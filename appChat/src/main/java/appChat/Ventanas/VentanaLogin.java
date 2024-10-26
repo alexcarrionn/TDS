@@ -22,55 +22,48 @@ public class VentanaLogin {
         // Crear el panel central para el formulario
         JPanel panelCentral = new JPanel();
         GridBagLayout gbl_panelCentral = new GridBagLayout();
-        gbl_panelCentral.columnWidths = new int[]{0, 271, 20, 0};
-        gbl_panelCentral.rowHeights = new int[]{0, 0, 0, 100, 0, 0, 0, 0};
-        gbl_panelCentral.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-        gbl_panelCentral.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
         panelCentral.setLayout(gbl_panelCentral);
 
         frame.getContentPane().add(panelCentral, BorderLayout.CENTER);
-
-        // Etiqueta y campo de teléfono
-        JLabel phoneLabel = new JLabel("Teléfono:");
-        phoneLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        phoneLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        GridBagConstraints gbc_phoneLabel = new GridBagConstraints();
-        gbc_phoneLabel.fill = GridBagConstraints.BOTH;
-        gbc_phoneLabel.insets = new Insets(0, 0, 5, 5);
-        gbc_phoneLabel.gridx = 1;
-        gbc_phoneLabel.gridy = 4;
-        gbc_phoneLabel.anchor = GridBagConstraints.CENTER; // Centrar la etiqueta
-        panelCentral.add(phoneLabel, gbc_phoneLabel);
+        
+                // Etiqueta y campo de teléfono
+                JLabel phoneLabel = new JLabel("Teléfono:");
+                phoneLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                phoneLabel.setFont(new Font("Arial", Font.BOLD, 15));
+                GridBagConstraints gbc_phoneLabel = new GridBagConstraints();
+                gbc_phoneLabel.anchor = GridBagConstraints.NORTH;
+                gbc_phoneLabel.insets = new Insets(10, 0, 5, 5);
+                gbc_phoneLabel.gridx = 0;
+                gbc_phoneLabel.gridy = 1;
+                panelCentral.add(phoneLabel, gbc_phoneLabel);
 
         JTextField phoneField = new JTextField();
         phoneField.setPreferredSize(new Dimension(200, 30));
         GridBagConstraints gbc_phoneField = new GridBagConstraints();
-        gbc_phoneField.anchor = GridBagConstraints.CENTER; // Centrar el campo
-        gbc_phoneField.fill = GridBagConstraints.VERTICAL;
-        gbc_phoneField.insets = new Insets(0, 0, 5, 0);
-        gbc_phoneField.gridx = 2;
-        gbc_phoneField.gridy = 4;
+        gbc_phoneField.insets = new Insets(0, 0, 15, 0);
+        gbc_phoneField.gridx = 1;
+        gbc_phoneField.gridy = 1;
+        gbc_phoneField.fill = GridBagConstraints.HORIZONTAL;
         panelCentral.add(phoneField, gbc_phoneField);
-
-        // Etiqueta y campo de contraseña
-        JLabel passwordLabel = new JLabel("Contraseña:");
-        passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        passwordLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        GridBagConstraints gbc_passwordLabel = new GridBagConstraints();
-        gbc_passwordLabel.fill = GridBagConstraints.BOTH;
-        gbc_passwordLabel.insets = new Insets(0, 0, 0, 5);
-        gbc_passwordLabel.gridx = 1;
-        gbc_passwordLabel.gridy = 6;
-        gbc_passwordLabel.anchor = GridBagConstraints.CENTER; // Centrar la etiqueta
-        panelCentral.add(passwordLabel, gbc_passwordLabel);
+        
+                // Etiqueta y campo de contraseña
+                JLabel passwordLabel = new JLabel("Contraseña:");
+                passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                passwordLabel.setFont(new Font("Arial", Font.BOLD, 15));
+                GridBagConstraints gbc_passwordLabel = new GridBagConstraints();
+                gbc_passwordLabel.anchor = GridBagConstraints.NORTH;
+                gbc_passwordLabel.insets = new Insets(10, 0, 0, 5);
+                gbc_passwordLabel.gridx = 0;
+                gbc_passwordLabel.gridy = 3;
+                panelCentral.add(passwordLabel, gbc_passwordLabel);
 
         JPasswordField passwordField = new JPasswordField();
         passwordField.setPreferredSize(new Dimension(200, 30));
         GridBagConstraints gbc_passwordField = new GridBagConstraints();
-        gbc_passwordField.anchor = GridBagConstraints.CENTER; // Centrar el campo
-        gbc_passwordField.fill = GridBagConstraints.VERTICAL;
-        gbc_passwordField.gridx = 2;
-        gbc_passwordField.gridy = 6;
+        gbc_passwordField.insets = new Insets(0, 0, 15, 0);
+        gbc_passwordField.gridx = 1;
+        gbc_passwordField.gridy = 3;
+        gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
         panelCentral.add(passwordField, gbc_passwordField);
 
         // Crear el panel inferior para los botones
@@ -90,8 +83,9 @@ public class VentanaLogin {
 
         JButton acceptButton = new JButton("Aceptar");
         acceptButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+            public void actionPerformed(ActionEvent e) {
+                // Acción del botón Aceptar
+            }
         });
         acceptButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagenes/aceptar.png")));
 
