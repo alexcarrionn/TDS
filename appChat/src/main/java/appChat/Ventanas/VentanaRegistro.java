@@ -15,7 +15,7 @@ public class VentanaRegistro {
     private static GridBagConstraints gbc_6;
     private static GridBagConstraints gbc_7;
     private static GridBagConstraints gbc_8;
-    private static GridBagConstraints gbc_4;
+    private static GridBagConstraints gbc_AreaEstado;
     private static GridBagConstraints gbc_9;
     private static GridBagConstraints gbc_10;
     private static GridBagConstraints gbc_11;
@@ -29,6 +29,7 @@ public class VentanaRegistro {
 
         // Crear el panel central para el formulario
         JPanel panelCentral = new JPanel();
+        panelCentral.setForeground(Color.GREEN);
         GridBagLayout gbl_panelCentral = new GridBagLayout();
         gbl_panelCentral.rowHeights = new int[]{0, 0, 0, 0, 31, 0, 0};
         gbl_panelCentral.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -127,8 +128,8 @@ public class VentanaRegistro {
         JDateChooser dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("dd/MM/yyyy");
         GridBagConstraints gbc_dateChooser = new GridBagConstraints();
-        gbc_dateChooser.fill = GridBagConstraints.BOTH;
-        gbc_dateChooser.insets = new Insets(0, 0, 5, 5);
+        gbc_dateChooser.fill = GridBagConstraints.HORIZONTAL; // Cambia BOTH a HORIZONTAL
+        gbc_dateChooser.insets = new Insets(5, 5, 5, 5); // Asegúrate de tener el mismo espaciado en todos los lados
         gbc_dateChooser.gridx = 1;
         gbc_dateChooser.gridy = 4;
         panelCentral.add(dateChooser, gbc_dateChooser);
@@ -181,16 +182,21 @@ public class VentanaRegistro {
         gbc_5.gridy = 5;
         panelCentral.add(new JLabel("Estado:"), gbc_5);
         
-        gbc_4 = new GridBagConstraints();
-        gbc_4.anchor = GridBagConstraints.WEST;
-        gbc_4.insets = new Insets(5, 5, 5, 5);
-        gbc_4.gridx = 1;
-        gbc_4.gridy = 5;
-        gbc_4.gridwidth = 2;
-        JTextArea saludoArea = new JTextArea(3, 20);
-        saludoArea.setLineWrap(true);
-        panelCentral.add(saludoArea, gbc_4);
-
+        gbc_AreaEstado = new GridBagConstraints();
+        gbc_AreaEstado.anchor = GridBagConstraints.WEST;
+        gbc_AreaEstado.insets = new Insets(5, 5, 5, 5);
+        gbc_AreaEstado.gridx = 1;
+        gbc_AreaEstado.gridy = 5;
+        gbc_AreaEstado.gridwidth = 2;
+        
+        // Añadir JTextArea dentro de JScrollPane
+        JTextArea AreaEstado = new JTextArea(5, 20);
+        AreaEstado.setWrapStyleWord(true);
+        AreaEstado.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(AreaEstado);
+        scrollPane.setPreferredSize(new Dimension(200, 100));
+        panelCentral.add(scrollPane, gbc_AreaEstado);
+        
         // Añadir panel central al frame
         frame.getContentPane().add(panelCentral, BorderLayout.CENTER);
 
@@ -204,7 +210,7 @@ public class VentanaRegistro {
 
         // Añadir panel de botones al frame
         frame.getContentPane().add(panelBotones, BorderLayout.SOUTH);
-
+        
         // Hacer la ventana visible
         frame.setVisible(true);
     }
