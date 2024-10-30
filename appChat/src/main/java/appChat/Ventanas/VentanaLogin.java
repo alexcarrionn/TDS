@@ -75,10 +75,13 @@ public class VentanaLogin {
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Acción del botón Registrar
+            	VentanaRegistro registro = new VentanaRegistro(); 
+            	registro.setVisible(true);  
             }
         });
 
         JButton cancelButton = new JButton("Cancelar");
+        cancelButton.addActionListener(e->System.exit(0));
         cancelButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagenes/cancelar.png")));
 
         JButton acceptButton = new JButton("Aceptar");
