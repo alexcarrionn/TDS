@@ -26,6 +26,7 @@ public class VentanaRegistro {
     public VentanaRegistro() {
         // Crear la ventana principal
     	frame = new JFrame("Ventana registro");
+    	frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(582, 394);
         frame.getContentPane().setLayout(new BorderLayout());

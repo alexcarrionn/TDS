@@ -9,6 +9,7 @@ public class VentanaLogin {
     public static void main(String[] args) {
         // Crear la ventana principal
         JFrame frame = new JFrame("AppChat");
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(651, 416);
         frame.getContentPane().setLayout(new BorderLayout());
