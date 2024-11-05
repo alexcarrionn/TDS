@@ -77,8 +77,10 @@ public class VentanaLogin {
             public void actionPerformed(ActionEvent e) {
                 // Acción del botón Registrar
             	VentanaRegistro registro = new VentanaRegistro(); 
-            	registro.setVisible(true);  
+            	registro.setVisible(true); 
+            	frame.dispose();
             }
+        
         });
 
         JButton cancelButton = new JButton("Cancelar");
@@ -87,8 +89,19 @@ public class VentanaLogin {
 
         JButton acceptButton = new JButton("Aceptar");
         acceptButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @SuppressWarnings("deprecation")
+			public void actionPerformed(ActionEvent e) {
                 // Acción del botón Aceptar
+            	if (phoneField.getText().isBlank()) {
+        			JOptionPane.showMessageDialog(frame, "El campo de Telefono tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+        		}
+            	else if (passwordField.getText().isBlank()) {
+            		JOptionPane.showMessageDialog(frame, "Debes de indicar la contraseña", "Error", JOptionPane.ERROR_MESSAGE);
+            	}
+            	/*else if (phoneField.getText() not in Usuarios){
+            		Da error si el usuario no esta registrado
+            		JOptionPane.showMessageDialog(frame, "El usuario debe de estar registrado", "Error", JOptionPane.ERROR_MESSAGE);
+            	}*/
             }
         });
         acceptButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagenes/aceptar.png")));

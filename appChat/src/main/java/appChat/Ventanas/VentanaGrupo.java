@@ -10,9 +10,10 @@ public class VentanaGrupo {
     private static DefaultListModel<String> grupoModel = new DefaultListModel<>();
     private static JList<String> listaContactos;
     private static JList<String> listaGrupo;
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Gestión de Grupos");
+    private JFrame frame;
+    
+    public VentanaGrupo() {
+        frame = new JFrame("Gestión de Grupos");
 
         // Configurar la operación de cierre
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,6 +87,36 @@ public class VentanaGrupo {
 
         // Botón para añadir contacto
         JButton btnAñadirContacto = new JButton("Añadir Contacto");
+        btnAñadirContacto.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		 JPanel panel = new JPanel(new GridLayout(0, 1));
+        	        panel.add(new JLabel("Introduzca el nombre del contacto y su teléfono"));
+
+        	        // Crear campos de texto
+        	        JTextField nombreField = new JTextField();
+        	        JTextField telefonoField = new JTextField();
+        	        panel.add(new JLabel("Nombre:"));
+        	        panel.add(nombreField);
+        	        panel.add(new JLabel("Teléfono:"));
+        	        panel.add(telefonoField);
+
+        	        // Mostrar el cuadro de diálogo
+        	        int result = JOptionPane.showConfirmDialog(frame, panel, "Alert", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        	        if (result == JOptionPane.OK_OPTION) {
+        	            String nombre = nombreField.getText();
+        	            String telefono = telefonoField.getText();
+
+        	            // Verificar que los campos no estén vacíos
+        	            if (!nombre.isEmpty() && !telefono.isEmpty()) {
+        	                // Agregar el nuevo contacto a la lista de contactos
+        	                contactosModel.addElement(nombre + " - " + telefono);
+        	            } else {
+        	                JOptionPane.showMessageDialog(frame, "Debe completar ambos campos", "Error", JOptionPane.ERROR_MESSAGE);
+        	            }
+        	        }
+        	    }
+        });
         
         GridBagConstraints gbc_btnAñadirContacto = new GridBagConstraints();
         gbc_btnAñadirContacto.insets = new Insets(5, 5, 5, 5);
@@ -105,4 +136,9 @@ public class VentanaGrupo {
         // Hacer visible la ventana
         frame.setVisible(true);
     }
+    
+    public void setVisible(boolean b) {
+		// TODO Auto-generated method stub
+		frame.setVisible(b);
+	}
 }
