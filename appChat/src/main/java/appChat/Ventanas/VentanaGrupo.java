@@ -110,7 +110,10 @@ public class VentanaGrupo {
         	            // Verificar que los campos no estén vacíos
         	            if (!nombre.isEmpty() && !telefono.isEmpty()) {
         	                // Agregar el nuevo contacto a la lista de contactos
-        	                contactosModel.addElement(nombre + " - " + telefono);
+        	                contactosModel.addElement(nombre);
+        	                /*else if(telefono not in Usuarios){
+        	                 * JOptionPane.showMessageDialog(frame, "El Telefono indicado no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        	            }*/    
         	            } else {
         	                JOptionPane.showMessageDialog(frame, "Debe completar ambos campos", "Error", JOptionPane.ERROR_MESSAGE);
         	            }
