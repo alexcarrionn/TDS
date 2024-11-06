@@ -16,7 +16,7 @@ public class VentanaBuscar {
     public VentanaBuscar() {
         // Crear el JFrame dentro de la clase
         frame = new JFrame("Buscar Ventana");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 500);  // Tamaño más grande de la ventana
         frame.setLocationRelativeTo(null);
 
@@ -119,8 +119,8 @@ public class VentanaBuscar {
             }
         });
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(VentanaBuscar::new);
+    
+    public void setVisible(boolean b) {
+        frame.setVisible(b);
     }
 }

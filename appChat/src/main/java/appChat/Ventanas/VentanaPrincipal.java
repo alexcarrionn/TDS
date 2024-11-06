@@ -77,15 +77,19 @@ public class VentanaPrincipal extends JFrame {
 		
 		JButton btnBuscarMensajes = new JButton("");
 		btnBuscarMensajes.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/lupa.png")));
+		btnBuscarMensajes.addActionListener(ev -> {
+			VentanaBuscar buscar = new VentanaBuscar(); 
+			buscar.setVisible(true);
+		}); 
 		panelBotones.add(btnBuscarMensajes);
 		
-		JButton contactos = new JButton("Contactos");
-		contactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/reunion.png")));
-		contactos.addActionListener(ev -> {
+		JButton btnContactos = new JButton("Contactos");
+		btnContactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/reunion.png")));
+		btnContactos.addActionListener(ev -> {
 			VentanaGrupo grupo = new VentanaGrupo(); 
 			grupo.setVisible(true);
 		}); 
-		panelBotones.add(contactos);
+		panelBotones.add(btnContactos);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		panelBotones.add(horizontalGlue);
