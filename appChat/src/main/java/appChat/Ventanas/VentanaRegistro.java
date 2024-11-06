@@ -18,9 +18,9 @@ public class VentanaRegistro {
     private static GridBagConstraints gbc_8;
     private static GridBagConstraints gbc_AreaEstado;
     private static JTextField imagen;
-    private static GridBagConstraints gbc_4;
-    private static JTextField repetir_contra;
-    private static GridBagConstraints gbc_11;
+    private static GridBagConstraints gbc_labelImagen;
+    private static JTextField repetirContra;
+    private static GridBagConstraints gbc_repetirLabel;
     private static JTextField contraseña;
     private static JTextField telefono;
     private JFrame frame;
@@ -107,23 +107,23 @@ public class VentanaRegistro {
         gbc_contraseña.gridy = 3;
         panelCentral.add(contraseña, gbc_contraseña);
 
-        gbc_11 = new GridBagConstraints();
-        gbc_11.anchor = GridBagConstraints.EAST;
-        gbc_11.insets = new Insets(5, 5, 5, 5);
-        gbc_11.gridx = 3;
-        gbc_11.gridy = 3;
-        JLabel label_1 = new JLabel("Repetir:");
-        panelCentral.add(label_1, gbc_11);
+        gbc_repetirLabel = new GridBagConstraints();
+        gbc_repetirLabel.anchor = GridBagConstraints.EAST;
+        gbc_repetirLabel.insets = new Insets(5, 5, 5, 5);
+        gbc_repetirLabel.gridx = 3;
+        gbc_repetirLabel.gridy = 3;
+        JLabel repetirLabel = new JLabel("Repetir:");
+        panelCentral.add(repetirLabel, gbc_repetirLabel);
 
-        repetir_contra = new JTextField();
-        repetir_contra.setColumns(10);
-        GridBagConstraints gbc_repetir_contra = new GridBagConstraints();
-        gbc_repetir_contra.gridwidth = 2;
-        gbc_repetir_contra.insets = new Insets(0, 0, 5, 0);
-        gbc_repetir_contra.fill = GridBagConstraints.HORIZONTAL;
-        gbc_repetir_contra.gridx = 4;
-        gbc_repetir_contra.gridy = 3;
-        panelCentral.add(repetir_contra, gbc_repetir_contra);
+        repetirContra = new JTextField();
+        repetirContra.setColumns(10);
+        GridBagConstraints gbc_repetirContra = new GridBagConstraints();
+        gbc_repetirContra.gridwidth = 2;
+        gbc_repetirContra.insets = new Insets(0, 0, 5, 0);
+        gbc_repetirContra.fill = GridBagConstraints.HORIZONTAL;
+        gbc_repetirContra.gridx = 4;
+        gbc_repetirContra.gridy = 3;
+        panelCentral.add(repetirContra, gbc_repetirContra);
 
         // Etiqueta y campo de fecha
         gbc_1 = new GridBagConstraints();
@@ -143,13 +143,13 @@ public class VentanaRegistro {
         panelCentral.add(dateChooser, gbc_dateChooser);
         
         // Etiqueta y espacio para la imagen
-        gbc_4 = new GridBagConstraints();
-        gbc_4.anchor = GridBagConstraints.EAST;
-        gbc_4.insets = new Insets(5, 5, 5, 5);
-        gbc_4.gridx = 3;
-        gbc_4.gridy = 4;
-        JLabel label = new JLabel("Imagen:");
-        panelCentral.add(label, gbc_4);
+        gbc_labelImagen = new GridBagConstraints();
+        gbc_labelImagen.anchor = GridBagConstraints.EAST;
+        gbc_labelImagen.insets = new Insets(5, 5, 5, 5);
+        gbc_labelImagen.gridx = 3;
+        gbc_labelImagen.gridy = 4;
+        JLabel labelImagen = new JLabel("Imagen:");
+        panelCentral.add(labelImagen, gbc_labelImagen);
 
         imagen = new JTextField();
         GridBagConstraints gbc_textField = new GridBagConstraints();
@@ -200,15 +200,15 @@ public class VentanaRegistro {
         gbc_panel.gridy = 6;
         panelCentral.add(panel, gbc_panel);
         
-        JButton btnNewButton = new JButton("Aceptar");
-        btnNewButton.addMouseListener(new MouseAdapter() {
+        JButton btnAceptar = new JButton("Aceptar");
+        btnAceptar.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
         		frame.dispose(); // Cierra la ventana actual
                 VentanaLogin.main(new String[]{}); // Abre la ventana de login	
         	}
         });
-        btnNewButton.addActionListener(new ActionListener() {
+        btnAceptar.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		if (nombreField.getText().isBlank()) {
         			JOptionPane.showMessageDialog(frame, "El campo de Nombre tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
@@ -219,7 +219,7 @@ public class VentanaRegistro {
         		else if (telefono.getText().isBlank()){
         			JOptionPane.showMessageDialog(frame, "El campo de Telefono tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
         		}
-        		else if (repetir_contra.getText().isBlank()){
+        		else if (repetirContra.getText().isBlank()){
         			JOptionPane.showMessageDialog(frame, "El campo de Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
         		}
         		else if (contraseña.getText().isBlank()){
@@ -228,24 +228,28 @@ public class VentanaRegistro {
         		else if (AreaEstado.getText().isBlank()) {
         			JOptionPane.showMessageDialog(frame, "El campo de Estado tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
         		}
-        		else if(!repetir_contra.getText().equals(contraseña.getText())) {
+        		else if(!repetirContra.getText().equals(contraseña.getText())) {
         			JOptionPane.showMessageDialog(frame, "Las contraseñas no coinciden.", "No Contraseñas", JOptionPane.ERROR_MESSAGE);
         		}
         	}
 
         });
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-        panel.add(btnNewButton);
+        panel.add(btnAceptar);
         
         Component horizontalGlue = Box.createHorizontalGlue();
         panel.add(horizontalGlue);
         
         JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.addActionListener(new ActionListener() {
+       /* btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Cierra la ventana actual
                 VentanaLogin.main(new String[]{}); // Abre la ventana de login
             }
+        });*/
+        btnCancelar.addActionListener(ev -> {
+        	frame.dispose(); // Cierra la ventana actual
+            VentanaLogin.main(new String[]{}); // Abre la ventana de login
         });
         panel.add(btnCancelar);
         

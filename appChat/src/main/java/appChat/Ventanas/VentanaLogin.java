@@ -1,6 +1,9 @@
 package appChat.Ventanas;
 
 import javax.swing.*;
+
+import controlador.AppChat;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -58,14 +61,14 @@ public class VentanaLogin {
                 gbc_passwordLabel.gridy = 3;
                 panelCentral.add(passwordLabel, gbc_passwordLabel);
 
-        JPasswordField passwordField = new JPasswordField();
-        passwordField.setPreferredSize(new Dimension(200, 30));
-        GridBagConstraints gbc_passwordField = new GridBagConstraints();
-        gbc_passwordField.insets = new Insets(0, 0, 15, 0);
-        gbc_passwordField.gridx = 1;
-        gbc_passwordField.gridy = 3;
-        gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
-        panelCentral.add(passwordField, gbc_passwordField);
+        JPasswordField contrasena = new JPasswordField();
+        contrasena.setPreferredSize(new Dimension(200, 30));
+        GridBagConstraints gbc_contrasena = new GridBagConstraints();
+        gbc_contrasena.insets = new Insets(0, 0, 15, 0);
+        gbc_contrasena.gridx = 1;
+        gbc_contrasena.gridy = 3;
+        gbc_contrasena.fill = GridBagConstraints.HORIZONTAL;
+        panelCentral.add(contrasena, gbc_contrasena);
 
         // Crear el panel inferior para los botones
         JPanel panelBotones = new JPanel();
@@ -78,7 +81,7 @@ public class VentanaLogin {
                 // Acción del botón Registrar
             	VentanaRegistro registro = new VentanaRegistro(); 
             	registro.setVisible(true); 
-            	frame.dispose();
+            	frame.setVisible(false);
             }
         
         });
@@ -92,17 +95,32 @@ public class VentanaLogin {
             @SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
                 // Acción del botón Aceptar
-            	if (phoneField.getText().isBlank()) {
+            	String telefono =phoneField.getText(); 
+          	  	String clave = contrasena.getText(); 
+            	if (telefono.isBlank()) {
         			JOptionPane.showMessageDialog(frame, "El campo de Telefono tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
         		}
-            	else if (passwordField.getText().isBlank()) {
+            	else if (clave.isBlank()) {
             		JOptionPane.showMessageDialog(frame, "Debes de indicar la contraseña", "Error", JOptionPane.ERROR_MESSAGE);
             	}
-            	/*else if (phoneField.getText() not in Usuarios){
-            		Da error si el usuario no esta registrado
-            		JOptionPane.showMessageDialog(frame, "El usuario debe de estar registrado", "Error", JOptionPane.ERROR_MESSAGE);
-            	}*/
-            }
+            	else {//recupero los datos de pantalla
+            	  
+            	  
+            	 // ejecutamos el negocio a traves del CONTROLADOR
+            	  
+            	  boolean login = AppChat.hacerLogin(telefono, clave);
+            	  
+            	  //Actuo en la pantalla segun el resultado 
+            	   
+            	   if (login) {
+            	   VentanaPrincipal vp= new VentanaPrincipal(); 
+            	   vp.setVisible(true);
+            	   frame.setVisible(false);}
+            	   else{
+            	   JOptionPane.showMessageDialog(frame, "El telefono no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+            	   }
+            	
+            }}
         });
         acceptButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagenes/aceptar.png")));
 

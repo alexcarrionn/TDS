@@ -16,7 +16,7 @@ public class VentanaGrupo {
         frame = new JFrame("Gestión de Grupos");
 
         // Configurar la operación de cierre
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Establecer el tamaño de la ventana
         frame.setSize(600, 400);
@@ -88,37 +88,37 @@ public class VentanaGrupo {
         // Botón para añadir contacto
         JButton btnAñadirContacto = new JButton("Añadir Contacto");
         btnAñadirContacto.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		 JPanel panel = new JPanel(new GridLayout(0, 1));
-        	        panel.add(new JLabel("Introduzca el nombre del contacto y su teléfono"));
+            public void actionPerformed(ActionEvent e) {
+                JPanel panel = new JPanel(new GridLayout(0, 1));
+                panel.add(new JLabel("Introduzca el nombre del contacto y su teléfono"));
 
-        	        // Crear campos de texto
-        	        JTextField nombreField = new JTextField();
-        	        JTextField telefonoField = new JTextField();
-        	        panel.add(new JLabel("Nombre:"));
-        	        panel.add(nombreField);
-        	        panel.add(new JLabel("Teléfono:"));
-        	        panel.add(telefonoField);
+                // Crear campos de texto
+                JTextField nombreField = new JTextField();
+                JTextField telefonoField = new JTextField();
+                panel.add(new JLabel("Nombre:"));
+                panel.add(nombreField);
+                panel.add(new JLabel("Teléfono:"));
+                panel.add(telefonoField);
 
-        	        // Mostrar el cuadro de diálogo
-        	        int result = JOptionPane.showConfirmDialog(frame, panel, "Alert", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                // Mostrar el cuadro de diálogo
+                int result = JOptionPane.showConfirmDialog(frame, panel, "Alert", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        	        if (result == JOptionPane.OK_OPTION) {
-        	            String nombre = nombreField.getText();
-        	            String telefono = telefonoField.getText();
+                if (result == JOptionPane.OK_OPTION) {
+                    String nombre = nombreField.getText();
+                    String telefono = telefonoField.getText();
 
-        	            // Verificar que los campos no estén vacíos
-        	            if (!nombre.isEmpty() && !telefono.isEmpty()) {
-        	                // Agregar el nuevo contacto a la lista de contactos
-        	                contactosModel.addElement(nombre);
-        	                /*else if(telefono not in Usuarios){
-        	                 * JOptionPane.showMessageDialog(frame, "El Telefono indicado no existe", "Error", JOptionPane.ERROR_MESSAGE);
-        	            }*/    
-        	            } else {
-        	                JOptionPane.showMessageDialog(frame, "Debe completar ambos campos", "Error", JOptionPane.ERROR_MESSAGE);
-        	            }
-        	        }
-        	    }
+                    // Verificar que los campos no estén vacíos
+                    if (!nombre.isEmpty() && !telefono.isEmpty()) {
+                        // Agregar el nuevo contacto a la lista de contactos
+                        contactosModel.addElement(nombre);
+                        /* else if(telefono not in Usuarios){
+                         * JOptionPane.showMessageDialog(frame, "El Telefono indicado no existe", "Error", JOptionPane.ERROR_MESSAGE);
+                         } */
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Debe completar ambos campos", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
         });
         
         GridBagConstraints gbc_btnAñadirContacto = new GridBagConstraints();
@@ -141,7 +141,6 @@ public class VentanaGrupo {
     }
     
     public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
-		frame.setVisible(b);
-	}
+        frame.setVisible(b);
+    }
 }
