@@ -50,6 +50,11 @@
     	<artifactId>junit5-engine</artifactId>
     	<version>5.0.0-ALPHA</version>
     </dependency>
+<dependency>
+<groupId>tds</groupId>
+<artifactId>chatWindowLib</artifactId>
+<version>1</version>
+</dependency>
   </dependencies>
 
   <build>

@@ -1,9 +1,7 @@
 package appChat.Ventanas;
 
 import javax.swing.*;
-
 import controlador.AppChat;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;

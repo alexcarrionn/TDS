@@ -33,7 +33,7 @@ public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField mensaje;
-
+	static VentanaPrincipal frame;
 	/**
 	 * Launch the application.
 	 */
@@ -41,7 +41,7 @@ public class VentanaPrincipal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaPrincipal frame = new VentanaPrincipal();
+					frame = new VentanaPrincipal();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -80,6 +80,7 @@ public class VentanaPrincipal extends JFrame {
 		btnBuscarMensajes.addActionListener(ev -> {
 			VentanaBuscar buscar = new VentanaBuscar(); 
 			buscar.setVisible(true);
+			//frame.setVisible(false); 
 		}); 
 		panelBotones.add(btnBuscarMensajes);
 		
@@ -88,6 +89,7 @@ public class VentanaPrincipal extends JFrame {
 		btnContactos.addActionListener(ev -> {
 			VentanaGrupo grupo = new VentanaGrupo(); 
 			grupo.setVisible(true);
+			//frame.setVisible(false); 
 		}); 
 		panelBotones.add(btnContactos);
 		

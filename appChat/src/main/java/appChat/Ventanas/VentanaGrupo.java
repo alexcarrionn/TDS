@@ -135,7 +135,7 @@ public class VentanaGrupo {
         gbc_btnAñadirGrupo.gridx = 4;
         gbc_btnAñadirGrupo.gridy = 6;
         frame.getContentPane().add(btnAñadirGrupo, gbc_btnAñadirGrupo);
-
+        //AQUI TENEMOS QUE PONER QUE PARA CUANDO LE DEMOS AL BOTON SE CREE UN NUEVO GRUPO CON LOS CONTACTOS QUE LE  HAYAMOS PASADO 
         // Hacer visible la ventana
         frame.setVisible(true);
     }
