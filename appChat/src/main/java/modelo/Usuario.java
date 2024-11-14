@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Usuario {
 	private String telefono; 
 	private String nombre;
@@ -8,6 +11,7 @@ public class Usuario {
 	private Boolean premium;
 	private String fecha; 
 	private String estado;
+	private List<Contactos> contactos; 
 	
 	public Usuario(String telefono, String nombre, String imagen,String contraseña, String fecha, String estado) {
 		super();
@@ -17,10 +21,10 @@ public class Usuario {
 		this.premium = false; 
 		this.contraseña = contraseña; 
 		this.fecha=fecha; 
-		this.estado=estado; 
+		this.estado=estado;
+		contactos= new ArrayList<Contactos>(); 
 	}
 	
-
 	public String getContraseña() {
 		return contraseña;
 	}
@@ -66,6 +70,20 @@ public class Usuario {
 	}
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public List<Contactos> getContactos() {
+		return new ArrayList<>(contactos);
+	}
+
+	public void setContactos(List<Contactos> contactos) {
+		this.contactos = contactos;
+	}
+
+	public Boolean getPremium() {
+		return premium;
 	} 
+	
+	
 	
 }

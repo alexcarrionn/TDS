@@ -16,14 +16,14 @@ import persistencia.IAdaptadorUsuarioDAO;
  * datos con un número grande de objetos. En ese caso se consultaria
  * directamente la base de datos
  */
-public class CatalogoUsuario {
+public class RepositorioUsuario {
 	private Map<String,Usuario> usuarios; 
-	private static CatalogoUsuario unicaInstancia = new CatalogoUsuario();
+	private static RepositorioUsuario unicaInstancia = new RepositorioUsuario();
 	
 	private FactoriaDAO dao;
 	private IAdaptadorUsuarioDAO adaptadorUsuario;
 	
-	private CatalogoUsuario() {
+	private RepositorioUsuario() {
 		try {
   			dao = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
   			adaptadorUsuario = dao.getUsuarioDAO();
@@ -34,11 +34,11 @@ public class CatalogoUsuario {
   		}
 	}
 	
-	public static CatalogoUsuario getUnicaInstancia(){
+	public static RepositorioUsuario getUnicaInstancia(){
 		return unicaInstancia;
 	}
 	
-	/*devuelve todos los clientes*/
+	/*devuelve todos los Usuarios*/
 	public List<Usuario> getUsuarios(){
 		ArrayList<Usuario> lista = new ArrayList<Usuario>();
 		for (Usuario c:usuarios.values()) 
@@ -60,7 +60,7 @@ public class CatalogoUsuario {
 		usuarios.remove(user.getTelefono());
 	}
 	
-	//Recupera todos los clientes para trabajar con ellos en memoria
+	//Recupera todos los usuarios para trabajar con ellos en memoria
 	private void cargarCatalogo() throws DAOException {
 		 List<Usuario> usuariosBD = adaptadorUsuario.recuperarTodosClientes();
 		 for (Usuario user: usuariosBD) 
