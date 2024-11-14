@@ -7,7 +7,7 @@ public class Usuario {
 	private String contraseña; 
 	private Boolean premium;
 	private String fecha; 
-	private String estado; 
+	private String estado;
 	
 	public Usuario(String telefono, String nombre, String imagen,String contraseña, String fecha, String estado) {
 		super();
