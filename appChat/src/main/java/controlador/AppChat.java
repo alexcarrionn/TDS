@@ -20,8 +20,9 @@ public class AppChat {
 	}
 
 	public static List<Mensaje> ObtenerMensajesReMensaje() {
-		Usuario Javi = new Usuario("98523", "Javi","","","",""); 
-		Usuario Ana = new Usuario("98523", "Ana", "","","",""); 
+		
+		Usuario Javi = new Usuario(98523, "Javi","","",""); 
+		Usuario Ana = new Usuario(98523, "Ana", "","",""); 
 		
 		
 		ArrayList<Mensaje> resultado = new ArrayList<Mensaje>(); 

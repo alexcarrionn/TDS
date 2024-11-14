@@ -1,6 +1,8 @@
 package modelo;
 
 public class Mensaje {
+	
+	//propiedades
 	private final String texto; 
 	private final Usuario emisor; 
 	private final Usuario receptor;
@@ -8,7 +10,9 @@ public class Mensaje {
 	private final String emoticono; 
 	private final String tipo; 
 	
+	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
 	
+	//getters y setters
 	public String getTexto() {
 		return texto;
 	}
