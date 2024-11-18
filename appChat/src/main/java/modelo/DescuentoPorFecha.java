@@ -21,7 +21,7 @@ public class DescuentoPorFecha extends Descuento {
         if (hoy.isAfter(fechaInicio) && hoy.isBefore(fechaFin)) {
             return porcentajeDescuento*precio;
         } else {
-            return 0.0; // Sin descuento fuera del rango de fechas
+            return precio; // Sin descuento fuera del rango de fechas
         }
     }
 }

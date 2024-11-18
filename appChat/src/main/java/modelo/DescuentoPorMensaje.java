@@ -17,7 +17,7 @@ public class DescuentoPorMensaje extends Descuento {
         if (cantidadMensajes >= umbralMensajes) {
             return porcentajeDescuento*precio;
         } else {
-            return 0.0; // Sin descuento si no se alcanzó el umbral de mensajes
+            return precio; // Sin descuento si no se alcanzó el umbral de mensajes
         }
     }
 }

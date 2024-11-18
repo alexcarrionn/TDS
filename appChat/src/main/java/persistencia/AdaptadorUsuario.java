@@ -11,9 +11,8 @@ import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
 
-import modelo.Cliente;
 import modelo.Usuario;
-import modelo.Venta;
+
 
 //Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
