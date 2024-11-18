@@ -8,6 +8,7 @@ import java.util.Optional;
 public class Usuario {
 	private static final double PRECIO_PREMIUM = 10.00;
 	private int telefono; 
+	private int id; 
 	private String nombre;
 	private String imagen;
 	private String contraseña; 
@@ -57,9 +58,16 @@ public class Usuario {
 	
 	
 	//Getters y Setters
-	
 	public String getContraseña() {
 		return contraseña;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public void setContraseña(String contraseña) {

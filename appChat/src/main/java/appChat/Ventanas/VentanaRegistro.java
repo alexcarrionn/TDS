@@ -23,12 +23,13 @@ public class VentanaRegistro {
     private static GridBagConstraints gbc_repetirLabel;
     private static JTextField contraseña;
     private static JTextField telefono;
+    private JLabel imagenLabel; // Hacer imagenLabel accesible en toda la clase
     private JFrame frame;
 
     public VentanaRegistro() {
         // Crear la ventana principal
-    	frame = new JFrame("Ventana registro");
-    	frame.setResizable(false);
+        frame = new JFrame("Ventana registro");
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(582, 394);
         frame.getContentPane().setLayout(new BorderLayout());
@@ -165,8 +166,28 @@ public class VentanaRegistro {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 4;
         gbc.gridy = 5;
-        JLabel imagenLabel = new JLabel(new ImageIcon(VentanaRegistro.class.getResource("/imagenes/agregar-usuario.png")));
+        imagenLabel = new JLabel(new ImageIcon(VentanaRegistro.class.getResource("/imagenes/agregar-usuario.png")));
         panelCentral.add(imagenLabel, gbc);
+
+        // Botón para cargar imagen
+        JButton btnCargarImagen = new JButton("Cargar Imagen");
+        btnCargarImagen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    java.io.File file = fileChooser.getSelectedFile();
+                    ImageIcon imageIcon = new ImageIcon(file.getPath());
+                    imagenLabel.setIcon(imageIcon); // Actualiza el JLabel con la nueva imagen
+                }
+            }
+        });
+
+        gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 4;
+        gbc.gridy = 6;
+        panelCentral.add(btnCargarImagen, gbc);
 
         // Etiqueta y campo de saludo
         gbc_5 = new GridBagConstraints();
@@ -202,36 +223,36 @@ public class VentanaRegistro {
         
         JButton btnAceptar = new JButton("Aceptar");
         btnAceptar.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent e) {
-        		frame.dispose(); // Cierra la ventana actual
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                frame.dispose(); // Cierra la ventana actual
                 VentanaLogin.main(new String[]{}); // Abre la ventana de login	
-        	}
+            }
         });
         btnAceptar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if (nombreField.getText().isBlank()) {
-        			JOptionPane.showMessageDialog(frame, "El campo de Nombre tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if (apellidosField.getText().isBlank()){
-        			JOptionPane.showMessageDialog(frame, "El campo de Apellido tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if (telefono.getText().isBlank()){
-        			JOptionPane.showMessageDialog(frame, "El campo de Telefono tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if (repetirContra.getText().isBlank()){
-        			JOptionPane.showMessageDialog(frame, "El campo de Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if (contraseña.getText().isBlank()){
-        			JOptionPane.showMessageDialog(frame, "El campo de Repetir Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if (AreaEstado.getText().isBlank()) {
-        			JOptionPane.showMessageDialog(frame, "El campo de Estado tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
-        		}
-        		else if(!repetirContra.getText().equals(contraseña.getText())) {
-        			JOptionPane.showMessageDialog(frame, "Las contraseñas no coinciden.", "No Contraseñas", JOptionPane.ERROR_MESSAGE);
-        		}
-        	}
+            public void actionPerformed(ActionEvent e) {
+                if (nombreField.getText().isBlank()) {
+                    JOptionPane.showMessageDialog(frame, "El campo de Nombre tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (apellidosField.getText().isBlank()){
+                    JOptionPane.showMessageDialog(frame, "El campo de Apellido tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (telefono.getText().isBlank()){
+                    JOptionPane.showMessageDialog(frame, "El campo de Telefono tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (repetirContra.getText().isBlank()){
+                    JOptionPane.showMessageDialog(frame, "El campo de Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (contraseña.getText().isBlank()){
+                    JOptionPane.showMessageDialog(frame, "El campo de Repetir Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (AreaEstado.getText().isBlank()) {
+                    JOptionPane.showMessageDialog(frame, "El campo de Estado tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(!repetirContra.getText().equals(contraseña.getText())) {
+                    JOptionPane.showMessageDialog(frame, "Las contraseñas no coinciden.", "No Contraseñas", JOptionPane.ERROR_MESSAGE);
+                }
+            }
 
         });
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -241,22 +262,16 @@ public class VentanaRegistro {
         panel.add(horizontalGlue);
         
         JButton btnCancelar = new JButton("Cancelar");
-       /* btnCancelar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Cierra la ventana actual
-                VentanaLogin.main(new String[]{}); // Abre la ventana de login
-            }
-        });*/
         btnCancelar.addActionListener(ev -> {
-        	frame.dispose(); // Cierra la ventana actual
+            frame.dispose(); // Cierra la ventana actual
             VentanaLogin.main(new String[]{}); // Abre la ventana de login
         });
         panel.add(btnCancelar);
         
     }
 
-	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
-		frame.setVisible(b);
-	}
+    public void setVisible(boolean b) {
+        // TODO Auto-generated method stub
+        frame.setVisible(b);
+    }
 }

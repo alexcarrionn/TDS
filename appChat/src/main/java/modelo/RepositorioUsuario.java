@@ -62,7 +62,7 @@ public class RepositorioUsuario {
 	
 	//Recupera todos los usuarios para trabajar con ellos en memoria
 	private void cargarCatalogo() throws DAOException {
-		 List<Usuario> usuariosBD = adaptadorUsuario.recuperarTodosClientes();
+		 List<Usuario> usuariosBD = adaptadorUsuario.recuperarTodosUsuarios();
 		 for (Usuario user: usuariosBD) 
 			     usuarios.put(user.getTelefono(),user);
 	}

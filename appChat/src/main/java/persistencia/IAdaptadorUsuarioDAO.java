@@ -5,9 +5,9 @@ import modelo.Usuario;
 
 public interface IAdaptadorUsuarioDAO {
 
-	public void registrarCliente(Usuario cliente);
-	public void borrarCliente(Usuario cliente);
-	public void modificarCliente(Usuario cliente);
-	public Usuario recuperarCliente(int codigo);
-	public List<Usuario> recuperarTodosClientes();
+	public void registrarUsuario(Usuario cliente);
+	public void borrarUsuario(Usuario cliente);
+	public void modificarUsuario(Usuario cliente);
+	public Usuario recuperarUsuario(int codigo);
+	public List<Usuario> recuperarTodosUsuarios();
 }
