@@ -1,0 +1,82 @@
+package modelo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Contacto {
+    // Propiedades
+    private String nombre;
+    private int telefono;
+    private List<Mensaje> mensajes;
+
+    // Constructor
+    public Contacto(String nombre, int telefono) {
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.mensajes = new ArrayList<>();
+    }
+
+    // Getters y Setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
+    }
+
+    public List<Mensaje> getMensajes() {
+        return new ArrayList<>(mensajes);
+    }
+
+    public void setMensajes(List<Mensaje> mensajes) {
+        this.mensajes = mensajes;
+    }
+
+    // Métodos de gestión de mensajes
+    public void addMensaje(Mensaje mensaje) {
+        this.mensajes.add(mensaje);
+    }
+
+    public void removeMensaje(Mensaje mensaje) {
+        this.mensajes.remove(mensaje);
+    }
+
+    public List<Mensaje> buscarMensajes(String texto) {
+        List<Mensaje> resultados = new ArrayList<>();
+        for (Mensaje mensaje : mensajes) {
+            if (mensaje.getTexto().toLowerCase().contains(texto.toLowerCase())) {
+                resultados.add(mensaje);
+            }
+        }
+        return resultados;
+    }
+
+    // Mostrar Contacto
+    @Override
+    public String toString() {
+        return "Nombre: " + nombre + ", Teléfono: " + telefono;
+    }
+
+    // Métodos equals y hashCode para evitar duplicados
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Contacto contacto = (Contacto) obj;
+        return telefono == contacto.telefono;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(telefono);
+    }
+}

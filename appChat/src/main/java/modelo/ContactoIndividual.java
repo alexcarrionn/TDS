@@ -1,5 +1,5 @@
 package modelo;
-public class ContactoIndividual extends Contactos{
+public class ContactoIndividual extends Contacto{
 
 	private Usuario usuario;
 	private int movil;

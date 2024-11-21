@@ -64,6 +64,9 @@ public class VentanaBuscar {
         buscarButton.setIcon(new ImageIcon(VentanaBuscar.class.getResource("/imagenes/buscar_boton.png")));
         buscarButton.setSelectedIcon(null);
         panelCampos.add(buscarButton);
+        
+        //TODO evento del boton
+        
 
         // Añadir ambos paneles (texto y campos) al panel superior
         panelSuperior.add(panelTexto);
