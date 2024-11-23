@@ -3,7 +3,7 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Grupo extends Contactos{
+public class Grupo extends Contacto{
 
 	private List<ContactoIndividual> contactos;
 	
@@ -16,8 +16,8 @@ public class Grupo extends Contactos{
 	}
 
 	//Constructor
-	public Grupo(String nombre, Usuario user) {
-		super(nombre);
+	public Grupo(String nombre, int telefono, Usuario user) {
+		super(nombre, telefono);
 		contactos=new ArrayList<>(); 
 
 	}

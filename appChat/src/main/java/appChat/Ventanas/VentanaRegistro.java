@@ -3,10 +3,14 @@ package appChat.Ventanas;
 import javax.swing.*;
 import java.awt.*;
 import com.toedter.calendar.JDateChooser;
+
+import controlador.AppChat;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 
 public class VentanaRegistro {
     private static GridBagConstraints gbc_1;
@@ -203,10 +207,10 @@ public class VentanaRegistro {
         gbc_AreaEstado.gridx = 1;
         gbc_AreaEstado.gridy = 5;
         
-        JTextArea AreaEstado = new JTextArea(5, 20);
-        AreaEstado.setWrapStyleWord(true);
-        AreaEstado.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(AreaEstado);
+        JTextArea areaEstado = new JTextArea(5, 20);
+        areaEstado.setWrapStyleWord(true);
+        areaEstado.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(areaEstado);
         scrollPane.setPreferredSize(new Dimension(200, 100));
         panelCentral.add(scrollPane, gbc_AreaEstado);
         
@@ -246,11 +250,22 @@ public class VentanaRegistro {
                 else if (contraseña.getText().isBlank()){
                     JOptionPane.showMessageDialog(frame, "El campo de Repetir Contraseña tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else if (AreaEstado.getText().isBlank()) {
+                else if (areaEstado.getText().isBlank()) {
                     JOptionPane.showMessageDialog(frame, "El campo de Estado tiene que estar relleno", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 else if(!repetirContra.getText().equals(contraseña.getText())) {
                     JOptionPane.showMessageDialog(frame, "Las contraseñas no coinciden.", "No Contraseñas", JOptionPane.ERROR_MESSAGE);
+                }
+                
+                String nombre = nombreField.getText() + apellidosField.getText();
+                int movil =Integer.parseInt(telefono.getText());
+                String contrasena = contraseña.getText(); 
+                String estado = areaEstado.getText(); 
+                String imagenUsuario = imagen.getText(); 
+                LocalDate fecha = LocalDate.parse((CharSequence) dateChooser.getDate());
+                boolean acept = AppChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
+                if(!acept) {
+                	 JOptionPane.showMessageDialog(frame, "El Usuario ya etsa registrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
 

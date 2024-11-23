@@ -106,7 +106,7 @@ public class VentanaLogin {
             	  
             	 // ejecutamos el negocio a traves del CONTROLADOR
             	  
-            	  boolean login = AppChat.hacerLogin(telefono, clave);
+            	  boolean login = AppChat.hacerLogin(Integer.getInteger(telefono), clave);
             	  
             	  //Actuo en la pantalla segun el resultado 
             	   
@@ -115,7 +115,7 @@ public class VentanaLogin {
             	   vp.setVisible(true);
             	   frame.setVisible(false);}
             	   else{
-            	   JOptionPane.showMessageDialog(frame, "El telefono no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+            	   JOptionPane.showMessageDialog(frame, "El Usuario no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
             	   }
             	
             }}

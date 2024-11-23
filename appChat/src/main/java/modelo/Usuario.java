@@ -15,21 +15,11 @@ public class Usuario {
 	private Boolean premium;
 	private LocalDate fecha; 
 	private String estado;
-	private List<Contactos> contactos;
+	private List<Contacto> contactos;
 	private Optional<Descuento> descuento;
 	
 	//Constructor
 	//eliminar cuando hagamos bien lo de APPCHAT
-	public Usuario(int telefono, String nombre, String imagen,String contraseña, String estado) {
-		super();
-		this.telefono = telefono;
-		this.nombre = nombre;
-		this.imagen = imagen;
-		this.premium = false; 
-		this.contraseña = contraseña;  
-		this.estado=estado;
-		contactos= new ArrayList<Contactos>();
-	}
 	
 	public Usuario(int telefono, String nombre, String imagen,String contraseña, String estado,Descuento descuentos) {
 		super();
@@ -39,7 +29,7 @@ public class Usuario {
 		this.premium = false; 
 		this.contraseña = contraseña;  
 		this.estado=estado;
-		contactos= new ArrayList<Contactos>();
+		contactos= new ArrayList<Contacto>();
 		this.descuento = Optional.ofNullable(descuentos);
 	}
 	
@@ -52,11 +42,19 @@ public class Usuario {
 		this.contraseña = contraseña; 
 		this.fecha=fecha; 
 		this.estado=estado;
-		contactos= new ArrayList<Contactos>();
+		contactos= new ArrayList<Contacto>();
 		this.descuento = Optional.ofNullable(descuentos);
 	}
-	
-	
+
+	public Usuario(String nombre2, int movil, String contrasena, LocalDate parse, String imagen2, String saludo) {
+		nombre=nombre2; 
+		telefono=movil; 
+		contraseña=contrasena;
+		fecha=parse; 
+		imagen=imagen2; 
+		estado=saludo;
+	}
+
 	//Getters y Setters
 	public String getContraseña() {
 		return contraseña;
@@ -113,11 +111,11 @@ public class Usuario {
 		this.estado = estado;
 	}
 
-	public List<Contactos> getContactos() {
+	public List<Contacto> getContactos() {
 		return new ArrayList<>(contactos);
 	}
 
-	public void setContactos(List<Contactos> contactos) {
+	public void setContactos(List<Contacto> contactos) {
 		this.contactos = contactos;
 	}
 
@@ -148,6 +146,13 @@ public class Usuario {
 	
 	public void addGrupo(Grupo grupo) {
 		contactos.add(grupo);
+	}
+	
+	public void addAllContactos(List<Contacto> Contactos) {
+		//aqui tenemos que hacer un for each para añadir todos los contactos
+		for (Contacto c: Contactos) {
+			contactos.add(c);
+		}
 	}
 	
 	//To string y el hashCode y el equals

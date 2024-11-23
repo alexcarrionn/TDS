@@ -46,7 +46,7 @@ public class MensajeCellRender extends JPanel
 		// Set the text
 		textolabel.setText(Mensaje.getTexto());
 		String usuario=""; 
-		if(Mensaje.getEmisor().getNombre().equals(AppChat.ObtenerMensajesReMensaje())) {
+		if(Mensaje.getEmisor().getNombre().equals(AppChat.obtenerMensajesReMensaje())) {
 			usuario=Mensaje.getReceptor().getNombre();
 		}else {
 			usuario = Mensaje.getEmisor().getNombre();

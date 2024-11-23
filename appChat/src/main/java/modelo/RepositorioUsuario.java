@@ -67,4 +67,9 @@ public class RepositorioUsuario {
 			     usuarios.put(user.getTelefono(),user);
 	}
 	
+	public boolean contains(Usuario usuario) {
+		return usuarios.containsValue(usuario);
+	}
+
+	
 }

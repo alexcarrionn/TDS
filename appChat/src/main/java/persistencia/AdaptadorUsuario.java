@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
-import modelo.Contactos;
+import modelo.Contacto;
+import modelo.ContactoIndividual;
+import modelo.Grupo;
 import modelo.Usuario;
 
 
@@ -31,7 +34,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
 
-	/* cuando se registra un cliente se le asigna un identificador ï¿½nico */
+	/* cuando se registra un cliente se le asigna un identificador unico */
 	public void registrarUsuario(Usuario user) {
 		Entidad eUsuario = null;
 
@@ -41,21 +44,44 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		} catch (NullPointerException e) {}
 		if (eUsuario != null) return;
 
-		/* registrar primero los atributos que son objetos
-		AdaptadorVentaTDS adaptadorVenta = AdaptadorVentaTDS.getUnicaInstancia();
-		for (Venta v : cliente.getVentas())
-			adaptadorVenta.registrarVenta(v);*/
+		// registrar primero los atributos que son objetos
+		// registrar contactos del usuario
+		registrarSiNoExistenContactosoGrupos(user.getContactos());
+
 
 		// crear entidad usuario
 		eUsuario = new Entidad();
 		eUsuario.setNombre("Usuario");
 		eUsuario.setPropiedades(new ArrayList<Propiedad>(
-				Arrays.asList(null);
+				 Arrays.asList(
+		                    new Propiedad("telefono", String.valueOf(user.getTelefono())),
+		                    new Propiedad("nombre", user.getNombre()),
+		                    new Propiedad("imagen", user.getImagen()),
+		                    new Propiedad("contraseña", user.getContraseña()),
+		                    new Propiedad("fecha", user.getFecha().toString()),
+		                    new Propiedad("estado", user.getEstado()),
+		                    new Propiedad("premium", String.valueOf(user.isPremium()))
+		            )));
 		// registrar entidad usuario
 		eUsuario = servPersistencia.registrarEntidad(eUsuario);
 		// asignar identificador unico
 		// Se aprovecha el que genera el servicio de persistencia
 		user.setTelefono(eUsuario.getId());
+		// Guardamos en el pool
+		PoolDAO.getUnicaInstancia().addObjeto(user.getTelefono(), user);
+	}
+
+	private void registrarSiNoExistenContactosoGrupos(List<Contacto> contactos) {
+		AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
+		AdaptadorGrupo adaptadorGrupos = AdaptadorGrupo.getUnicaInstancia();
+		contactos.stream().forEach(c -> {
+			if (c instanceof ContactoIndividual) {
+				adaptadorContactos.registrarContacto((ContactoIndividual) c);
+			} else {
+				adaptadorGrupos.registrarGrupo((Grupo) c);
+			}
+		});
+		
 	}
 
 	public void borrarUsuario(Usuario user) {
@@ -68,19 +94,22 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getTelefono());
 
-		/*for (Propiedad prop : eCliente.getPropiedades()) {
-			if (prop.getNombre().equals("codigo")) {
+		for (Propiedad prop : eUsuario.getPropiedades()) {
+			if (prop.getNombre().equals("telefono")) {
 				prop.setValor(String.valueOf(user.getTelefono()));
-			} else if (prop.getNombre().equals("dni")) {
-				prop.setValor(user.getDni());
 			} else if (prop.getNombre().equals("nombre")) {
-				prop.setValor(user.getNombre());
-			} else if (prop.getNombre().equals("ventas")) {
-				String ventas = obtenerCodigosVentas(user.getVentas());
-				prop.setValor(ventas);
+				prop.setValor(String.valueOf(user.getNombre()));
+			} else if (prop.getNombre().equals("imagen")) {
+				prop.setValor(String.valueOf(user.getImagen()));
+			}else if (prop.getNombre().equals("contraseña")){
+				prop.setValor(user.getContraseña());
+			}else if(prop.getNombre().equals("estado")){
+				prop.setValor(user.getEstado());
+			}else if(prop.getNombre().equals("premium")) {
+				prop.setValor(String.valueOf(user.isPremium())); 
 			}
 			servPersistencia.modificarPropiedad(prop);
-		}*/
+		}
 
 	}
 	@Override
@@ -91,7 +120,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		 Entidad entidadUsuario = servPersistencia.recuperarEntidad(id);
 		 if (entidadUsuario == null) return null;
 		 String nombre = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "nombre");
-		 String movil = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "movil");
+		 int movil = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "movil"));
 		 String contrasena = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "contrasena");
 		 String fechaNacimientoStr = servPersistencia.recuperarPropiedadEntidad(entidadUsuario,
 		"fechaNacimiento");
@@ -108,6 +137,24 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		 return usuario;
 		}
 	
+	private List<Contacto> obtenerContactos(String contactos) {
+		//primero pasamos a stream el String de contactos contactos
+	    return Arrays.stream(contactos.split(" "))
+	    			  //Convertimos primero cada cadena a entero
+	                 .map(Integer::parseInt)
+	                 //Una vez que hacemos eso utilizamos map para convertirlos en la entidad correspondiente a traves de la persistencia
+	                 .map(servPersistencia::recuperarEntidad)
+	                 //Filtramos todos aquellos los cuales no sean null
+	                 .filter(Objects::nonNull)
+	                 //Utilizamos un map para recoger aquellos COntactos con nombre y telefono que encontramos 
+	                 .map(entidad -> {
+	                     String nombre = servPersistencia.recuperarPropiedadEntidad(entidad, "nombre");
+	                     int movil = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(entidad, "telefono")); 
+	                     return new Contacto(nombre,movil);
+	                 })
+	                 //con el collect lo que hacemos es enviarlos a una lista
+	                 .collect(Collectors.toList());
+	}
 	public List<Usuario> recuperarTodosUsuarios() {
 
 		List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("usuario");

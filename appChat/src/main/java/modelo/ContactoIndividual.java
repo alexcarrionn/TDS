@@ -6,10 +6,9 @@ public class ContactoIndividual extends Contacto{
 	
 	//Constructor
 	public ContactoIndividual(String nombre, Usuario usuario, int movil) {
-		super(nombre);
+		super(nombre, movil);
 		// TODO Auto-generated constructor stub
 		usuario=this.usuario;
-		this.movil=movil;
 	}
 	
 	
