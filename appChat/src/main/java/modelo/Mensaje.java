@@ -23,6 +23,10 @@ public class Mensaje {
 		return emisor;
 	}
 	
+	public void setEmisor(Usuario emisor) {
+		this.emisor = emisor;
+	}
+
 	public Contacto getReceptor() {
 		return receptor;
 	}

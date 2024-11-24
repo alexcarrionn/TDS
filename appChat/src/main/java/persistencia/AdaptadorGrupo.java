@@ -22,6 +22,11 @@ public class AdaptadorGrupo {
 	
 	public void registrarGrupo(Grupo c) {
 		// TODO Auto-generated method stub
-		
+		//for each de registrar ContactoIndividual
+	}
+	
+	public void recuperarGrupo(Grupo c) {
+		// TODO Auto-generated method stub
+		//for each de recuperar ContactoIndividual
 	}
 }

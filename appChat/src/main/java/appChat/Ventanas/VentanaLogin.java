@@ -108,7 +108,7 @@ public class VentanaLogin {
             		
             		AppChat appChat = AppChat.getUnicaInstancia();
             	  
-            		boolean login = appChat.hacerLogin(Integer.getInteger(telefono), clave);
+            		boolean login = appChat.hacerLogin(Integer.parseInt(telefono), clave);
             	  
             	  //Actuo en la pantalla segun el resultado 
             	   
@@ -117,7 +117,7 @@ public class VentanaLogin {
             	   vp.setVisible(true);
             	   frame.setVisible(false);}
             	   else{
-            	   JOptionPane.showMessageDialog(frame, "El Usuario no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+            		   JOptionPane.showMessageDialog(frame, "El Usuario no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
             	   }
             	
             }}

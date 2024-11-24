@@ -81,12 +81,24 @@ public class AdaptadorMensaje {
     public Mensaje recuperarMensaje(int id) {
         Entidad eMensaje = servPersistencia.recuperarEntidad(id);
         String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
-        Usuario emisor = PoolUsuarios.INSTANCE.getUsuario(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emisor")));
-        Contacto receptor = PoolDAO.getUnicaInstancia().getContacto(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor")));
+        Usuario emisor = null;
+        Contacto receptor = null;
         LocalDate fecha = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));
 
         Mensaje mensaje = new Mensaje(texto, emisor, receptor, fecha);
         mensaje.setId(eMensaje.getId());
+        
+        PoolDAO.getUnicaInstancia().addObjeto(id, mensaje);
+        
+        AdaptadorUsuario adaptadorU = AdaptadorUsuario.getUnicaInstancia();
+		int codigoUsuario = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emisor"));
+		emisor = adaptadorU.recuperarUsuario(codigoUsuario);
+		mensaje.setEmisor(emisor);
+        
+		AdaptadorContactoIndividual adaptadorC = AdaptadorContactoIndividual.getUnicaInstancia();
+		int codigoContacto = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor"));
+		receptor = adaptadorC.recuperarContacto(codigoContacto);
+		
         return mensaje;
     }
 

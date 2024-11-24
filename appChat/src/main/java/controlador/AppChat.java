@@ -20,15 +20,16 @@ import persistencia.IAdaptadorUsuarioDAO;
 
 public class AppChat {
     private static AppChat unicaInstancia;
-    private static Usuario usuarioLogueado;
-    private static RepositorioUsuario repo; 
+    private Usuario usuarioLogueado;
+    private RepositorioUsuario repo; 
     private List<Contacto> listaContactos;
     private AdaptadorMensaje adaptadormensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
     
     
     private AppChat() {
-        this.listaContactos = new ArrayList<>();
+        inicializarAdaptadores();
+        inicializarRepositorio();
     }
 
     public static AppChat getUnicaInstancia() {
@@ -36,6 +37,10 @@ public class AppChat {
             unicaInstancia = new AppChat();
         }
         return unicaInstancia;
+    }
+    
+    private void inicializarRepositorio() {
+    	repo=RepositorioUsuario.getUnicaInstancia();
     }
     
 	// Inicializamos los adaptadores
@@ -50,7 +55,6 @@ public class AppChat {
 		//adaptadorMensaje = factoria.getMensajeDAO();
 		adaptadorUsuario = factoria.getUsuarioDAO();
 	}
-
     
     public Usuario getUsuarioLogueado() {
         return usuarioLogueado;
@@ -116,7 +120,9 @@ public class AppChat {
     public List<Contacto> obtenerTodosContactos() {
         return new ArrayList<>(listaContactos);
     }
+
     
+    /*    
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
 		Mensaje mensaje = new Mensaje(mensajeEnviar, LocalDateTime.now(), usuarioActual, contacto);
 		contacto.enviarMensaje(mensaje);
@@ -130,7 +136,7 @@ public class AppChat {
 		}
 	}
 
-/*
+
     public void enviarMensaje(Contacto contacto, int emoji) {
 		Mensaje mensaje = new Mensaje(emoji, LocalDateTime.now(), usuarioActual, contacto);
 		contacto.sendMessage(mensaje);

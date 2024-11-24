@@ -255,6 +255,12 @@ public class VentanaRegistro {
                 }
                 else if(!repetirContra.getText().equals(contraseña.getText())) {
                     JOptionPane.showMessageDialog(frame, "Las contraseñas no coinciden.", "No Contraseñas", JOptionPane.ERROR_MESSAGE);
+                }else {
+                
+                // Verificar si la fecha es nula
+                LocalDate fecha = null;
+                if (dateChooser.getDate() != null) {
+                    fecha = LocalDate.parse((CharSequence) dateChooser.getDate());
                 }
                 
                 String nombre = nombreField.getText() + apellidosField.getText();
@@ -262,14 +268,13 @@ public class VentanaRegistro {
                 String contrasena = contraseña.getText(); 
                 String estado = areaEstado.getText(); 
                 String imagenUsuario = imagen.getText(); 
-                LocalDate fecha = LocalDate.parse((CharSequence) dateChooser.getDate());
         		AppChat appChat = AppChat.getUnicaInstancia();
-                boolean acept = appChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
-                if(!acept) {
-                	 JOptionPane.showMessageDialog(frame, "El Usuario ya etsa registrado", "Error", JOptionPane.ERROR_MESSAGE);
+                boolean accept = appChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
+                if(!accept) {
+                	 JOptionPane.showMessageDialog(frame, "El Usuario ya esta registrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
+            }
         });
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(btnAceptar);

@@ -113,7 +113,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		JList<Mensaje> listaChatsRecientes = new JList<Mensaje>();
 		listaChatsRecientes.setCellRenderer(new MensajeCellRender()); 
-		List<Mensaje> mensajes = AppChat.obtenerMensajesReMensaje(); 
+		List<Mensaje> mensajes = AppChat.obtenerMensajes(); 
 		DefaultListModel<Mensaje> modelo = new DefaultListModel<Mensaje>(); 
 		for (Mensaje men : mensajes) {
 			modelo.addElement(men); 

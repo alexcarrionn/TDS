@@ -58,7 +58,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		                    new Propiedad("nombre", user.getNombre()),
 		                    new Propiedad("imagen", user.getImagen()),
 		                    new Propiedad("contraseña", user.getContraseña()),
-		                    new Propiedad("fecha", user.getFecha().toString()),
+		                    new Propiedad("fecha", user.getFecha() != null ? user.getFecha().toString() : "null"),
 		                    new Propiedad("estado", user.getEstado()),
 		                    new Propiedad("premium", String.valueOf(user.isPremium()))
 		            )));

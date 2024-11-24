@@ -22,7 +22,10 @@ public class AdaptadorContactoIndividual {
 	public void registrarContacto(ContactoIndividual c) {
 		// TODO Auto-generated method stub
 		
-		
 	}
-
+	
+	public ContactoIndividual recuperarContacto(int tel) {
+		return null;
+		// TODO Auto-generated method stub
+	}
 }

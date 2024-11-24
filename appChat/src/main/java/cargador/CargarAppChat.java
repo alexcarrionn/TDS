@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import controlador.AppChat;
 import modelo.ContactoIndividual;
-import modelo.TipoMensaje;
 
 public class CargarAppChat {
 	
@@ -22,7 +21,7 @@ public class CargarAppChat {
 		
 		ContactoIndividual c2 = appChat.agregarContacto("elena", 22);
 		ContactoIndividual c3 = appChat.agregarContacto("rosalia", 33);
-		
+/*		
 		appChat.enviarMensajeContacto(c2, "Hola, ¿cómo estás?", -1, TipoMensaje.ENVIADO);
 		appChat.enviarMensajeContacto(c2, "", 2, TipoMensaje.ENVIADO);
 		
@@ -41,6 +40,6 @@ public class CargarAppChat {
 	    appChat.enviarMensajeContacto(c4, "Juegas esta semana?", -1, TipoMensaje.ENVIADO);	
 	    
 	    System.out.println("Fin de la carga de datos");
-	}
-
+*/
+	}	
 }
