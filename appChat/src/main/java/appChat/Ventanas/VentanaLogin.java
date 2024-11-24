@@ -105,8 +105,10 @@ public class VentanaLogin {
             	  
             	  
             	 // ejecutamos el negocio a traves del CONTROLADOR
+            		
+            		AppChat appChat = AppChat.getUnicaInstancia();
             	  
-            	  boolean login = AppChat.hacerLogin(Integer.getInteger(telefono), clave);
+            		boolean login = appChat.hacerLogin(Integer.getInteger(telefono), clave);
             	  
             	  //Actuo en la pantalla segun el resultado 
             	   

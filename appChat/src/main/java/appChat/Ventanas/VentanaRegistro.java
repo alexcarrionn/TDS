@@ -263,7 +263,8 @@ public class VentanaRegistro {
                 String estado = areaEstado.getText(); 
                 String imagenUsuario = imagen.getText(); 
                 LocalDate fecha = LocalDate.parse((CharSequence) dateChooser.getDate());
-                boolean acept = AppChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
+        		AppChat appChat = AppChat.getUnicaInstancia();
+                boolean acept = appChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
                 if(!acept) {
                 	 JOptionPane.showMessageDialog(frame, "El Usuario ya etsa registrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }

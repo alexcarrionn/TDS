@@ -1,28 +1,13 @@
 package modelo;
 public class ContactoIndividual extends Contacto{
 
-	private Usuario usuario;
 	private int movil;
 	
 	//Constructor
-	public ContactoIndividual(String nombre, Usuario usuario, int movil) {
+	public ContactoIndividual(String nombre, int movil) {
 		super(nombre, movil);
-		// TODO Auto-generated constructor stub
-		usuario=this.usuario;
 	}
-	
-	
-	//Getters y setters
-	public Usuario getUsuario() {
-		return usuario;
-	}
-	
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-	
-	
-
+		
 	public int getMovil() {
 		return movil;
 	}

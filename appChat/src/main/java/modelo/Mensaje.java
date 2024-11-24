@@ -1,14 +1,16 @@
 package modelo;
 
+import java.time.LocalDate;
+
 public class Mensaje {
 	
 	//propiedades
-	private final String texto; 
-	private final Usuario emisor; 
-	private final Usuario receptor;
-	private final String hora;
-	private final String emoticono; 
-	private final String tipo; 
+	private String texto; 
+	private Usuario emisor; 
+	private Contacto receptor;
+	private LocalDate hora;
+	private int emoticono; 
+	private int id;
 	
 	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
 	
@@ -21,31 +23,39 @@ public class Mensaje {
 		return emisor;
 	}
 	
-	public Usuario getReceptor() {
+	public Contacto getReceptor() {
 		return receptor;
 	}
 	
-	public String getHora() {
+	public LocalDate getHora() {
 		return hora;
 	}
 
-	public String getEmoticono() {
+	public int getEmoticono() {
 		return emoticono;
 	}
 
-	public String getTipo() {
-		return tipo;
+	public int getId() {
+		return id;
 	}
 
-	public Mensaje(String texto, Usuario emisor, Usuario receptor, String hora, String emoticono, String tipo) {
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDate hora) {
 		super();
 		this.texto = texto;
 		this.emisor = emisor;
 		this.receptor = receptor;
-		this.emoticono=emoticono; 
 		this.hora=hora; 
-		this.tipo=tipo; 
 	}
 	
-	
+	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDate hora) {
+		super();
+		this.emisor = emisor;
+		this.receptor = receptor;
+		this.emoticono=emoticono; 
+		this.hora=hora; 
+	}
 }
