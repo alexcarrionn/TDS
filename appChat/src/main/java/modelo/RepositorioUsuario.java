@@ -47,10 +47,7 @@ public class RepositorioUsuario {
 	}
 	
 	public Usuario getUsuario(int numero) {
-		for (Usuario c:usuarios.values()) {
-			if (c.getTelefono() == numero) return c;
-		}
-		return null;
+		return usuarios.get(numero);
 	}
 	
 	public void addUsuario(Usuario user) {

@@ -9,27 +9,26 @@ import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
 import modelo.Usuario;
-import persistencia.AdaptadorMensaje;
 import persistencia.AdaptadorUsuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
+import persistencia.IAdaptadorMensajeDAO;
 import persistencia.IAdaptadorUsuarioDAO;
-
-//Para poder usar la clase AppChat tiene que ser Singleton , para ello lo que hacemos es poner el contructor en privado y mas tarde creamos una 
-//funcion estatica que nos devuelva una única instacia de la clase
 
 public class AppChat {
     private static AppChat unicaInstancia;
     private Usuario usuarioLogueado;
     private RepositorioUsuario repo; 
     private List<Contacto> listaContactos;
-    private AdaptadorMensaje adaptadormensaje;
+    private List<Mensaje> mensajes; // Lista para almacenar los mensajes
+    private IAdaptadorMensajeDAO adaptadorMensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
-    
     
     private AppChat() {
         inicializarAdaptadores();
         inicializarRepositorio();
+        // Inicializar la lista de mensajes
+        mensajes = new ArrayList<>();
     }
 
     public static AppChat getUnicaInstancia() {
@@ -38,24 +37,23 @@ public class AppChat {
         }
         return unicaInstancia;
     }
-    
-    private void inicializarRepositorio() {
-    	repo=RepositorioUsuario.getUnicaInstancia();
-    }
-    
-	// Inicializamos los adaptadores
-	private void inicializarAdaptadores() {
-		FactoriaDAO factoria = null;
-		try {
-			factoria = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
-		} catch (DAOException e) {
-			e.printStackTrace();
-		}
 
-		//adaptadorMensaje = factoria.getMensajeDAO();
-		adaptadorUsuario = factoria.getUsuarioDAO();
-	}
-    
+    private void inicializarRepositorio() {
+        repo = RepositorioUsuario.getUnicaInstancia();
+    }
+
+    // Inicializamos los adaptadores
+    private void inicializarAdaptadores() {
+        FactoriaDAO factoria = null;
+        try {
+            factoria = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        adaptadorMensaje = factoria.getMensajeDAO();
+        adaptadorUsuario = factoria.getUsuarioDAO();
+    }
+
     public Usuario getUsuarioLogueado() {
         return usuarioLogueado;
     }
@@ -68,26 +66,25 @@ public class AppChat {
         }
         return false;
     }
-    
-    //Le pasamos un usuario, creado en la ventanaRegistro, para poder registrarlo en la base de datos
+
+    // Le pasamos un usuario, creado en la ventanaRegistro, para poder registrarlo en la base de datos
     public boolean crearCuentaUsuario(int movil, String nombre, String imagen, String contrasena, LocalDate fecha, String estado) {
-    	//Primero creamos un nuevo usuario con los datos metidos en la Ventana Registro
-    	Usuario nuevoUsuario = new Usuario(movil, nombre, imagen, contrasena, fecha, estado, null);
-		//Comprobamos que no hay Ningun Usuario con ese numero de telefono
-    	if (!repo.contains(nuevoUsuario)) {
-			// Conexion con la persistencia y registrar usuario
-			repo.addUsuario(nuevoUsuario);
-			AdaptadorUsuario.getUnicaInstancia().registrarUsuario(nuevoUsuario);
-			return hacerLogin(movil, contrasena);
-		}
-    	//en caso de que haya un usuario con ese telefono cogemos y devolvemos false para que mande un mensaje de error
-		return false;
+        // Primero creamos un nuevo usuario con los datos metidos en la Ventana Registro
+        Usuario nuevoUsuario = new Usuario(movil, nombre, imagen, contrasena, fecha, estado, null);
+        // Comprobamos que no hay ningún usuario con ese número de teléfono
+        if (!repo.contains(nuevoUsuario)) {
+            // Conexión con la persistencia y registrar usuario
+            repo.addUsuario(nuevoUsuario);
+            AdaptadorUsuario.getUnicaInstancia().registrarUsuario(nuevoUsuario);
+            return hacerLogin(movil, contrasena);
+        }
+        // En caso de que haya un usuario con ese teléfono, devolvemos false para que mande un mensaje de error
+        return false;
     }
 
-    
-    public static List<Mensaje> obtenerMensajes() {
-		return null;
-    	//TODO
+    // Función para obtener los mensajes
+    public List<Mensaje> obtenerMensajes() {
+        return new ArrayList<>(mensajes); // Devuelve una copia de la lista de mensajes
     }
 
     public List<Contacto> buscarContactos(String texto, String telefono) {
@@ -103,13 +100,12 @@ public class AppChat {
     }
 
     public ContactoIndividual agregarContacto(String nombre, int telefono) {
-    	ContactoIndividual contacto = new ContactoIndividual(nombre, telefono);
+        ContactoIndividual contacto = new ContactoIndividual(nombre, telefono);
         if (!listaContactos.contains(contacto)) {
             listaContactos.add(contacto);
         } else {
             System.out.println("El contacto ya existe.");
         }
-        
         return contacto;
     }
 
@@ -120,6 +116,7 @@ public class AppChat {
     public List<Contacto> obtenerTodosContactos() {
         return new ArrayList<>(listaContactos);
     }
+}
 
     
     /*    
@@ -149,4 +146,3 @@ public class AppChat {
 		}
 	}
 */
-}

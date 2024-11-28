@@ -14,7 +14,7 @@ import modelo.Contacto;
 import modelo.Mensaje;
 import modelo.Usuario;
 
-public class AdaptadorMensaje {
+public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorMensaje unicaInstancia = null;
 
