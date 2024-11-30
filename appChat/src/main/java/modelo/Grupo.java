@@ -79,4 +79,10 @@ public class Grupo extends Contacto{
 				return false;
 			return true;
 		}
+
+		@Override
+		public String getFoto() {
+			// TODO 
+			return null;
+		}
 }

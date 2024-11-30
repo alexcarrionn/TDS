@@ -150,7 +150,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	                 .map(entidad -> {
 	                     String nombre = servPersistencia.recuperarPropiedadEntidad(entidad, "nombre");
 	                     int movil = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(entidad, "telefono")); 
-	                     return new Contacto(nombre,movil);
+	                     return new ContactoIndividual(nombre,movil);
 	                 })
 	                 //con el collect lo que hacemos es enviarlos a una lista
 	                 .collect(Collectors.toList());

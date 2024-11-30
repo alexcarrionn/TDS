@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
@@ -26,6 +27,7 @@ import javax.swing.JTextField;
 
 import controlador.AppChat;
 import modelo.Contacto;
+import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import tds.BubbleText;
 
@@ -33,6 +35,7 @@ public class VentanaPrincipal extends JFrame {
 
     private static final long serialVersionUID = 1L;
 	private static final float TAMANO_MENSAJE = 12;
+	private static final int ICON_SIZE_MINI = 12;
     private JPanel contentPane;
     private JTextField mensaje;
     static VentanaPrincipal frame;
@@ -121,33 +124,6 @@ public class VentanaPrincipal extends JFrame {
         contentPane.add(panelLista, BorderLayout.WEST);
         panelLista.setLayout(new BorderLayout(0, 0));
         
-		// Se extraen los contactos del usuario
-		List<Contacto> contactos = appchat.getContactosUsuarioActual();
-
-		// Creamos el modelo
-		final DefaultListModel<Contacto> modelContacts = new DefaultListModel<>();
-
-		// Rellenamos el modelo
-		contactos.stream().forEach(c -> modelContacts.addElement(c));
-		listaContactos = new JList<>(modelContacts);
-		
-		listaContactos.setBorder(null);
-		listaContactos.setCellRenderer(new ContactoListCellRenderer());
-		listaContactos.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				Contacto contactoActual = listaContactos.getSelectedValue();
-				if (contactoActual != null) {
-					loadChat(contactoActual);
-					appchat.setChatActual(contactoActual);
-					chatName.setText(contactoActual.getNombre());
-					chatPhoto.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
-				}
-			}
-
-		});
-
-        panelLista.add(listaContactos);
-
         JPanel chatActual = new JPanel();
         contentPane.add(chatActual, BorderLayout.CENTER);
         chatActual.setLayout(new BorderLayout(0, 0));
@@ -155,6 +131,29 @@ public class VentanaPrincipal extends JFrame {
         JPanel chat = new JPanel();
         chatActual.add(chat, BorderLayout.CENTER);
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+        
+		// Se extraen los contactos del usuario
+		List<Contacto> contactos = appchat.getContactosUsuarioActual();
+		
+		// Crear una lista genérica de Contacto
+		JList<ContactoIndividual> listaContactos = new JList<>();
+		
+		listaContactos.setBorder(null);
+		listaContactos.setCellRenderer(new ContactoListCellRenderer());
+		listaContactos.addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting()) {
+				Contacto contactoActual = listaContactos.getSelectedValue();
+				if (contactoActual != null) {
+					cargarChat(contactoActual);
+					appchat.setChatActual(contactoActual);
+					labelUsuarioActual.setText(contactoActual.getNombre());
+					labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
+				}
+			}
+
+		});
+
+        panelLista.add(listaContactos);
 
         JPanel enviar = new JPanel();
         chatActual.add(enviar, BorderLayout.SOUTH);
@@ -181,7 +180,13 @@ public class VentanaPrincipal extends JFrame {
     
     //FUNCIONES AUXILIARES
     
-    private void cargarChat(Contacto contacto) {
+
+	private Icon resizeIcon(String foto, int iconSizeMini) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private void cargarChat(Contacto contacto) {
         if (contacto == null) {
             return; // Salir si el contacto es nulo
         }

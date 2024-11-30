@@ -20,6 +20,7 @@ public class AppChat {
     private RepositorioUsuario repo; 
     private IAdaptadorMensajeDAO adaptadorMensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
+    private Contacto chatActual;
     
     private AppChat() {
         inicializarAdaptadores();
@@ -86,6 +87,14 @@ public class AppChat {
 	public List<Contacto> getContactosUsuarioActual() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public Contacto getChatActual() {
+		return chatActual;
+	}
+
+	public void setChatActual(Contacto contactoActual) {
+		chatActual = contactoActual;	
 	}
 
 

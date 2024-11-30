@@ -19,8 +19,8 @@ public class CargarAppChat {
 		
 		appChat.hacerLogin(11, "aa");
 		
-		ContactoIndividual c2 = appChat.agregarContacto("elena", 22);
-		ContactoIndividual c3 = appChat.agregarContacto("rosalia", 33);
+		//ContactoIndividual c2 = appChat.agregarContacto("elena", 22);
+		//ContactoIndividual c3 = appChat.agregarContacto("rosalia", 33);
 /*		
 		appChat.enviarMensajeContacto(c2, "Hola, ¿cómo estás?", -1, TipoMensaje.ENVIADO);
 		appChat.enviarMensajeContacto(c2, "", 2, TipoMensaje.ENVIADO);

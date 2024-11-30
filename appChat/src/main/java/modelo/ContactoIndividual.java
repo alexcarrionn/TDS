@@ -61,4 +61,9 @@ public class ContactoIndividual extends Contacto{
 				return false;
 			return true;
 		}
+
+		@Override
+		public String getFoto() {
+			return usuario.getImagen();
+		}
 }

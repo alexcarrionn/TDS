@@ -3,7 +3,7 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Contacto {
+public abstract class Contacto {
     // Propiedades
     private String nombre;
     private int telefono;
@@ -79,4 +79,6 @@ public class Contacto {
     public int hashCode() {
         return Integer.hashCode(telefono);
     }
+
+	public abstract String getFoto();
 }
