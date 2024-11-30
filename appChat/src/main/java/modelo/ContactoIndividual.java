@@ -2,6 +2,7 @@ package modelo;
 public class ContactoIndividual extends Contacto{
 
 	private int movil;
+	private Usuario usuario;
 	
 	//Constructor
 	public ContactoIndividual(String nombre, int movil) {
@@ -10,6 +11,10 @@ public class ContactoIndividual extends Contacto{
 		
 	public int getMovil() {
 		return movil;
+	}
+	
+	public Usuario getUsuario() {
+		return usuario;
 	}
 	
 	public void setMovil(int movil) {

@@ -18,16 +18,12 @@ public class AppChat {
     private static AppChat unicaInstancia;
     private Usuario usuarioLogueado;
     private RepositorioUsuario repo; 
-    private List<Contacto> listaContactos;
-    private List<Mensaje> mensajes; // Lista para almacenar los mensajes
     private IAdaptadorMensajeDAO adaptadorMensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
     
     private AppChat() {
         inicializarAdaptadores();
-        inicializarRepositorio();
-        // Inicializar la lista de mensajes
-        mensajes = new ArrayList<>();
+        inicializarRepositorio();       
     }
 
     public static AppChat getUnicaInstancia() {
@@ -58,7 +54,7 @@ public class AppChat {
     }
 
     public boolean hacerLogin(int tel, String contraseña) {
-        Usuario usuario = RepositorioUsuario.getUnicaInstancia().getUsuario(tel);
+        Usuario usuario = repo.getUsuario(tel);
         if (usuario != null && usuario.getContraseña().equals(contraseña)) {
             usuarioLogueado = usuario;
             return true;
@@ -82,11 +78,18 @@ public class AppChat {
     }
 
     // Función para obtener los mensajes
-    public List<Mensaje> obtenerMensajes() {
-        return new ArrayList<>(mensajes); // Devuelve una copia de la lista de mensajes
+    public List<Mensaje> getMensajes(Contacto contacto) {
+    	//TODO
+        return null; // Devuelve una copia de la lista de mensajes
     }
 
-    public List<Contacto> buscarContactos(String texto, String telefono) {
+	public List<Contacto> getContactosUsuarioActual() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+ /*   public List<Contacto> buscarContactos(String texto, String telefono) {
         // Crear variables locales para las versiones procesadas
         final String textoFiltrado = (texto != null) ? texto.trim().toLowerCase() : "";
         final String telefonoFiltrado = (telefono != null) ? telefono.trim() : "";
@@ -117,8 +120,7 @@ public class AppChat {
     }
 }
 
-    
-    /*    
+       
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
 		Mensaje mensaje = new Mensaje(mensajeEnviar, LocalDateTime.now(), usuarioActual, contacto);
 		contacto.enviarMensaje(mensaje);
@@ -145,3 +147,4 @@ public class AppChat {
 		}
 	}
 */
+}

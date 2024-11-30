@@ -4,13 +4,17 @@ import java.awt.EventQueue;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -21,14 +25,23 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 
 import controlador.AppChat;
+import modelo.Contacto;
 import modelo.Mensaje;
+import tds.BubbleText;
 
 public class VentanaPrincipal extends JFrame {
 
     private static final long serialVersionUID = 1L;
+	private static final float TAMANO_MENSAJE = 12;
     private JPanel contentPane;
     private JTextField mensaje;
     static VentanaPrincipal frame;
+    private AppChat appchat;
+    private JList<Contacto> listaContactos;
+    private ChatBurbujas chat;
+    
+	private Map<Contacto, ChatBurbujas> chatsRecientes;
+	private JScrollPane scrollBarChatBurbujas;
 
     /**
      * Launch the application.
@@ -50,6 +63,9 @@ public class VentanaPrincipal extends JFrame {
      * Create the frame.
      */
     public VentanaPrincipal() {
+    	//Llamamos a la instancia del controlador
+    	appchat=AppChat.getUnicaInstancia();
+    	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 852, 544);
         contentPane = new JPanel();
@@ -104,17 +120,33 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelLista = new JPanel();
         contentPane.add(panelLista, BorderLayout.WEST);
         panelLista.setLayout(new BorderLayout(0, 0));
+        
+		// Se extraen los contactos del usuario
+		List<Contacto> contactos = appchat.getContactosUsuarioActual();
 
-        JList<Mensaje> listaChatsRecientes = new JList<Mensaje>();
-        listaChatsRecientes.setCellRenderer(new MensajeCellRender());
-        List<Mensaje> mensajes = AppChat.getUnicaInstancia().obtenerMensajes(); // Asegurarse de que obtenerMensajes() esté correctamente implementado
-        DefaultListModel<Mensaje> modelo = new DefaultListModel<Mensaje>();
-        for (Mensaje men : mensajes) {
-            modelo.addElement(men);
-        }
-        listaChatsRecientes.setModel(modelo);
+		// Creamos el modelo
+		final DefaultListModel<Contacto> modelContacts = new DefaultListModel<>();
 
-        panelLista.add(listaChatsRecientes);
+		// Rellenamos el modelo
+		contactos.stream().forEach(c -> modelContacts.addElement(c));
+		listaContactos = new JList<>(modelContacts);
+		
+		listaContactos.setBorder(null);
+		listaContactos.setCellRenderer(new ContactoListCellRenderer());
+		listaContactos.addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting()) {
+				Contacto contactoActual = listaContactos.getSelectedValue();
+				if (contactoActual != null) {
+					loadChat(contactoActual);
+					appchat.setChatActual(contactoActual);
+					chatName.setText(contactoActual.getNombre());
+					chatPhoto.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
+				}
+			}
+
+		});
+
+        panelLista.add(listaContactos);
 
         JPanel chatActual = new JPanel();
         contentPane.add(chatActual, BorderLayout.CENTER);
@@ -146,4 +178,71 @@ public class VentanaPrincipal extends JFrame {
         });
         enviar.add(botonEnviarMensaje);
     }
+    
+    //FUNCIONES AUXILIARES
+    
+    private void cargarChat(Contacto contacto) {
+        if (contacto == null) {
+            return; // Salir si el contacto es nulo
+        }
+
+        // Obtener el chat asociado al contacto
+        chat = chatsRecientes.get(contacto);
+
+        if (chat == null) {
+            // Crear un nuevo panel de chat si no existe
+            chat = crearNuevoChat();
+            scrollBarChatBurbujas.setViewportView(chat);
+
+            // Añadir burbujas de mensajes al chat
+            appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
+
+            // Guardar el nuevo chat en la caché
+            chatsRecientes.put(contacto, chat);
+        } else {
+            // Mostrar el chat existente
+            configurarChatExistente(chat);
+            scrollBarChatBurbujas.setViewportView(chat);
+        }
+    }
+
+    // Método para crear un nuevo chat
+    private ChatBurbujas crearNuevoChat() {
+        ChatBurbujas nuevoChat = new ChatBurbujas();
+        nuevoChat.setBackground(Color.pink);
+        nuevoChat.setLayout(new BoxLayout(nuevoChat, BoxLayout.Y_AXIS));
+        nuevoChat.setSize(400, 700);
+        return nuevoChat;
+    }
+
+    // Método para configurar un chat existente
+    private void configurarChatExistente(ChatBurbujas chat) {
+        chat.setBackground(Color.pink);
+        chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+        chat.setSize(400, 700);
+        scrollBarChatBurbujas.getViewport().setBackground(Color.pink);
+    }
+
+    // Método para crear una burbuja de mensaje
+    private BubbleText crearBurbuja(Mensaje m) {
+        String emisor;
+        int direccionMensaje;
+        Color colorBurbuja;
+
+        if (m.getEmisor().equals(appchat.getUsuarioLogueado())) {
+            colorBurbuja = Color.GREEN;
+            emisor = "You";
+            direccionMensaje = BubbleText.SENT;
+        } else {
+            colorBurbuja = Color.DARK_GRAY;
+            emisor = m.getEmisor().getNombre();
+            direccionMensaje = BubbleText.RECEIVED;
+        }
+
+        if (m.getTexto().isEmpty()) {
+            return new BubbleText(chat, m.getEmoticono(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
+        }
+        return new BubbleText(chat, m.getTexto(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
+    }
+
 }
