@@ -9,7 +9,6 @@ import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
 import modelo.Usuario;
-import persistencia.AdaptadorUsuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
 import persistencia.IAdaptadorMensajeDAO;
@@ -75,7 +74,7 @@ public class AppChat {
         if (!repo.contains(nuevoUsuario)) {
             // Conexión con la persistencia y registrar usuario
             repo.addUsuario(nuevoUsuario);
-            AdaptadorUsuario.getUnicaInstancia().registrarUsuario(nuevoUsuario);
+            adaptadorUsuario.registrarUsuario(nuevoUsuario);
             return hacerLogin(movil, contrasena);
         }
         // En caso de que haya un usuario con ese teléfono, devolvemos false para que mande un mensaje de error
