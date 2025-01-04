@@ -5,27 +5,28 @@ import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
 public class AdaptadorContactoIndividual {
-	private static ServicioPersistencia servPersistencia;
-	private static AdaptadorContactoIndividual unicaInstancia = null;
-	
-	public static AdaptadorContactoIndividual getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorContactoIndividual();
-		else
-			return unicaInstancia;
-	}
+    private static ServicioPersistencia servPersistencia;
+    private static AdaptadorContactoIndividual unicaInstancia = null;
 
-	private AdaptadorContactoIndividual() {
-		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
-	}
+    public static AdaptadorContactoIndividual getUnicaInstancia() { // patron singleton
+        if (unicaInstancia == null)
+            return new AdaptadorContactoIndividual();
+        else
+            return unicaInstancia;
+    }
 
-	public void registrarContacto(ContactoIndividual c) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public ContactoIndividual recuperarContacto(int tel) {
-		return null;
-		// TODO Auto-generated method stub
-	}
+    private AdaptadorContactoIndividual() {
+        servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
+    }
+
+    public void registrarContacto(ContactoIndividual c) {
+        
+    }
+    
+    public ContactoIndividual recuperarContacto(int tel) {
+        return null;
+    }
+    public static void modificarContacto(ContactoIndividual contacto) {
+    	
+    }
 }

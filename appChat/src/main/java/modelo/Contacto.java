@@ -1,6 +1,6 @@
 package modelo;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Contacto {
@@ -10,10 +10,13 @@ public abstract class Contacto {
     private List<Mensaje> mensajes;
 
     // Constructor
-    public Contacto(String nombre, int telefono) {
-        this.nombre = nombre;
-        this.telefono = telefono;
-        this.mensajes = new ArrayList<>();
+    public Contacto(String nombre) {
+    	this(nombre, new LinkedList<>());
+    }
+    
+    public Contacto(String nombre, List<Mensaje> mensajes) {
+    	this.nombre = nombre;
+    	this.mensajes = mensajes;
     }
 
     // Getters y Setters
@@ -34,7 +37,7 @@ public abstract class Contacto {
     }
 
     public List<Mensaje> getMensajes() {
-        return new ArrayList<>(mensajes);
+        return new LinkedList<>(mensajes);
     }
 
     public void setMensajes(List<Mensaje> mensajes) {
@@ -51,7 +54,7 @@ public abstract class Contacto {
     }
 
     public List<Mensaje> buscarMensajes(String texto) {
-        List<Mensaje> resultados = new ArrayList<>();
+        List<Mensaje> resultados = new LinkedList<>();
         for (Mensaje mensaje : mensajes) {
             if (mensaje.getTexto().toLowerCase().contains(texto.toLowerCase())) {
                 resultados.add(mensaje);

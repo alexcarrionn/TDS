@@ -1,14 +1,16 @@
 package controlador;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
 import modelo.Usuario;
+import persistencia.AdaptadorContactoIndividual;
+import persistencia.AdaptadorGrupo;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
 import persistencia.IAdaptadorMensajeDAO;
@@ -98,12 +100,13 @@ public class AppChat {
 	}
 
 
- /*   public List<Contacto> buscarContactos(String texto, String telefono) {
+    public List<Contacto> buscarContactos(String texto, String telefono) {
         // Crear variables locales para las versiones procesadas
         final String textoFiltrado = (texto != null) ? texto.trim().toLowerCase() : "";
         final String telefonoFiltrado = (telefono != null) ? telefono.trim() : "";
 
-        // Usar estas variables en la lambda
+        List<Contacto> listaContactos = usuarioLogueado.getContactos();
+		// Usar estas variables en la lambda
         return listaContactos.stream()
             .filter(c -> (textoFiltrado.isEmpty() || c.getNombre().toLowerCase().contains(textoFiltrado)) &&
                          (telefonoFiltrado.isEmpty() || String.valueOf(c.getTelefono()).contains(telefonoFiltrado)))
@@ -112,8 +115,8 @@ public class AppChat {
 
     public ContactoIndividual agregarContacto(String nombre, int telefono) {
         ContactoIndividual contacto = new ContactoIndividual(nombre, telefono);
-        if (!listaContactos.contains(contacto)) {
-            listaContactos.add(contacto);
+        if (!usuarioLogueado.getContactos().contains(contacto)) {
+            usuarioLogueado.addContacto(contacto);
         } else {
             System.out.println("El contacto ya existe.");
         }
@@ -121,39 +124,36 @@ public class AppChat {
     }
 
     public void eliminarContacto(Contacto contacto) {
-        listaContactos.remove(contacto);
+        usuarioLogueado.removeContacto(contacto);
     }
 
     public List<Contacto> obtenerTodosContactos() {
-        return new ArrayList<>(listaContactos);
+        return usuarioLogueado.getContactos();
     }
-}
-
-       
+      
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
-		Mensaje mensaje = new Mensaje(mensajeEnviar, LocalDateTime.now(), usuarioActual, contacto);
-		contacto.enviarMensaje(mensaje);
+		Mensaje mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto,LocalDate.now());
+		contacto.addMensaje(mensaje);
 
-		adaptadormensaje.registrarMensaje(mensaje);
+		adaptadorMensaje.registrarMensaje(mensaje);
 
-		if (contacto instanceof IndividualContact) {
-			adaptadorContactoIndividual.modificarContacto((IndividualContact) contacto);
+		if (contacto instanceof ContactoIndividual) {
+			AdaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
 		} else {
-			adaptadorGrupo.modificarGrupo((Group) contacto);
+			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 	}
 
 
     public void enviarMensaje(Contacto contacto, int emoji) {
-		Mensaje mensaje = new Mensaje(emoji, LocalDateTime.now(), usuarioActual, contacto);
-		contacto.sendMessage(mensaje);
+		Mensaje mensaje = new Mensaje(emoji, usuarioLogueado, contacto, LocalDate.now());
+		contacto.addMensaje(mensaje);
 		adaptadorMensaje.registrarMensaje(mensaje);
 
-		if (contacto instanceof IndividualContact) {
-			adaptadorContactoIndividual.modificarContacto((IndividualContact) contacto);
+		if (contacto instanceof ContactoIndividual) {
+			AdaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
 		} else {
-			adaptadorGrupo.modificarGrupo((Group) contacto);
+			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 	}
-*/
 }

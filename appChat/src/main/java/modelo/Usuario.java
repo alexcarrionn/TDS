@@ -144,6 +144,10 @@ public class Usuario {
 		contactos.add(contacto);
 	}
 	
+	public void removeContacto(Contacto contacto) {
+		contactos.remove(contacto);
+	}
+	
 	public void addGrupo(Grupo grupo) {
 		contactos.add(grupo);
 	}
@@ -191,4 +195,6 @@ public class Usuario {
 			Usuario other = (Usuario) obj;
 			return nombre.equals(other.nombre) || telefono == other.telefono;
 		}
+
+
 	}

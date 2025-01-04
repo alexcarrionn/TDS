@@ -1,24 +1,29 @@
 package modelo;
+
+import java.util.LinkedList;
+
 public class ContactoIndividual extends Contacto{
 
 	private int movil;
-	private Usuario usuario;
 	
 	//Constructor
 	public ContactoIndividual(String nombre, int movil) {
-		super(nombre, movil);
+		super(nombre);
+		this.movil=movil;
+	}
+	
+	public ContactoIndividual(String nombre, int movil, LinkedList<Mensaje> mensajes) {
+		super(nombre,mensajes);
+		this.movil=movil;
 	}
 		
 	public int getMovil() {
 		return movil;
 	}
 	
-	public Usuario getUsuario() {
-		return usuario;
-	}
-	
-	public void setMovil(int movil) {
-		this.movil = movil;
+	public String getEstado() {
+		Usuario usuario = RepositorioUsuario.getUnicaInstancia().getUsuario(movil);
+		return usuario.getEstado();	
 	}
 	
 	//Metodos
@@ -64,6 +69,7 @@ public class ContactoIndividual extends Contacto{
 
 		@Override
 		public String getFoto() {
+			Usuario usuario = RepositorioUsuario.getUnicaInstancia().getUsuario(movil);
 			return usuario.getImagen();
 		}
 }

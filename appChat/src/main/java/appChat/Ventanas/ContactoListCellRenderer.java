@@ -55,7 +55,7 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 	public Component getListCellRendererComponent(JList<? extends ContactoIndividual> listacontactos, ContactoIndividual contacto, int index,
 			boolean isSelected, boolean cellHasFocus) {
 		// Configuración de la imagen
-		String fotoUsuario = contacto.getUsuario().getImagen();
+		String fotoUsuario = contacto.getFoto();
 		URL url = getClass().getResource(fotoUsuario);
 		if (url != null) {
 			Image imagenOriginal;
@@ -75,8 +75,8 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 
 		// Configuración del texto
 		lblNombre.setText(contacto.getNombre());
-		lblTelefono.setText("Tel: " + contacto.getUsuario().getTelefono());
-		lblSaludo.setText(contacto.getUsuario().getEstado());
+		lblTelefono.setText("Tel: " + contacto.getMovil());
+		lblSaludo.setText(contacto.getEstado());
 
 		// Configuración de colores para selección
 		if (isSelected) {
