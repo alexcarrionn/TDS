@@ -3,7 +3,6 @@ package cargador;
 import java.time.LocalDate;
 
 import controlador.AppChat;
-import modelo.ContactoIndividual;
 
 public class CargarAppChat {
 	
