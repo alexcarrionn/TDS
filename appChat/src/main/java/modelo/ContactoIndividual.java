@@ -1,23 +1,24 @@
 package modelo;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class ContactoIndividual extends Contacto{
 
-	private int movil;
+	private String movil;
 	
 	//Constructor
-	public ContactoIndividual(String nombre, int movil) {
+	public ContactoIndividual(String nombre, String movil) {
 		super(nombre);
 		this.movil=movil;
 	}
 	
-	public ContactoIndividual(String nombre, int movil, LinkedList<Mensaje> mensajes) {
+	public ContactoIndividual(String nombre, String movil, LinkedList<Mensaje> mensajes) {
 		super(nombre,mensajes);
 		this.movil=movil;
 	}
 		
-	public int getMovil() {
+	public String getMovil() {
 		return movil;
 	}
 	
@@ -34,42 +35,31 @@ public class ContactoIndividual extends Contacto{
 	 *añade a un grupo 
 	 *elimina del gupo  */
 	
-	// HashCode e Equals
-		/**
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + movil;
-			return result;
-		}
-		
-		
 
-		/**
-		 * Dos contactos son iguales si tienen el mismo número de teléfono
-		 * 
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ContactoIndividual other = (ContactoIndividual) obj;
-			if (movil != other.movil)
-				return false;
-			return true;
-		}
 
 		@Override
 		public String getFoto() {
 			Usuario usuario = RepositorioUsuario.getUnicaInstancia().getUsuario(movil);
 			return usuario.getImagen();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + Objects.hash(movil);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ContactoIndividual other = (ContactoIndividual) obj;
+			return Objects.equals(movil, other.movil);
 		}
 }

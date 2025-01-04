@@ -108,7 +108,7 @@ public class VentanaLogin {
             		
             		AppChat appChat = AppChat.getUnicaInstancia();
             	  
-            		boolean login = appChat.hacerLogin(Integer.parseInt(telefono), clave);
+            		boolean login = appChat.hacerLogin(telefono, clave);
             	  
             	  //Actuo en la pantalla segun el resultado 
             	   

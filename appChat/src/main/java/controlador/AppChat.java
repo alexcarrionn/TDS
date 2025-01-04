@@ -56,7 +56,7 @@ public class AppChat {
         return usuarioLogueado;
     }
 
-    public boolean hacerLogin(int tel, String contraseña) {
+    public boolean hacerLogin(String tel, String contraseña) {
         Usuario usuario = repo.getUsuario(tel);
         if (usuario != null && usuario.getContraseña().equals(contraseña)) {
             usuarioLogueado = usuario;
@@ -64,21 +64,28 @@ public class AppChat {
         }
         return false;
     }
+    
+    public boolean registrarUsuario(String telefono, String nombre,String foto, String contraseña,LocalDate fecha,String estado) {
+		Usuario usuarioExistente = repo.getUsuario(telefono);
+		if (usuarioExistente != null) {
+			return false;
+		}
 
-    // Le pasamos un usuario, creado en la ventanaRegistro, para poder registrarlo en la base de datos
-    public boolean crearCuentaUsuario(int movil, String nombre, String imagen, String contrasena, LocalDate fecha, String estado) {
-        // Primero creamos un nuevo usuario con los datos metidos en la Ventana Registro
-        Usuario nuevoUsuario = new Usuario(movil, nombre, imagen, contrasena, fecha, estado, null);
-        // Comprobamos que no hay ningún usuario con ese número de teléfono
-        if (!repo.contains(nuevoUsuario)) {
-            // Conexión con la persistencia y registrar usuario
-            repo.addUsuario(nuevoUsuario);
-            adaptadorUsuario.registrarUsuario(nuevoUsuario);
-            return hacerLogin(movil, contrasena);
-        }
-        // En caso de que haya un usuario con ese teléfono, devolvemos false para que mande un mensaje de error
-        return false;
-    }
+		LocalDate fechaRegistro = LocalDate.now();
+
+		Usuario nuevoUsuario = new Usuario(telefono, nombre, foto, contraseña, fechaRegistro,estado, null);
+
+		// si no esta registrado, lo añadimos al catalogo de usuarios
+		if (!repo.contains(nuevoUsuario)) {
+			repo.addUsuario(nuevoUsuario);
+			adaptadorUsuario.registrarUsuario(nuevoUsuario);
+
+			return hacerLogin(nuevoUsuario.getTelefono(), nuevoUsuario.getContraseña()); // comprueba que se haya registrado
+																		// correctamente
+		}
+		return false;
+
+	}
 
     // Función para obtener los mensajes
     public List<Mensaje> getMensajes(Contacto contacto) {
@@ -113,7 +120,7 @@ public class AppChat {
             .collect(Collectors.toList());
     }
 
-    public ContactoIndividual agregarContacto(String nombre, int telefono) {
+    public ContactoIndividual agregarContacto(String nombre, String telefono) {
         ContactoIndividual contacto = new ContactoIndividual(nombre, telefono);
         if (!usuarioLogueado.getContactos().contains(contacto)) {
             usuarioLogueado.addContacto(contacto);

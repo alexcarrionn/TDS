@@ -3,11 +3,12 @@ package modelo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Usuario {
 	private static final double PRECIO_PREMIUM = 10.00;
-	private int telefono; 
+	private String telefono; 
 	private int id; 
 	private String nombre;
 	private String imagen;
@@ -21,7 +22,7 @@ public class Usuario {
 	//Constructor
 	//eliminar cuando hagamos bien lo de APPCHAT
 	
-	public Usuario(int telefono, String nombre, String imagen,String contraseña, String estado,Descuento descuentos) {
+	public Usuario(String telefono, String nombre, String imagen,String contraseña, String estado,Descuento descuentos) {
 		super();
 		this.telefono = telefono;
 		this.nombre = nombre;
@@ -33,7 +34,7 @@ public class Usuario {
 		this.descuento = Optional.ofNullable(descuentos);
 	}
 	
-	public Usuario(int telefono, String nombre, String imagen,String contraseña, LocalDate fecha, String estado,Descuento descuentos) {
+	public Usuario(String telefono, String nombre, String imagen,String contraseña, LocalDate fecha, String estado,Descuento descuentos) {
 		super();
 		this.telefono = telefono;
 		this.nombre = nombre;
@@ -46,7 +47,7 @@ public class Usuario {
 		this.descuento = Optional.ofNullable(descuentos);
 	}
 
-	public Usuario(String nombre2, int movil, String contrasena, LocalDate parse, String imagen2, String saludo) {
+	public Usuario(String nombre2, String movil, String contrasena, LocalDate parse, String imagen2, String saludo) {
 		nombre=nombre2; 
 		telefono=movil; 
 		contraseña=contrasena;
@@ -80,10 +81,10 @@ public class Usuario {
 		this.premium = isPremium;
 	}
 
-	public int getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
-	public void setTelefono(int telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 	public String getNombre() {
@@ -169,21 +170,13 @@ public class Usuario {
 		/**
 		 * @see java.lang.Object#hashCode()
 		 */
+		
+
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-			result = prime * result + telefono;
-			return result;
+			return Objects.hash(contactos, contraseña, descuento, estado, fecha, id, imagen, nombre, premium, telefono);
 		}
 
-
-		/**
-		 * Dos usuarios serán iguales si tienen el mismo nick o número de teléfono
-		 * 
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -193,7 +186,16 @@ public class Usuario {
 			if (getClass() != obj.getClass())
 				return false;
 			Usuario other = (Usuario) obj;
-			return nombre.equals(other.nombre) || telefono == other.telefono;
+			return Objects.equals(contactos, other.contactos) && Objects.equals(contraseña, other.contraseña)
+					&& Objects.equals(descuento, other.descuento) && Objects.equals(estado, other.estado)
+					&& Objects.equals(fecha, other.fecha) && id == other.id && Objects.equals(imagen, other.imagen)
+					&& Objects.equals(nombre, other.nombre) && Objects.equals(premium, other.premium)
+					&& Objects.equals(telefono, other.telefono);
+		}
+
+		public void setDescuento(Optional<Descuento> of) {
+			// TODO Auto-generated method stub
+			
 		}
 
 

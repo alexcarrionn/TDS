@@ -18,7 +18,6 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -40,7 +39,6 @@ public class VentanaPrincipal extends JFrame {
     private JTextField mensaje;
     static VentanaPrincipal frame;
     private AppChat appchat;
-    private JList<Contacto> listaContactos;
     private ChatBurbujas chat;
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;

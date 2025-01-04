@@ -17,7 +17,7 @@ import persistencia.IAdaptadorUsuarioDAO;
  * directamente la base de datos
  */
 public class RepositorioUsuario {
-	private Map<Integer,Usuario> usuarios; 
+	private Map<String,Usuario> usuarios; 
 	private static RepositorioUsuario unicaInstancia = new RepositorioUsuario();
 	
 	private FactoriaDAO dao;
@@ -27,7 +27,7 @@ public class RepositorioUsuario {
 		try {
   			dao = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
   			adaptadorUsuario = dao.getUsuarioDAO();
-  			usuarios = new HashMap<Integer,Usuario>();
+  			usuarios = new HashMap<String,Usuario>();
   			this.cargarCatalogo();
   		} catch (DAOException eDAO) {
   			eDAO.printStackTrace();
@@ -46,7 +46,7 @@ public class RepositorioUsuario {
 		return lista;
 	}
 	
-	public Usuario getUsuario(int numero) {
+	public Usuario getUsuario(String numero) {
 		return usuarios.get(numero);
 	}
 	

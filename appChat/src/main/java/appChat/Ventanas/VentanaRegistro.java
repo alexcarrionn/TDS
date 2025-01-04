@@ -264,12 +264,12 @@ public class VentanaRegistro {
                 }
                 
                 String nombre = nombreField.getText() + apellidosField.getText();
-                int movil =Integer.parseInt(telefono.getText());
+                String movil =telefono.getText();
                 String contrasena = contraseña.getText(); 
                 String estado = areaEstado.getText(); 
                 String imagenUsuario = imagen.getText(); 
         		AppChat appChat = AppChat.getUnicaInstancia();
-                boolean accept = appChat.crearCuentaUsuario(movil, nombre, imagenUsuario, contrasena, fecha,estado); 
+                boolean accept = appChat.registrarUsuario(movil,nombre,imagenUsuario,contrasena,fecha,estado); 
                 if(!accept) {
                 	 JOptionPane.showMessageDialog(frame, "El Usuario ya esta registrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }

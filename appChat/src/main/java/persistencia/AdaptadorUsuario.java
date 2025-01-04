@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import appChat.Ventanas.VentanaPrincipal;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Descuento;
 import modelo.Grupo;
 import modelo.Usuario;
 
@@ -48,16 +51,17 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		});
 		
 	}
+	
 
 	public void borrarUsuario(Usuario user) {
 		// No se comprueban restricciones de integridad con Contacto
-		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getTelefono());
+		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
 		servPersistencia.borrarEntidad(eUsuario);
 	}
 
 	public void modificarUsuario(Usuario user) {
 
-		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getTelefono());
+		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
 
 		for (Propiedad prop : eUsuario.getPropiedades()) {
 			if (prop.getNombre().equals("telefono")) {
@@ -77,62 +81,155 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		}
 
 	}
-	public void registrarUsuario(Usuario user) {
-	    Entidad eUsuario = null;
+	public void registrarUsuario(Usuario usuario) {
+		Entidad eUsuario = null;
 
-	    // Si la entidad está registrada no la registra de nuevo
-	    try {
-	        eUsuario = servPersistencia.recuperarEntidad(user.getTelefono());
-	    } catch (NullPointerException e) {}
-	    if (eUsuario != null) return;
+        // Si la entidad esta registrada no la registra de nuevo
+        try {
+        	eUsuario = servPersistencia.recuperarEntidad(usuario.getId());
+        } catch (NullPointerException e) {}
+        if (eUsuario != null) return;
 
-	    // Registrar primero los atributos que son objetos
-	    // Registrar contactos del usuario
-	    registrarSiNoExistenContactosoGrupos(user.getContactos());
+		// registrar contactos del usuario
+		registrarSiNoExistenContactosoGrupos(usuario.getContactos());
 
-	    // Crear entidad usuario
-	    eUsuario = new Entidad();
-	    eUsuario.setNombre("Usuario");
-	    eUsuario.setPropiedades(new ArrayList<Propiedad>(
-	         Arrays.asList(
-	                new Propiedad("telefono", String.valueOf(user.getTelefono())),
-	                new Propiedad("nombre", user.getNombre()),
-	                new Propiedad("imagen", user.getImagen()),
-	                new Propiedad("contraseña", user.getContraseña()),
-	                new Propiedad("fecha", user.getFecha() != null ? user.getFecha().toString() : "null"),
-	                new Propiedad("estado", user.getEstado()),
-	                new Propiedad("premium", String.valueOf(user.isPremium()))
-	        )));
-	    // Registrar entidad usuario
-	    eUsuario = servPersistencia.registrarEntidad(eUsuario);
+        // crear entidad Cliente
+        eUsuario = new Entidad();
+        eUsuario.setNombre("cliente");
+        eUsuario.setPropiedades(new ArrayList<Propiedad>(
+                Arrays.asList(
+                           new Propiedad("telefono", usuario.getTelefono()),
+                           new Propiedad("nombre", usuario.getNombre()),
+                           new Propiedad("imagen", usuario.getImagen()),
+                           new Propiedad("contraseña", usuario.getContraseña()),
+                           new Propiedad("fecha", usuario.getFecha() != null ? usuario.getFecha().toString() : "null"),
+                           new Propiedad("estado", usuario.getEstado()),
+                           new Propiedad("premium", String.valueOf(usuario.isPremium()))
+                   )));
 
-	    // Aquí, en lugar de asignar el teléfono como el identificador, usa el id generado por el servicio de persistencia
-	    user.setTelefono(eUsuario.getId());
-	    
-	    // Guardamos en el pool
-	    PoolDAO.getUnicaInstancia().addObjeto(user.getTelefono(), user);
+        // registrar entidad cliente
+        eUsuario = servPersistencia.registrarEntidad(eUsuario);
+        // asignar identificador unico
+        // Se aprovecha el que genera el servicio de persistencia
+        usuario.setId(eUsuario.getId());
+		// Guardamos en el pool
+		PoolDAO.getUnicaInstancia().addObjeto(usuario.getId(), usuario);
 	}
 
-	public Usuario recuperarUsuario(int id) {
-	    if (PoolUsuarios.INSTANCE.containsUsuario(id)) {
-	        return PoolUsuarios.INSTANCE.getUsuario(id);
-	    }
-	    Entidad entidadUsuario = servPersistencia.recuperarEntidad(id);
-	    if (entidadUsuario == null) return null;
-	    String nombre = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "nombre");
-	    String movil = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "telefono"); // Debe coincidir con el nombre de la propiedad
-	    String contrasena = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "contraseña"); // Corregir el nombre
-	    String fechaNacimientoStr = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "fecha");
-	    String imagen = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "imagen");
-	    String saludo = servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "estado");
-	    boolean premium = Boolean.parseBoolean(servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "premium"));
+	public Usuario recuperarUsuario(int codigo) {
+		// Si la entidad está en el pool, se devuelve directamente
+		if (PoolDAO.getUnicaInstancia().contiene(codigo))
+			return (Usuario) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
-	    Usuario usuario = new Usuario(nombre, Integer.parseInt(movil), contrasena, LocalDate.parse(fechaNacimientoStr), imagen, saludo);
-	    usuario.setTelefono(id);
-	    usuario.setPremium(premium);
-	    PoolUsuarios.INSTANCE.addUsuario(usuario.getTelefono(), usuario);
-	    usuario.addAllContactos(obtenerContactos(servPersistencia.recuperarPropiedadEntidad(entidadUsuario, "contactos")));
-	    return usuario;
+		// Recuperar entidad del sistema de persistencia
+		Entidad eUsuario = servPersistencia.recuperarEntidad(codigo);
+
+		// Recuperar propiedades
+		String name = servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre");
+		LocalDate fecha = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, "fecha"));
+		String tlf = servPersistencia.recuperarPropiedadEntidad(eUsuario, "numero");
+		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
+		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
+		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "isPremium"));
+		LocalDate fechaRegistro = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaRegistro"));
+		String path = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fotoPerfil");
+
+		// Crear el objeto usuario
+		String foto;
+		if (path.startsWith("..")) {
+			foto = VentanaPrincipal.class.getResource(path).toString();
+		} else if (path.startsWith("file")) {
+			foto = path.replaceFirst("file:", "");
+		} else {
+			foto = path;
+		}
+		Usuario usuario = new Usuario(tlf,name,foto,password,fecha,saludo,null);
+
+		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
+
+		// Recuperar contactos y grupos asociados
+		List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(
+				servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos"));
+		contactos.forEach(usuario::addContacto);
+
+		List<Grupo> grupos = obtenerGruposDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "grupos"));
+		grupos.forEach(usuario::addGrupo);
+
+		return usuario;
+	}
+
+
+	// Método auxiliar para obtener contactos a partir de códigos
+	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
+	    List<ContactoIndividual> contactos = new ArrayList<>();
+	    if (codigos == null || codigos.isEmpty()) {
+	        return contactos;
+	    }
+
+	    for (String codigo : codigos.split(",")) {
+	        contactos.add((ContactoIndividual) recuperarContacto(Integer.parseInt(codigo)));
+	    }
+
+	    return contactos;
+	}
+	
+	private List<Grupo> obtenerGruposDesdeCodigos(String codigos) {
+	    List<Grupo> grupos = new ArrayList<>();
+	    if (codigos == null || codigos.isEmpty()) {
+	        return grupos;
+	    }
+
+	    for (String codigo : codigos.split(",")) {
+	        Grupo grupo = (Grupo) recuperarGrupo(Integer.parseInt(codigo));
+	        if (grupo != null) {
+	            grupos.add(grupo);
+	        }
+	    }
+
+	    return grupos;
+	}
+
+
+	// Método para recuperar un contacto (implementación depende de Contacto)
+	private Contacto recuperarContacto(int codigo) {
+	    // Implementación específica para recuperar Contacto
+	    return (Contacto) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+	}
+	
+	private Grupo recuperarGrupo(int codigo) {
+	    // Intentar obtener el grupo del pool
+	    Grupo grupo = (Grupo) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+	    if (grupo != null) {
+	        return grupo; // Si el grupo ya está en el pool, se devuelve directamente
+	    }
+
+	    // Recuperar la entidad desde la persistencia
+	    Entidad entidadGrupo = servPersistencia.recuperarEntidad(codigo);
+	    if (entidadGrupo == null) {
+	        return null; // Si no se encuentra la entidad, devolver null
+	    }
+
+	    // Recuperar propiedades del grupo
+	    String nombre = servPersistencia.recuperarPropiedadEntidad(entidadGrupo, "nombre");
+	    String contactosStr = servPersistencia.recuperarPropiedadEntidad(entidadGrupo, "contactos");
+
+	    // Obtener la lista de contactos del grupo
+	    List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(contactosStr);
+
+	    // Crear el grupo con los datos recuperados
+	    grupo = new Grupo(nombre, contactos);
+
+	    // Añadir el grupo al pool para futuras recuperaciones
+	    PoolDAO.getUnicaInstancia().addObjeto(codigo, grupo);
+
+	    return grupo;
+	}
+
+
+	// Método para recuperar un descuento (implementación depende de Descuento)
+	private Descuento recuperarDescuento(int codigo) {
+	    // Implementación específica para recuperar Descuento
+	    return (Descuento) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 	}
 
 	
@@ -148,7 +245,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	                 //Utilizamos un map para recoger aquellos COntactos con nombre y telefono que encontramos 
 	                 .map(entidad -> {
 	                     String nombre = servPersistencia.recuperarPropiedadEntidad(entidad, "nombre");
-	                     int movil = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(entidad, "telefono")); 
+	                     String movil = servPersistencia.recuperarPropiedadEntidad(entidad, "telefono"); 
 	                     return new ContactoIndividual(nombre,movil);
 	                 })
 	                 //con el collect lo que hacemos es enviarlos a una lista
