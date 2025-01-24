@@ -11,6 +11,7 @@ import modelo.RepositorioUsuario;
 import modelo.Usuario;
 import persistencia.AdaptadorContactoIndividual;
 import persistencia.AdaptadorGrupo;
+import persistencia.AdaptadorUsuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
 import persistencia.IAdaptadorMensajeDAO;
@@ -18,24 +19,34 @@ import persistencia.IAdaptadorUsuarioDAO;
 
 public class AppChat {
     private static AppChat unicaInstancia;
+    
+    //Usuario actual
     private Usuario usuarioLogueado;
-    private RepositorioUsuario repo; 
+    
+    //Adapatadores
     private IAdaptadorMensajeDAO adaptadorMensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
+    
+    //Chat Seleccionado
     private Contacto chatActual;
+    
+    //catalogo de usuarios
+    private RepositorioUsuario repo; 
     
     private AppChat() {
         inicializarAdaptadores();
         inicializarRepositorio();       
     }
-
+    
+    //aplicamos el patrón Singleton
     public static AppChat getUnicaInstancia() {
         if (unicaInstancia == null) {
             unicaInstancia = new AppChat();
         }
         return unicaInstancia;
     }
-
+    
+    //inicializamos Repositorio
     private void inicializarRepositorio() {
         repo = RepositorioUsuario.getUnicaInstancia();
     }
@@ -58,12 +69,16 @@ public class AppChat {
 
     public boolean hacerLogin(String tel, String contraseña) {
         Usuario usuario = repo.getUsuario(tel);
-        if (usuario != null && usuario.getContraseña().equals(contraseña)) {
-            usuarioLogueado = usuario;
-            return true;
+        if (usuario == null) {
+            return false;
         }
-        return false;
+        if (!usuario.getContraseña().equals(contraseña)) {
+            return false;
+        }
+        usuarioLogueado = usuario;
+        return true;
     }
+
     
     public boolean registrarUsuario(String telefono, String nombre,String foto, String contraseña,LocalDate fecha,String estado) {
 		Usuario usuarioExistente = repo.getUsuario(telefono);
@@ -163,4 +178,12 @@ public class AppChat {
 			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 	}
+    
+    //funcion que te permite hacer a un usuario Premium
+    public void hacerPremium() {
+    	//primero modificamos el usuario para que premium sea true
+    	usuarioLogueado.setPremium(); 
+    	//lo cambiamos en la base de datos
+    	AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+    }
 }

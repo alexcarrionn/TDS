@@ -22,6 +22,7 @@ import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import controlador.AppChat;
@@ -29,6 +30,8 @@ import modelo.Contacto;
 import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import tds.BubbleText;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -108,6 +111,18 @@ public class VentanaPrincipal extends JFrame {
         panelBotones.add(horizontalGlue);
 
         JButton premium = new JButton("Premium");
+        premium.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		if(appchat.getUsuarioLogueado().getPremium()) {
+        			JOptionPane.showMessageDialog(frame, "Ya has pagado la suscripción premium", "Error", JOptionPane.ERROR_MESSAGE);
+        		}else {
+        			appchat.hacerPremium(); 
+        			JOptionPane.showMessageDialog(frame, "PREMIUM ACTIVADO DISFRUTA DE TU SUSCRPICION", "OK", JOptionPane.INFORMATION_MESSAGE ); 
+        			
+        		}
+        	}
+        });
         premium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
         panelBotones.add(premium);
 

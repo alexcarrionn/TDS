@@ -51,8 +51,10 @@ public class RepositorioUsuario {
 	}
 	
 	public void addUsuario(Usuario user) {
-		usuarios.put(user.getTelefono(),user);
+	    usuarios.put(user.getTelefono(), user);
+	    adaptadorUsuario.registrarUsuario(user); // Persistir en la base de datos
 	}
+
 	public void removeUsuario (Usuario user) {
 		usuarios.remove(user.getTelefono());
 	}

@@ -20,7 +20,6 @@ public class Usuario {
 	private Optional<Descuento> descuento;
 	
 	//Constructor
-	//eliminar cuando hagamos bien lo de APPCHAT
 	
 	public Usuario(String telefono, String nombre, String imagen,String contraseña, String estado,Descuento descuentos) {
 		super();
@@ -54,6 +53,7 @@ public class Usuario {
 		fecha=parse; 
 		imagen=imagen2; 
 		estado=saludo;
+		premium=false; 
 	}
 
 	//Getters y Setters
@@ -124,6 +124,10 @@ public class Usuario {
 		return premium;
 	} 
 	
+	public void setPremium() {
+		premium=true; 
+	}
+	
 	public Optional<Descuento> getDescuento() {
 		return descuento;
 	}
@@ -138,6 +142,16 @@ public class Usuario {
 	//Tenemos que hacer una funcion que nos devuelva el numero de mensajes enviados en cada mes del año, para calcular si se puede o no hacer el desceunto
 	
 	//Devolver los grupos que tiene el usuario
+    
+    public List<Grupo> obtenerGrupos() {
+        List<Grupo> grupos = new ArrayList<>();
+        for (Contacto contacto : contactos) {
+            if (contacto instanceof Grupo) {
+                grupos.add((Grupo) contacto);  // Añadir los grupos a la lista
+            }
+        }
+        return grupos;
+    }
 	
 	//Devolver los contactos Ind
 	
@@ -197,6 +211,4 @@ public class Usuario {
 			// TODO Auto-generated method stub
 			
 		}
-
-
 	}

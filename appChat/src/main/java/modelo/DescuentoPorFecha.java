@@ -5,13 +5,12 @@ import java.time.LocalDate;
 public class DescuentoPorFecha extends Descuento {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private double porcentajeDescuento;
+    private final static double porcentajeDescuento = 0.7;
 
     //Constructor
-    public DescuentoPorFecha(LocalDate fechaInicio, LocalDate fechaFin, double porcentajeDescuento) {
+    public DescuentoPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.porcentajeDescuento = porcentajeDescuento;
     }
     
     //Para conseguir el descuento por fecha
