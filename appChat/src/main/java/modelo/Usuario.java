@@ -20,7 +20,6 @@ public class Usuario {
 	private Optional<Descuento> descuento;
 	
 	//Constructor
-	
 	public Usuario(String telefono, String nombre, String imagen,String contraseña, String estado,Descuento descuentos) {
 		super();
 		this.telefono = telefono;
@@ -33,7 +32,7 @@ public class Usuario {
 		this.descuento = Optional.ofNullable(descuentos);
 	}
 	
-	public Usuario(String telefono, String nombre, String imagen,String contraseña, LocalDate fecha, String estado,Descuento descuentos) {
+	public Usuario(String telefono, String nombre, String imagen,String contraseña, LocalDate fecha, String estado,Descuento descuento) {
 		super();
 		this.telefono = telefono;
 		this.nombre = nombre;
@@ -43,7 +42,7 @@ public class Usuario {
 		this.fecha=fecha; 
 		this.estado=estado;
 		contactos= new ArrayList<Contacto>();
-		this.descuento = Optional.ofNullable(descuentos);
+		this.descuento = Optional.ofNullable(descuento);
 	}
 
 	public Usuario(String nombre2, String movil, String contrasena, LocalDate parse, String imagen2, String saludo) {
@@ -173,6 +172,14 @@ public class Usuario {
 			contactos.add(c);
 		}
 	}
+	
+	//Función que sirve para poder contar todos los mensajes que tiene el usuario
+	public int contarMensajesTotales() {
+	    return contactos.stream() // Convertimos la lista de contactos en un Stream
+	            .mapToInt(contacto -> contacto.getMensajes().size()) // Obtenemos el número de mensajes por contacto
+	            .sum(); // Sumamos todos los tamaños de las listas de mensajes
+	}
+
 	
 	//To string y el hashCode y el equals
 		@Override

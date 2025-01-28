@@ -110,21 +110,36 @@ public class VentanaPrincipal extends JFrame {
         Component horizontalGlue = Box.createHorizontalGlue();
         panelBotones.add(horizontalGlue);
 
-        JButton premium = new JButton("Premium");
-        premium.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent e) {
-        		if(appchat.getUsuarioLogueado().getPremium()) {
-        			JOptionPane.showMessageDialog(frame, "Ya has pagado la suscripción premium", "Error", JOptionPane.ERROR_MESSAGE);
-        		}else {
-        			appchat.hacerPremium(); 
-        			JOptionPane.showMessageDialog(frame, "PREMIUM ACTIVADO DISFRUTA DE TU SUSCRPICION", "OK", JOptionPane.INFORMATION_MESSAGE ); 
-        			
-        		}
-        	}
+        JButton botonPremium = new JButton("Premium");
+        botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
+        botonPremium.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (appchat.getUsuarioLogueado().getPremium()) {
+                    JOptionPane.showMessageDialog(frame, "Ya has pagado la suscripción premium", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    int opcion = JOptionPane.showConfirmDialog(
+                        frame,
+                        "¿Deseas activar la suscripción premium?",
+                        "Activar Premium",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                    );
+
+                    if (opcion == JOptionPane.YES_OPTION) {
+                        appchat.hacerPremium();
+                        JOptionPane.showMessageDialog(frame, "PREMIUM ACTIVADO. DISFRUTA DE TU SUSCRIPCIÓN", "OK", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+
+                // Mostrar la ventana premium, independientemente del estado
+                VentanaPremium ventana = new VentanaPremium();
+                ventana.setVisible(true);
+            }
         });
-        premium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
-        panelBotones.add(premium);
+
+        // Agregar el botón al panel
+        panelBotones.add(botonPremium);
 
         JLabel labelUsuarioActual = new JLabel("Usuario Actual");
         panelBotones.add(labelUsuarioActual);

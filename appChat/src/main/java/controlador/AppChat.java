@@ -2,9 +2,12 @@ package controlador;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Descuento;
+import modelo.DescuentoFactory;
 import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
@@ -185,5 +188,14 @@ public class AppChat {
     	usuarioLogueado.setPremium(); 
     	//lo cambiamos en la base de datos
     	AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+    }
+    
+    public double getDescuento() {
+    	return usuarioLogueado.getPrecio(); 
+    }
+    
+    public void aplicarDescuento(String tipoDescuento) {
+        Descuento nuevoDescuento = DescuentoFactory.crearDescuento(tipoDescuento);
+        usuarioLogueado.setDescuento(Optional.of(nuevoDescuento));
     }
 }
