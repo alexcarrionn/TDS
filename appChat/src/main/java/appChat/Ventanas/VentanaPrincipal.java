@@ -30,8 +30,6 @@ import modelo.Contacto;
 import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import tds.BubbleText;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -115,23 +113,6 @@ public class VentanaPrincipal extends JFrame {
         botonPremium.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (appchat.getUsuarioLogueado().getPremium()) {
-                    JOptionPane.showMessageDialog(frame, "Ya has pagado la suscripción premium", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    int opcion = JOptionPane.showConfirmDialog(
-                        frame,
-                        "¿Deseas activar la suscripción premium?",
-                        "Activar Premium",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                    );
-
-                    if (opcion == JOptionPane.YES_OPTION) {
-                        appchat.hacerPremium();
-                        JOptionPane.showMessageDialog(frame, "PREMIUM ACTIVADO. DISFRUTA DE TU SUSCRIPCIÓN", "OK", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-
                 // Mostrar la ventana premium, independientemente del estado
                 VentanaPremium ventana = new VentanaPremium();
                 ventana.setVisible(true);

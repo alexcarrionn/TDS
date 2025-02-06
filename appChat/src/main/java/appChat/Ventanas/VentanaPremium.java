@@ -1,9 +1,7 @@
 package appChat.Ventanas;
 
 import javax.swing.*;
-
 import controlador.AppChat;
-
 import java.awt.*;
 
 @SuppressWarnings("serial")
@@ -25,28 +23,29 @@ public class VentanaPremium extends JFrame {
 
         // Panel central para la cantidad a pagar
         JPanel panelCentral = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblCantidad = new JLabel("Cantidad a pagar: ");
+        panelCentral.add(lblCantidad);
+
         // Panel inferior para los botones
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton botonAceptar = new JButton("Aceptar");
         botonAceptar.addActionListener(e -> {
             String tipoDescuentoSeleccionado = (String) comboBoxDescuentos.getSelectedItem();
-            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado); 
+            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);
+            AppChat.getUnicaInstancia().hacerPremium(); 
+            // Actualizar el texto de la etiqueta en lugar de agregar una nueva
+            lblCantidad.setText("Cantidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
+        });
 
-        });
         JButton botonCancelar = new JButton("Cancelar");
-        botonCancelar.addActionListener(e -> {
-            // Cerrar la ventana
-            dispose();
-        });
+        botonCancelar.addActionListener(e -> dispose());
+
         panelInferior.add(botonAceptar);
         panelInferior.add(botonCancelar);
 
         // Agregar los paneles al frame
         getContentPane().add(panelSuperior);
         getContentPane().add(panelCentral);
-        
-        JLabel lblNewLabel = new JLabel("Catidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
-        panelCentral.add(lblNewLabel);
         getContentPane().add(panelInferior);
 
         // Configurar visibilidad del frame
