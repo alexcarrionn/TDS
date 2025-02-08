@@ -6,6 +6,7 @@ import java.util.Arrays;
 import beans.Entidad;
 import beans.Propiedad;
 import modelo.ContactoIndividual;
+import modelo.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
@@ -52,9 +53,37 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
 
     
     public ContactoIndividual recuperarContacto(int tel) {
-        return null;
+        // Recuperar la entidad desde la persistencia
+        Entidad eContacto = servPersistencia.recuperarEntidad(tel);
+        if (eContacto == null) return null;
+
+        // Obtener las propiedades
+        String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
+        String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
+        
+        // Crear el objeto ContactoIndividual
+        ContactoIndividual contacto = new ContactoIndividual(nombre, movil);
+        contacto.setId(tel); // Asignar ID recuperado
+
+        return contacto;
     }
+
     public void modificarContacto(ContactoIndividual contacto) {
-    	
+        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
+
+        for (Propiedad p : eContacto.getPropiedades()) {
+            switch (p.getNombre()) {
+                case "nombre":
+                    p.setValor(contacto.getNombre());
+                    break;
+                case "movil":
+                    p.setValor(contacto.getMovil());
+                    break;
+                case "usuario":
+                    p.setValor(String.valueOf(contacto.getUsuario().getId()));
+                    break;
+            }
+            servPersistencia.modificarPropiedad(p); // Actualizar propiedad en la BD
+        }
     }
 }

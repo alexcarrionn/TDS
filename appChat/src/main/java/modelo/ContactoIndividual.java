@@ -9,16 +9,16 @@ public class ContactoIndividual extends Contacto{
 	private Usuario usuario;
 	
 	//Constructor
-	public ContactoIndividual(String nombre, String movil, Usuario usuario) {
+	public ContactoIndividual(String nombre, String movil) {
 		super(nombre);
 		this.movil=movil;
-		this.usuario=usuario;
+
 	}
 	
-	public ContactoIndividual(String nombre, String movil, Usuario usuario, LinkedList<Mensaje> mensajes) {
+	public ContactoIndividual(String nombre, String movil, LinkedList<Mensaje> mensajes) {
 		super(nombre,mensajes);
 		this.movil=movil;
-		this.usuario=usuario;
+
 	}
 		
 	public String getMovil() {

@@ -141,10 +141,8 @@ public class AppChat {
 
     public ContactoIndividual agregarContacto(String nombre, String telefono) {
         if (!usuarioLogueado.contieneContacto(nombre)) {
-			Optional<Usuario> usuarioOpt = repo.buscarUsuario(telefono);
-
-			if (usuarioOpt.isPresent()) {
-				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono, usuarioOpt.get());
+				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono);
+				
 				usuarioLogueado.addContacto(nuevoContacto);
 
 				AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
@@ -152,7 +150,6 @@ public class AppChat {
 				adaptadorUsuario.modificarUsuario(usuarioLogueado);
 
 				return nuevoContacto;
-			}
 		}
 		return null;
 	}

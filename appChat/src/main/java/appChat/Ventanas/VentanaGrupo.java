@@ -2,6 +2,7 @@ package appChat.Ventanas;
 
 import javax.swing.*;
 import controlador.AppChat;
+import modelo.Contacto;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -103,10 +104,10 @@ public class VentanaGrupo extends JFrame {
     private void cargarContactos() {
         mainListModel.clear(); // Limpiar la lista antes de actualizar
 
-        List<modelo.Contacto> contactos = controlador.obtenerTodosContactos(); // Obtener los contactos
+        List<Contacto> contactos = controlador.obtenerTodosContactos(); // Obtener los contactos
 
-        for (modelo.Contacto contacto : contactos) {
-            mainListModel.addElement(contacto.getNombre() + " - " + contacto.getTelefono());
+        for (Contacto contacto : contactos) {
+            mainListModel.addElement(contacto.getNombre());
         }
     }
 
@@ -126,7 +127,6 @@ public class VentanaGrupo extends JFrame {
             if (!name.isEmpty() && !phone.isEmpty()) {
                 controlador.agregarContacto(name, phone);
                 cargarContactos(); // Actualizar la lista con el nuevo contacto
-                mainListModel.addElement(name); 
             } else {
                 JOptionPane.showMessageDialog(this, "Debe ingresar el nombre y el teléfono.", "Error", JOptionPane.ERROR_MESSAGE);
             }
