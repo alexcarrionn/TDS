@@ -264,8 +264,7 @@ public class VentanaRegistro {
                             .atZone(java.time.ZoneId.systemDefault())
                             .toLocalDate();
                 }
-
-                
+              
                 String nombre = nombreField.getText() + apellidosField.getText();
                 String movil =telefono.getText();
                 String contrasena = contraseña.getText(); 

@@ -88,8 +88,9 @@ public class AppChat {
 		if (usuarioExistente != null) {
 			return false;
 		}
-
-		//LocalDate fechaRegistro = LocalDate.now();
+		
+		if(fecha ==null) {
+		fecha = LocalDate.now();}
 
 		Usuario nuevoUsuario = new Usuario(telefono, nombre, foto, contraseña, fecha, estado, null);
 
