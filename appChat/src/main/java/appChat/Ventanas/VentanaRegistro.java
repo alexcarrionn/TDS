@@ -260,8 +260,11 @@ public class VentanaRegistro {
                 // Verificar si la fecha es nula
                 LocalDate fecha = null;
                 if (dateChooser.getDate() != null) {
-                    fecha = LocalDate.parse((CharSequence) dateChooser.getDate());
+                    fecha = dateChooser.getDate().toInstant()
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toLocalDate();
                 }
+
                 
                 String nombre = nombreField.getText() + apellidosField.getText();
                 String movil =telefono.getText();
