@@ -5,6 +5,7 @@ import java.util.List;
 
 public abstract class Contacto {
     // Propiedades
+	private int id;
     private String nombre;
     private int telefono;
     private List<Mensaje> mensajes;
@@ -84,4 +85,12 @@ public abstract class Contacto {
     }
 
 	public abstract String getFoto();
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 }

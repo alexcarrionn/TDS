@@ -89,9 +89,9 @@ public class AppChat {
 			return false;
 		}
 
-		LocalDate fechaRegistro = LocalDate.now();
+		//LocalDate fechaRegistro = LocalDate.now();
 
-		Usuario nuevoUsuario = new Usuario(telefono, nombre, foto, contraseña, fechaRegistro,estado, null);
+		Usuario nuevoUsuario = new Usuario(telefono, nombre, foto, contraseña, fecha, estado, null);
 
 		// si no esta registrado, lo añadimos al catalogo de usuarios
 		if (!repo.contains(nuevoUsuario)) {
@@ -139,14 +139,23 @@ public class AppChat {
     }
 
     public ContactoIndividual agregarContacto(String nombre, String telefono) {
-        ContactoIndividual contacto = new ContactoIndividual(nombre, telefono);
-        if (!usuarioLogueado.getContactos().contains(contacto)) {
-            usuarioLogueado.addContacto(contacto);
-        } else {
-            System.out.println("El contacto ya existe.");
-        }
-        return contacto;
-    }
+        if (!usuarioLogueado.contieneContacto(nombre)) {
+			Optional<Usuario> usuarioOpt = repo.buscarUsuario(telefono);
+
+			if (usuarioOpt.isPresent()) {
+				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono, usuarioOpt.get());
+				usuarioLogueado.addContacto(nuevoContacto);
+
+				AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
+
+				adaptadorUsuario.modificarUsuario(usuarioLogueado);
+
+				return nuevoContacto;
+			}
+		}
+		return null;
+	}
+
 
     public void eliminarContacto(Contacto contacto) {
         usuarioLogueado.removeContacto(contacto);
@@ -163,7 +172,7 @@ public class AppChat {
 		adaptadorMensaje.registrarMensaje(mensaje);
 
 		if (contacto instanceof ContactoIndividual) {
-			AdaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
+			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
 		} else {
 			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
@@ -176,7 +185,7 @@ public class AppChat {
 		adaptadorMensaje.registrarMensaje(mensaje);
 
 		if (contacto instanceof ContactoIndividual) {
-			AdaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
+			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
 		} else {
 			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}

@@ -132,10 +132,8 @@ public class Usuario {
 	}
 	
 	public double getPrecio() {
-		if (descuento.isPresent()) {
-			return descuento.get().getDescuento(PRECIO_PREMIUM);
-		} else
-			return PRECIO_PREMIUM;
+	    return descuento.map(d -> d.getDescuento(PRECIO_PREMIUM))
+	                    .orElse(PRECIO_PREMIUM);
 	}
 	
 	//Tenemos que hacer una funcion que nos devuelva el numero de mensajes enviados en cada mes del año, para calcular si se puede o no hacer el desceunto
@@ -215,8 +213,7 @@ public class Usuario {
 		}
 
 		public void setDescuento(Optional<Descuento> of) {
-			// TODO Auto-generated method stub
-			
+			this.descuento=of;	
 		}
 		
 		public int getNumMensajes() {
@@ -224,5 +221,10 @@ public class Usuario {
 			.mapToInt(contacto-> contacto.getMensajes().size())
 			.sum();
 			
+		}
+
+		public boolean contieneContacto(String nombre) {
+			return contactos.stream()
+							.anyMatch(c->c.getNombre().equals(nombre));
 		}
 	}

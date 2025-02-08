@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
@@ -70,5 +71,9 @@ public class RepositorioUsuario {
 		return usuarios.containsValue(usuario);
 	}
 
-	
+	public Optional<Usuario> buscarUsuario(String telefono) {
+		return usuarios.values().stream()
+			    .filter(u -> u.getTelefono().equals(telefono))
+			    .findAny();
+	}
 }

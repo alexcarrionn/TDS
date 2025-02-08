@@ -6,20 +6,27 @@ import java.util.Objects;
 public class ContactoIndividual extends Contacto{
 
 	private String movil;
+	private Usuario usuario;
 	
 	//Constructor
-	public ContactoIndividual(String nombre, String movil) {
+	public ContactoIndividual(String nombre, String movil, Usuario usuario) {
 		super(nombre);
 		this.movil=movil;
+		this.usuario=usuario;
 	}
 	
-	public ContactoIndividual(String nombre, String movil, LinkedList<Mensaje> mensajes) {
+	public ContactoIndividual(String nombre, String movil, Usuario usuario, LinkedList<Mensaje> mensajes) {
 		super(nombre,mensajes);
 		this.movil=movil;
+		this.usuario=usuario;
 	}
 		
 	public String getMovil() {
 		return movil;
+	}
+	
+	public void setMovil(String movil) {
+		this.movil=movil;
 	}
 	
 	public String getEstado() {
@@ -62,4 +69,9 @@ public class ContactoIndividual extends Contacto{
 			ContactoIndividual other = (ContactoIndividual) obj;
 			return Objects.equals(movil, other.movil);
 		}
+
+		public Usuario getUsuario() {
+			return usuario;
+		}
+
 }

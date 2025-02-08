@@ -1,6 +1,9 @@
 package appChat.Ventanas; 
 
 import javax.swing.*;
+
+import controlador.AppChat;
+
 import java.awt.*;
 
 import java.util.HashMap;
@@ -13,8 +16,10 @@ public class VentanaGrupo extends JFrame {
     private JList<String> mainList;
     private JList<String> groupCreationList;
     private Map<String, DefaultListModel<String>> groupsMap;
-
+    private final AppChat controlador=AppChat.getUnicaInstancia();
+    
     public VentanaGrupo() {
+    	
         setTitle("Gestor de Contactos");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(653, 378);
@@ -101,6 +106,7 @@ public class VentanaGrupo extends JFrame {
             String phone = phoneField.getText().trim();
             if (!name.isEmpty() && !phone.isEmpty()) {
                 mainListModel.addElement(name);
+                controlador.agregarContacto(name, phone);
             } else {
                 JOptionPane.showMessageDialog(this, "Debe ingresar el nombre y el teléfono.", "Error", JOptionPane.ERROR_MESSAGE);
             }
