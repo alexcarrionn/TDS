@@ -218,4 +218,11 @@ public class Usuario {
 			// TODO Auto-generated method stub
 			
 		}
+		
+		public int getNumMensajes() {
+			return contactos.stream()
+			.mapToInt(contacto-> contacto.getMensajes().size())
+			.sum();
+			
+		}
 	}

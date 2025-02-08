@@ -183,11 +183,25 @@ public class AppChat {
 	}
     
     //funcion que te permite hacer a un usuario Premium
-    public void hacerPremium() {
-    	//primero modificamos el usuario para que premium sea true
-    	usuarioLogueado.setPremium(); 
-    	//lo cambiamos en la base de datos
-    	AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+    public boolean hacerPremium(String tipo) {
+    	LocalDate inicio = LocalDate.of(2024, 12, 24); // Ejemplo: cuenta creada antes del 1 de enero de 2023
+    	LocalDate fin = LocalDate.of(2025, 1, 6); // Ejemplo: cuenta creada antes del 1 de enero de 2023
+    	//hacer la comprobacion 
+    	if ("Descuento Mensajes".equals(tipo)) {
+    		if(usuarioLogueado.getNumMensajes()>= 100 ) {
+    			//primero modificamos el usuario para que premium sea true
+    			usuarioLogueado.setPremium(); 
+    			//lo cambiamos en la base de datos
+    			AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+    			return true;}
+    	}else if("Descuento Fecha".equals(tipo)){
+    			if((usuarioLogueado.getFecha().isAfter(inicio)||usuarioLogueado.getFecha().equals(inicio))&& (usuarioLogueado.getFecha().isBefore(fin)||usuarioLogueado.getFecha().equals(fin))) {
+    				usuarioLogueado.setPremium(); 
+        			//lo cambiamos en la base de datos
+        			AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+        			return true;
+    			}}
+    	return false; 
     }
     
     public double getDescuento() {

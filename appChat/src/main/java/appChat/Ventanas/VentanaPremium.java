@@ -6,7 +6,7 @@ import java.awt.*;
 
 @SuppressWarnings("serial")
 public class VentanaPremium extends JFrame {
-    public VentanaPremium() {
+    public VentanaPremium() { 
         // Crear el frame
         setTitle("Seleccionar Descuento Premium");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -31,8 +31,12 @@ public class VentanaPremium extends JFrame {
         JButton botonAceptar = new JButton("Aceptar");
         botonAceptar.addActionListener(e -> {
             String tipoDescuentoSeleccionado = (String) comboBoxDescuentos.getSelectedItem();
+            
             AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);
-            AppChat.getUnicaInstancia().hacerPremium(); 
+            boolean comprobacion = AppChat.getUnicaInstancia().hacerPremium(tipoDescuentoSeleccionado); 
+            if (!comprobacion) {
+            	 JOptionPane.showMessageDialog(this, "No cumple los requisitos para el descuento aplicado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
             // Actualizar el texto de la etiqueta en lugar de agregar una nueva
             lblCantidad.setText("Cantidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
         });
