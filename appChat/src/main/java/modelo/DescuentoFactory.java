@@ -7,6 +7,5 @@ public class DescuentoFactory {
             return new DescuentoPorFecha();
         } else {
             return new DescuentoPorMensaje();
-        }
-    }
-}
+
+}}}

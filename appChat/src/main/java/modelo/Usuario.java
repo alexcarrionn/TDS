@@ -132,8 +132,10 @@ public class Usuario {
 	}
 	
 	public double getPrecio() {
-	    return descuento.map(d -> d.getDescuento(PRECIO_PREMIUM))
-	                    .orElse(PRECIO_PREMIUM);
+		if (descuento.isPresent()){
+			return descuento.get().getDescuento(PRECIO_PREMIUM);
+		} else
+			return PRECIO_PREMIUM;
 	}
 	
 	//Tenemos que hacer una funcion que nos devuelva el numero de mensajes enviados en cada mes del año, para calcular si se puede o no hacer el desceunto

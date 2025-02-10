@@ -189,34 +189,42 @@ public class AppChat {
 		}
 	}
     
-    //funcion que te permite hacer a un usuario Premium
-    public boolean hacerPremium(String tipo) {
-    	LocalDate inicio = LocalDate.of(2024, 12, 24); // Ejemplo: cuenta creada antes del 1 de enero de 2023
-    	LocalDate fin = LocalDate.of(2025, 1, 6); // Ejemplo: cuenta creada antes del 1 de enero de 2023
-    	//hacer la comprobacion 
-    	if ("Descuento Mensajes".equals(tipo)) {
-    		if(usuarioLogueado.getNumMensajes()>= 100 ) {
-    			//primero modificamos el usuario para que premium sea true
-    			usuarioLogueado.setPremium(); 
-    			//lo cambiamos en la base de datos
-    			AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
-    			return true;}
-    	}else if("Descuento Fecha".equals(tipo)){
-    			if((usuarioLogueado.getFecha().isAfter(inicio)||usuarioLogueado.getFecha().equals(inicio))&& (usuarioLogueado.getFecha().isBefore(fin)||usuarioLogueado.getFecha().equals(fin))) {
-    				usuarioLogueado.setPremium(); 
-        			//lo cambiamos en la base de datos
-        			AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
-        			return true;
-    			}}
-    	return false; 
-    }
-    
     public double getDescuento() {
     	return usuarioLogueado.getPrecio(); 
     }
     
+    
+    //esta funcion te aplica el descuento concreto si se cumple la condicion
     public void aplicarDescuento(String tipoDescuento) {
-        Descuento nuevoDescuento = DescuentoFactory.crearDescuento(tipoDescuento);
-        usuarioLogueado.setDescuento(Optional.of(nuevoDescuento));
+        // Solo aplicamos el descuento si cumple las condiciones
+        if (hacerPremium(tipoDescuento)) {
+            Descuento nuevoDescuento = DescuentoFactory.crearDescuento(tipoDescuento);
+            usuarioLogueado.setDescuento(Optional.of(nuevoDescuento));
+        } else {
+            // Si no cumple, eliminamos cualquier descuento existente
+            usuarioLogueado.setDescuento(Optional.empty());
+        }
+    }
+    
+    //Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
+    public boolean hacerPremium(String tipo) {
+        LocalDate inicio = LocalDate.of(2024, 12, 24);
+        LocalDate fin = LocalDate.of(2025, 1, 6);
+        
+        if ("Descuento Mensajes".equals(tipo)) {
+            if(usuarioLogueado.getNumMensajes() >= 100) {
+                usuarioLogueado.setPremium();
+                AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+                return true;
+            }
+        } else if("Descuento Fecha".equals(tipo)) {
+            if((usuarioLogueado.getFecha().isAfter(inicio) || usuarioLogueado.getFecha().equals(inicio)) 
+               && (usuarioLogueado.getFecha().isBefore(fin) || usuarioLogueado.getFecha().equals(fin))) {
+                usuarioLogueado.setPremium();
+                AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+                return true;
+            }
+        }
+        return false;
     }
 }
