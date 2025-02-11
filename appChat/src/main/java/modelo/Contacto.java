@@ -40,12 +40,12 @@ public abstract class Contacto {
     public List<Mensaje> getMensajes() {
         return new LinkedList<>(mensajes);
     }
-
+    //Metodo de gestion de mensajes, en este metodo se añaden todos los mensajes pasados como parametro
     public void setMensajes(List<Mensaje> mensajes) {
-        this.mensajes = mensajes;
+        this.mensajes.addAll(mensajes);
     }
 
-    // Métodos de gestión de mensajes
+    // Métodos de gestión de mensajes, en este se añade un mensaje pasado como parametro
     public void addMensaje(Mensaje mensaje) {
         this.mensajes.add(mensaje);
     }

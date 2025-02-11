@@ -139,19 +139,13 @@ public class AppChat {
             .collect(Collectors.toList());
     }
 
-    public ContactoIndividual agregarContacto(String nombre, String telefono) {
+    public void agregarContacto(String nombre, String telefono) {
         if (!usuarioLogueado.contieneContacto(nombre)) {
 				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono);
-				
 				usuarioLogueado.addContacto(nuevoContacto);
-
 				AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
-
 				adaptadorUsuario.modificarUsuario(usuarioLogueado);
-
-				return nuevoContacto;
 		}
-		return null;
 	}
 
 

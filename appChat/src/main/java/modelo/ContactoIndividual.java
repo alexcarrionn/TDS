@@ -74,4 +74,10 @@ public class ContactoIndividual extends Contacto{
 			return usuario;
 		}
 
+		public void setUsuario(Usuario usuario) {
+			this.usuario = usuario;
+		}
+		
+		
+
 }
