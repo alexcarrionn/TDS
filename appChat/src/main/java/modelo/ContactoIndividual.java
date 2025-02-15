@@ -9,16 +9,16 @@ public class ContactoIndividual extends Contacto{
 	private Usuario usuario;
 	
 	//Constructor
-	public ContactoIndividual(String nombre, String movil) {
+	public ContactoIndividual(String nombre, String movil, Usuario usuario) {
 		super(nombre);
 		this.movil=movil;
-
+		this.usuario=usuario;
 	}
 	
-	public ContactoIndividual(String nombre, String movil, LinkedList<Mensaje> mensajes) {
+	public ContactoIndividual(String nombre, String movil, LinkedList<Mensaje> mensajes, Usuario usuario) {
 		super(nombre,mensajes);
 		this.movil=movil;
-
+		this.usuario=usuario;
 	}
 		
 	public String getMovil() {
@@ -46,7 +46,6 @@ public class ContactoIndividual extends Contacto{
 
 		@Override
 		public String getFoto() {
-			Usuario usuario = RepositorioUsuario.getUnicaInstancia().getUsuario(movil);
 			return usuario.getImagen();
 		}
 

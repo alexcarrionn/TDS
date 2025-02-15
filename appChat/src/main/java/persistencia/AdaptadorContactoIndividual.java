@@ -30,7 +30,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
 
     public void registrarContacto(ContactoIndividual c) {
         // Comprobar si el contacto ya está registrado
-        if (servPersistencia.recuperarEntidades(c.getMovil()) != null) {
+        if (servPersistencia.recuperarEntidad(c.getId()) != null) {
             return; // Ya existe, no lo registramos de nuevo
         }
 
@@ -80,7 +80,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
         
         // Crear el objeto ContactoIndividual
-        ContactoIndividual contacto = new ContactoIndividual(nombre, movil);
+        ContactoIndividual contacto = new ContactoIndividual(nombre, movil, null);
         contacto.setId(id); // Asignar ID recuperado
         
         //recuperamos todos los mensajes del usuario 

@@ -139,14 +139,23 @@ public class AppChat {
             .collect(Collectors.toList());
     }
 
-    public void agregarContacto(String nombre, String telefono) {
+    public ContactoIndividual agregarContacto(String nombre, String telefono) {
+        // Si no tiene el contacto guardado lo guarda
         if (!usuarioLogueado.contieneContacto(nombre)) {
-				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono);
-				usuarioLogueado.addContacto(nuevoContacto);
-				AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
-				adaptadorUsuario.modificarUsuario(usuarioLogueado);
-		}
-	}
+            Optional<Usuario> usuarioOpt = repo.buscarUsuario(telefono);
+
+            if (usuarioOpt.isPresent()) {
+                ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono, usuarioOpt.get());
+                usuarioLogueado.addContacto(nuevoContacto);
+
+                AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
+
+                adaptadorUsuario.modificarUsuario(usuarioLogueado);
+                return nuevoContacto;
+            }
+        }
+        return null;
+    }
 
 
     public void eliminarContacto(Contacto contacto) {

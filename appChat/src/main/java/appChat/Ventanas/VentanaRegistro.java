@@ -182,7 +182,9 @@ public class VentanaRegistro {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     java.io.File file = fileChooser.getSelectedFile();
                     ImageIcon imageIcon = new ImageIcon(file.getPath());
-                    imagenLabel.setIcon(imageIcon); // Actualiza el JLabel con la nueva imagen
+                    Image image = imageIcon.getImage().getScaledInstance(150,150, Image.SCALE_AREA_AVERAGING);
+                    ImageIcon imageResized= new ImageIcon(image);
+                    imagenLabel.setIcon(imageResized);
                 }
             }
         });
