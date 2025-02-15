@@ -2,6 +2,7 @@ package persistencia;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         AdaptadorUsuario.getUnicaInstancia().registrarUsuario(usuario);        
     }
 
-
+/*
 	public ContactoIndividual recuperarContacto(int id) {
         // Recuperar la entidad desde la persistencia
         Entidad eContacto = servPersistencia.recuperarEntidad(id);
@@ -96,8 +97,44 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         //devolvemos el contacto individual
         return contacto;
     }
+*/
+    public ContactoIndividual recuperarContacto(int codigo) {
+        // Si la entidad esta en el pool la devuelve directamente
+        if (PoolDAO.getUnicaInstancia().contiene(codigo))
+            return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
-    public void modificarContacto(ContactoIndividual contacto) {
+        // Sino, la recupera de la base de datos
+        // Recuperamos la entidad
+        Entidad eContact = servPersistencia.recuperarEntidad(codigo);
+
+        // recuperar propiedades que no son objetos
+        String nombre = servPersistencia.recuperarPropiedadEntidad(eContact, "nombre");
+
+        String movil = servPersistencia.recuperarPropiedadEntidad(eContact, "movil");
+
+        ContactoIndividual contact = new ContactoIndividual(nombre, movil,new LinkedList<Mensaje>(),null);
+        contact.setId(codigo);
+
+        // Metemos al contacto en el pool antes de llamar a otros adaptadores
+        PoolDAO.getUnicaInstancia().addObjeto(codigo, contact);
+
+        // Mensajes que el contacto tiene
+        //List<Mensaje> mensajes = obtenerMensajesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eContact, "mensajesRecibidos"));
+        //for (Mensaje m : mensajes)
+         //   contact.addMensaje(m);
+
+        // Obtener usuario del contacto
+        contact.setUsuario(obtenerUsuarioDesdeCodigo(servPersistencia.recuperarPropiedadEntidad(eContact, "usuario")));
+
+        // Devolvemos el objeto contacto
+        return contact;
+    }
+	
+    private Usuario obtenerUsuarioDesdeCodigo(String codigo) {
+        return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(codigo));
+    }
+
+	public void modificarContacto(ContactoIndividual contacto) {
         Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
         //Cambiamos cada una de las propiedades del contacto 
         servPersistencia.eliminarPropiedadEntidad(eContacto, "nombre"); 
