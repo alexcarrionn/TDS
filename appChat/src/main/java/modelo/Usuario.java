@@ -27,9 +27,10 @@ public class Usuario {
 		this.nombre = nombre;
 		this.imagen = imagen;
 		this.premium = false; 
-		this.contraseña = contraseña;  
+		this.contraseña = contraseña;
+		this.fecha=LocalDate.now();
 		this.estado=estado;
-		contactos= new ArrayList<Contacto>();
+		this.contactos= new ArrayList<Contacto>();
 		this.descuento = Optional.ofNullable(descuentos);
 	}
 	
@@ -42,7 +43,7 @@ public class Usuario {
 		this.contraseña = contraseña; 
 		this.fecha=fecha; 
 		this.estado=estado;
-		contactos= new ArrayList<Contacto>();
+		this.contactos= new ArrayList<Contacto>();
 		this.descuento = Optional.ofNullable(descuento);
 	}
 
