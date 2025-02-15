@@ -3,6 +3,7 @@ package appChat.Ventanas;
 import javax.swing.*;
 import controlador.AppChat;
 import modelo.Contacto;
+import persistencia.AdaptadorUsuario;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -104,7 +105,7 @@ public class VentanaGrupo extends JFrame {
     private void cargarContactos() {
         mainListModel.clear(); // Limpiar la lista antes de actualizar
 
-        List<Contacto> contactos = controlador.obtenerTodosContactos(); // Obtener los contactos
+        List<Contacto> contactos = controlador.getUsuarioLogueado().getContactos(); // Obtener los contactos
 
         for (Contacto contacto : contactos) {
             mainListModel.addElement(contacto.getNombre());

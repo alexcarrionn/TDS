@@ -1,6 +1,7 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -157,14 +158,17 @@ public class AppChat {
         return null;
     }
 
-
     public void eliminarContacto(Contacto contacto) {
         usuarioLogueado.removeContacto(contacto);
     }
 
     public List<Contacto> obtenerTodosContactos() {
+    	if (usuarioLogueado == null)
+            return new LinkedList<Contacto>();
+        
         return usuarioLogueado.getContactos();
     }
+    
       
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
 		Mensaje mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto,LocalDate.now());

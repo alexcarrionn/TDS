@@ -47,8 +47,15 @@ public class RepositorioUsuario {
 		return lista;
 	}
 	
-	public Usuario getUsuario(String numero) {
-		return usuarios.get(numero);
+	public Usuario getUsuario(int id) {
+		return usuarios.values().stream()
+								.filter(u->u.getId()==id)
+								.findAny()
+								.orElse(null);
+	}
+	
+	public Usuario getUsuario(String telefono) {
+		return usuarios.get(telefono);
 	}
 	
 	public void addUsuario(Usuario user) {

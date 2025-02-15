@@ -57,11 +57,14 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 				prop.setValor(user.getEstado());
 			}else if(prop.getNombre().equals("premium")) {
 				prop.setValor(String.valueOf(user.isPremium())); 
+			}else if(prop.getNombre().equals("contactos")) {
+				prop.setValor(obtenerCodigosContactos(user.getContactos()));
 			}
 			servPersistencia.modificarPropiedad(prop);
 		}
 
 	}
+	
 	public void registrarUsuario(Usuario usuario) {
 	    Entidad eUsuario = null;
 
@@ -106,14 +109,14 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	
 	private String obtenerCodigosContactos(List<Contacto> contactos) {
 	    return contactos.stream()
-	        .map(contacto -> String.valueOf(contacto.getTelefono())) // Usamos el teléfono como identificador
+	        .map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
 	        .collect(Collectors.joining(","));
 	}
 
 	private String obtenerCodigosGrupos(List<Grupo> grupos) {
 	    return grupos.stream()
 	        .flatMap(grupo -> grupo.getContactos().stream()) // Para cada grupo, obtenemos sus contactos
-	        .map(contacto -> String.valueOf(contacto.getTelefono())) // Usamos el teléfono como identificador
+	        .map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
 	        .collect(Collectors.joining(",")); // Unimos los códigos de los contactos en una cadena separada por comas
 	}
 
@@ -154,10 +157,11 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 	    // IMPORTANTE: Añadir el usuario al pool antes de llamar a otros adaptadores
 	    PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
-
+	    
 	    // Recuperar propiedades que son objetos llamando a adaptadores
 	    // Contactos
-	    List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos"));
+	    String codigosContactos = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos");
+	    List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(codigosContactos);
 	    for (ContactoIndividual c : contactos)
 	        usuario.addContacto(c);
 
@@ -182,7 +186,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	}
 
 	// Método auxiliar para obtener contactos a partir de códigos
-	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
+	public List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
 	    List<ContactoIndividual> contactos = new ArrayList<>();
 	    if (codigos == null || codigos.isEmpty()) {
 	        return contactos;

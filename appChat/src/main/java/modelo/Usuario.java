@@ -2,6 +2,7 @@ package modelo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -112,7 +113,7 @@ public class Usuario {
 	}
 
 	public List<Contacto> getContactos() {
-		return new ArrayList<>(contactos);
+		return new LinkedList<>(contactos);
 	}
 
 	public void setContactos(List<Contacto> contactos) {
