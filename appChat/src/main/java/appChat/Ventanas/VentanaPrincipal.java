@@ -18,6 +18,7 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -78,10 +79,20 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelBotones = new JPanel();
         contentPane.add(panelBotones, BorderLayout.NORTH);
         panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.X_AXIS));
-
+        
+        
+        //TODO VER SI SE PUEDE REINICIAR CADA VEZ QUE SE AÑADA UN NUEVO CONTACTO 
         JComboBox<String> comboUsuarioReceptor = new JComboBox<String>();
         comboUsuarioReceptor.setEditable(true);
-        comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(new String[] { "Contacto Javier", "Contacto Ana" }));
+        //comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(new String[] { "Contacto Javier", "Contacto Ana" }));
+        List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();
+        String[] nombresContactos = contactosUsuarioActual.stream()
+        		 .map(contacto -> "Contacto " + contacto.getNombre()) // Suponiendo que Usuario tiene un método getNombre()
+        		 .toArray(String[]::new);
+
+        comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(nombresContactos));
+        
+        
         panelBotones.add(comboUsuarioReceptor);
 
         JButton btnEnviar = new JButton("");
@@ -141,11 +152,10 @@ public class VentanaPrincipal extends JFrame {
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
         
 		// Se extraen los contactos del usuario
-		List<Contacto> contactos = appchat.getContactosUsuarioActual();
+		/*List<Contacto> contactos = appchat.getContactosUsuarioActual();
 		
 		// Crear una lista genérica de Contacto
 		JList<ContactoIndividual> listaContactos = new JList<>();
-		
 		listaContactos.setBorder(null);
 		listaContactos.setCellRenderer(new ContactoListCellRenderer());
 		listaContactos.addListSelectionListener(e -> {
@@ -160,9 +170,42 @@ public class VentanaPrincipal extends JFrame {
 			}
 
 		});
+		
+        panelLista.add(listaContactos);*/
 
-        panelLista.add(listaContactos);
+     // Obtener la lista de contactos del usuario
+        List<Contacto> contactos = appchat.getContactosUsuarioActual();
 
+        // Convertimos la lista de Contacto a ContactoIndividual si es necesario
+        DefaultListModel<ContactoIndividual> modeloLista = new DefaultListModel<>();
+
+        for (Contacto c : contactos) {
+            if (c instanceof ContactoIndividual) { // Verificamos si es del tipo correcto
+                modeloLista.addElement((ContactoIndividual) c);
+            }
+        }
+
+        // Crear la JList con el modelo
+        JList<ContactoIndividual> listaContactos = new JList<>(modeloLista);
+        listaContactos.setBorder(null);
+        listaContactos.setCellRenderer(new ContactoListCellRenderer());
+
+        listaContactos.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                Contacto contactoActual = listaContactos.getSelectedValue();
+                if (contactoActual != null) {
+                    cargarChat(contactoActual);
+                    appchat.setChatActual(contactoActual);
+                    labelUsuarioActual.setText(contactoActual.getNombre());
+                    labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
+                }
+            }
+        });
+
+        // Agregar la lista al panel
+        panelLista.add(new JScrollPane(listaContactos)); // Se recomienda usar JScrollPane para listas grandes
+	
+        
         JPanel enviar = new JPanel();
         chatActual.add(enviar, BorderLayout.SOUTH);
         enviar.setLayout(new BoxLayout(enviar, BoxLayout.X_AXIS));

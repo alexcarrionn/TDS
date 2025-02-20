@@ -10,8 +10,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
-
-import modelo.Contacto;
 import modelo.ContactoIndividual;
 
 import java.awt.*;
@@ -56,22 +54,26 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 			boolean isSelected, boolean cellHasFocus) {
 		// Configuración de la imagen
 		String fotoUsuario = contacto.getFoto();
-		URL url = getClass().getResource(fotoUsuario);
-		if (url != null) {
-			Image imagenOriginal;
-			try {
-				imagenOriginal = ImageIO.read(url);
-				int anchoDeseado = 50;
-		        int altoDeseado = 50;
-		        Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
-		        ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);		
-		        lblImagen.setIcon(iconoEscalado);
-			} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-			}
-	            
-		} else System.err.println("No se pudo cargar la imagen: " + fotoUsuario);
+		if (fotoUsuario.equals("")){
+			fotoUsuario = "https://robohash.org/"+contacto.getNombre();
+		}
+	    try {
+	        // Cargar imagen desde URL externa
+	        URL url = new URL(fotoUsuario);
+	        Image imagenOriginal = ImageIO.read(url);
+	        if (imagenOriginal != null) {
+	            int anchoDeseado = 50;
+	            int altoDeseado = 50;
+	            Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+	            ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+	            lblImagen.setIcon(iconoEscalado);
+	        } else {
+	            System.err.println("La imagen es nula: " + fotoUsuario);
+	        }
+	    } catch (IOException e) {
+	        System.err.println("No se pudo cargar la imagen desde la URL: " + fotoUsuario);
+	        e.printStackTrace();
+	    }
 
 		// Configuración del texto
 		lblNombre.setText(contacto.getNombre());

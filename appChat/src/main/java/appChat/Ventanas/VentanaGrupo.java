@@ -3,8 +3,6 @@ package appChat.Ventanas;
 import javax.swing.*;
 import controlador.AppChat;
 import modelo.Contacto;
-import persistencia.AdaptadorUsuario;
-
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.*;
