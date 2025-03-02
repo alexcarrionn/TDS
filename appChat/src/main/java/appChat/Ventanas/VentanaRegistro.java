@@ -185,6 +185,7 @@ public class VentanaRegistro {
                     Image image = imageIcon.getImage().getScaledInstance(150,150, Image.SCALE_AREA_AVERAGING);
                     ImageIcon imageResized= new ImageIcon(image);
                     imagenLabel.setIcon(imageResized);
+                    imagen.setText(file.getPath());
                 }
             }
         });

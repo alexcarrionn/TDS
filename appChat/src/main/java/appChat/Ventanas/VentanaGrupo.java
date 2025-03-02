@@ -161,25 +161,7 @@ public class VentanaGrupo extends JFrame {
         }
     }
 
-    // Método para crear un grupo basado en los elementos seleccionados
-   /* private void createGroup() {
-        String groupName = JOptionPane.showInputDialog(this, "Ingrese el nombre del grupo:");
-        if (groupName != null && !groupName.trim().isEmpty()) {
-            if (groupsMap.containsKey(groupName)) {
-                JOptionPane.showMessageDialog(this, "El grupo ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-            	controlador.agregarGrupo(groupName);
-                DefaultListModel<String> groupContacts = new DefaultListModel<>();
-                for (int i = 0; i < groupCreationListModel.size(); i++) {
-                    groupContacts.addElement(groupCreationListModel.getElementAt(i));
-                }
-                groupsMap.put(groupName, groupContacts);
-                mainListModel.addElement(groupName);
-                groupCreationListModel.clear(); // Limpiar la lista de creación
-            }
-        }
-    }
-*/
+
     // Método para crear un grupo basado en los elementos seleccionados
     private void createGroup() {
         String groupName = JOptionPane.showInputDialog(this, "Ingrese el nombre del grupo:");

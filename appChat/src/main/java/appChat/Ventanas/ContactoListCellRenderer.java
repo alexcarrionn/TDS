@@ -1,8 +1,5 @@
 package appChat.Ventanas;
 
-import java.net.URL;
-
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -10,18 +7,20 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
+
+import modelo.Contacto;
 import modelo.ContactoIndividual;
 
 import java.awt.*;
-import java.io.IOException;
+import java.io.File;
 
-public class ContactoListCellRenderer extends JPanel implements ListCellRenderer<ContactoIndividual> {
+public class ContactoListCellRenderer extends JPanel implements ListCellRenderer<Contacto> {
 	/**
-	 * 
-	 */
+	*
+	*/
 	private static final long serialVersionUID = 1L;
 	private static final Border SELECCIONADO = BorderFactory.createLineBorder(Color.BLUE, 2);
-    private static final Border NO_SELECCIONADO = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+	private static final Border NO_SELECCIONADO = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
 	private JLabel lblImagen;
 	private JLabel lblNombre;
@@ -45,51 +44,107 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 		panelTexto.add(lblTelefono);
 		panelTexto.add(lblSaludo);
 
-		add(lblImagen, BorderLayout.WEST);  // Imagen a la izquierda
-		add(panelTexto, BorderLayout.CENTER);  // Texto a la derecha
+		add(lblImagen, BorderLayout.WEST); // Imagen a la izquierda
+		add(panelTexto, BorderLayout.CENTER); // Texto a la derecha
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList<? extends ContactoIndividual> listacontactos, ContactoIndividual contacto, int index,
-			boolean isSelected, boolean cellHasFocus) {
-		// Configuración de la imagen
-		String fotoUsuario = contacto.getFoto();
-		if (fotoUsuario.equals("")){
-			fotoUsuario = "https://robohash.org/"+contacto.getNombre();
+	public Component getListCellRendererComponent(JList<? extends Contacto> listacontactos, Contacto contacto,
+			int index, boolean isSelected, boolean cellHasFocus) {
+
+		if (contacto instanceof ContactoIndividual) {
+			// Configuración de la imagen
+			String fotoUsuario = contacto.getFoto();
+			if (fotoUsuario == null || fotoUsuario.isEmpty()) {
+				fotoUsuario = "https://robohash.org/" + contacto.getNombre();
+			}
+
+			ImageIcon icono = null;
+			if (fotoUsuario.startsWith("http://") || fotoUsuario.startsWith("https://")) {
+				// Cargar imagen desde URL externa
+				try {
+					icono = new ImageIcon(new java.net.URL(fotoUsuario));
+				} catch (Exception e) {
+					System.err.println("No se pudo cargar la imagen desde la URL: " + fotoUsuario);
+					e.printStackTrace();
+				}
+			} else {
+				// Cargar imagen desde ruta local
+				File file = new File(fotoUsuario);
+				if (file.exists()) {
+					icono = new ImageIcon(file.getAbsolutePath());
+				} else {
+					System.err.println("La imagen no existe en la ruta: " + fotoUsuario);
+				}
+			}
+
+			if (icono != null) {
+				int anchoDeseado = 50;
+				int altoDeseado = 50;
+				Image imagenOriginal = icono.getImage();
+				Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+				ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+				lblImagen.setIcon(iconoEscalado);
+			} else {
+				lblImagen.setIcon(null); // Establecer imagen nula si no se pudo cargar
+			}
+
+			// Configuración del texto
+			lblNombre.setText(contacto.getNombre());
+			lblTelefono.setText("Tel: " + ((ContactoIndividual) contacto).getMovil());
+			lblSaludo.setText(((ContactoIndividual) contacto).getEstado());
+
+			// Configuración de colores para selección
+			if (isSelected) {
+				setBackground(new Color(184, 207, 229)); // Color de fondo para selección
+				setBorder(SELECCIONADO); // Borde azul para mostrar selección
+			} else {
+				setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
+				setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
+			}
+
+			setOpaque(true); // Para que el fondo se muestre correctamente
+			return this;
+		} else {
+			// Configuración de la imagen
+			String fotoUsuario = contacto.getFoto();
+			if (fotoUsuario == null || fotoUsuario.isEmpty()) {
+				fotoUsuario = "https://robohash.org/" + contacto.getNombre();
+			}
+
+			File file = new File(fotoUsuario);
+			ImageIcon icono = null;
+			if (file.exists()) {
+				icono = new ImageIcon(file.getAbsolutePath());
+			} else {
+				System.err.println("La imagen no existe en la ruta: " + fotoUsuario);
+			}
+
+			if (icono != null) {
+				int anchoDeseado = 50;
+				int altoDeseado = 50;
+				Image imagenOriginal = icono.getImage();
+				Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+				ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+				lblImagen.setIcon(iconoEscalado);
+			} else {
+				lblImagen.setIcon(null); // Establecer imagen nula si no se pudo cargar
+			}
+
+			// Configuración del texto
+			lblNombre.setText(contacto.getNombre());
+			// Configuración de colores para selección
+			if (isSelected) {
+				setBackground(new Color(184, 207, 229)); // Color de fondo para selección
+				setBorder(SELECCIONADO); // Borde azul para mostrar selección
+			} else {
+				setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
+				setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
+			}
+
+			setOpaque(true); // Para que el fondo se muestre correctamente
+
+			return this;
 		}
-	    try {
-	        // Cargar imagen desde URL externa
-	        URL url = new URL(fotoUsuario);
-	        Image imagenOriginal = ImageIO.read(url);
-	        if (imagenOriginal != null) {
-	            int anchoDeseado = 50;
-	            int altoDeseado = 50;
-	            Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
-	            ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-	            lblImagen.setIcon(iconoEscalado);
-	        } else {
-	            System.err.println("La imagen es nula: " + fotoUsuario);
-	        }
-	    } catch (IOException e) {
-	        System.err.println("No se pudo cargar la imagen desde la URL: " + fotoUsuario);
-	        e.printStackTrace();
-	    }
-
-		// Configuración del texto
-		lblNombre.setText(contacto.getNombre());
-		lblTelefono.setText("Tel: " + contacto.getMovil());
-		lblSaludo.setText(contacto.getEstado());
-
-		// Configuración de colores para selección
-		if (isSelected) {
-            setBackground(new Color(184, 207, 229)); // Color de fondo para selección
-            setBorder(SELECCIONADO); // Borde azul para mostrar selección
-        } else {
-            setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
-            setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
-        }
-
-		setOpaque(true); // Para que el fondo se muestre correctamente
-		return this;
 	}
 }
