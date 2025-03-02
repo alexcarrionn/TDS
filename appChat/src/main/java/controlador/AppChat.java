@@ -1,6 +1,7 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -158,6 +159,26 @@ public class AppChat {
         }
         return null;
     }
+    
+    public Grupo agregarGrupo(String groupName) {
+        // Si no tiene el grupo guardado lo guarda
+        if (!usuarioLogueado.contieneGrupo(groupName)) {
+            // Crear un nuevo grupo vacío
+            Grupo nuevoGrupo = new Grupo(groupName, new ArrayList<>());
+            
+            // Agregar el nuevo grupo al usuario logueado
+            usuarioLogueado.addGrupo(nuevoGrupo);
+
+            // Registrar el grupo en el adaptador (si es necesario)
+            AdaptadorGrupo.getUnicaInstancia().registrarGrupo(nuevoGrupo);
+
+            // Modificar el usuario en el repositorio
+            adaptadorUsuario.modificarUsuario(usuarioLogueado);
+            
+            return nuevoGrupo;
+        }
+        return null; // Retorna null si el grupo ya existe
+    }
 
     public void eliminarContacto(Contacto contacto) {
         usuarioLogueado.removeContacto(contacto);
@@ -235,4 +256,6 @@ public class AppChat {
         }
         return false;
     }
+
+
 }

@@ -6,7 +6,7 @@ public interface IAdaptadorContactoIndividualDAO {
 	
 	public void registrarContacto(ContactoIndividual c);
 	
-	public ContactoIndividual recuperarContacto(int tel);
+	public ContactoIndividual recuperarContacto(int id);
 	
 	public void modificarContacto(ContactoIndividual c);
 }

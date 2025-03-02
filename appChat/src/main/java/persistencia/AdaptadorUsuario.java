@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import tds.driver.FactoriaServicioPersistencia;
@@ -189,29 +188,20 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 	// Método auxiliar para obtener contactos a partir de códigos
 	public List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
-	    List<ContactoIndividual> contactos = new LinkedList<>();
-	    if (codigos == null || codigos.trim().isEmpty()) {
-	        return contactos;
-	    }
+        AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
 
-	    // Usa StringTokenizer con espacio como delimitador, si los IDs están separados por espacio
-	    StringTokenizer strTok = new StringTokenizer(codigos, ","); // Cambia "," por " " si es necesario
-	    while (strTok.hasMoreTokens()) {
-	        try {
-	            int id = Integer.parseInt(strTok.nextToken().trim());
-	            ContactoIndividual contacto =  AdaptadorContactoIndividual.getUnicaInstancia().recuperarContacto(id);
-	            if (contacto != null) {
-	                contactos.add(contacto);
-	            }
-	        } catch (NumberFormatException e) {
-	            System.err.println("Error: ID no válido en la cadena de códigos -> " + codigos);
-	        }
-	    }
+        return Arrays.stream(codigos.split(","))
+                     .map(code -> {
+                         try {
+                             return adaptadorContactos.recuperarContacto(Integer.valueOf(code));
+                         } catch (NumberFormatException e) {
+                             return null;
+                         }
+                     })
+                     .filter(contacto -> contacto != null)
+                     .collect(Collectors.toList());
+    }
 
-	    return contactos;
-	}
-
-	
 	private List<Grupo> obtenerGruposDesdeCodigos(String codigos) {
 	    List<Grupo> grupos = new ArrayList<>();
 	    if (codigos == null || codigos.isEmpty()) {
@@ -256,32 +246,4 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 	    return grupo;
 	}
-
-
-	// Método para recuperar un descuento (implementación depende de Descuento)
-	
-	/*private Descuento recuperarDescuento(int codigo) {
-	    // Implementación específica para recuperar Descuento
-	    return (Descuento) PoolDAO.getUnicaInstancia().getObjeto(codigo);
-	}*/
-
-	
-	/*private List<Contacto> obtenerContactos(String contactos) {
-		//primero pasamos a stream el String de contactos contactos
-	    return Arrays.stream(contactos.split(" "))
-	    			  //Convertimos primero cada cadena a entero
-	                 .map(Integer::parseInt)
-	                 //Una vez que hacemos eso utilizamos map para convertirlos en la entidad correspondiente a traves de la persistencia
-	                 .map(servPersistencia::recuperarEntidad)
-	                 //Filtramos todos aquellos los cuales no sean null
-	                 .filter(Objects::nonNull)
-	                 //Utilizamos un map para recoger aquellos COntactos con nombre y telefono que encontramos 
-	                 .map(entidad -> {
-	                     String nombre = servPersistencia.recuperarPropiedadEntidad(entidad, "nombre");
-	                     String movil = servPersistencia.recuperarPropiedadEntidad(entidad, "telefono"); 
-	                     return new ContactoIndividual(nombre,movil);
-	                 })
-	                 //con el collect lo que hacemos es enviarlos a una lista
-	                 .collect(Collectors.toList());
-	}*/
 }

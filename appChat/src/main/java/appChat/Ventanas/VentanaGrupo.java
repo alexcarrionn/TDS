@@ -159,6 +159,7 @@ public class VentanaGrupo extends JFrame {
             if (groupsMap.containsKey(groupName)) {
                 JOptionPane.showMessageDialog(this, "El grupo ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
+            	AppChat.getUnicaInstancia().agregarGrupo(groupName);
                 DefaultListModel<String> groupContacts = new DefaultListModel<>();
                 for (int i = 0; i < groupCreationListModel.size(); i++) {
                     groupContacts.addElement(groupCreationListModel.getElementAt(i));

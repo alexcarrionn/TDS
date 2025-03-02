@@ -18,7 +18,7 @@ public class Grupo extends Contacto{
 	//Constructor
 	public Grupo(String nombre, List<ContactoIndividual> contactos) {
 		super(nombre);
-		contactos=new ArrayList<>(); 
+		this.contactos = contactos != null ? new ArrayList<>(contactos) : new ArrayList<>(); 
 
 	}
 	

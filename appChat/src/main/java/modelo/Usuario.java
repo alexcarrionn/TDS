@@ -229,6 +229,14 @@ public class Usuario {
 
 		public boolean contieneContacto(String nombre) {
 			return contactos.stream()
+							.filter(c-> c instanceof ContactoIndividual)
 							.anyMatch(c->c.getNombre().equals(nombre));
 		}
+		
+		public boolean contieneGrupo(String nombre) {
+			return contactos.stream()
+							.filter(c-> c instanceof Grupo)
+							.anyMatch(c->c.getNombre().equals(nombre));
+		}
+
 	}
