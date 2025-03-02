@@ -85,12 +85,7 @@ public class VentanaPrincipal extends JFrame {
         JComboBox<String> comboUsuarioReceptor = new JComboBox<String>();
         comboUsuarioReceptor.setEditable(true);
         //comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(new String[] { "Contacto Javier", "Contacto Ana" }));
-        List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();
-        String[] nombresContactos = contactosUsuarioActual.stream()
-        		 .map(contacto -> "Contacto " + contacto.getNombre()) // Suponiendo que Usuario tiene un método getNombre()
-        		 .toArray(String[]::new);
-
-        comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(nombresContactos));
+        actualizarComboBox(comboUsuarioReceptor);
         
         
         panelBotones.add(comboUsuarioReceptor);
@@ -231,7 +226,18 @@ public class VentanaPrincipal extends JFrame {
     
     //FUNCIONES AUXILIARES
     
+    private void actualizarComboBox(JComboBox<String> comboBox) {
+        List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();
+        String[] nombresContactos = contactosUsuarioActual.stream()
+            .map(contacto -> "Contacto " + contacto.getNombre())
+            .toArray(String[]::new);
 
+        comboBox.setModel(new DefaultComboBoxModel<String>(nombresContactos));
+    }
+    
+    
+    
+    
 	private Icon resizeIcon(String foto, int iconSizeMini) {
 		// TODO Auto-generated method stub
 		return null;
