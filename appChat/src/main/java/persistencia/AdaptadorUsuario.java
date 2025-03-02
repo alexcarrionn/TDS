@@ -59,6 +59,8 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 				prop.setValor(String.valueOf(user.isPremium())); 
 			}else if(prop.getNombre().equals("contactos")) {
 				prop.setValor(obtenerCodigosContactos(user.getContactos()));
+			}else if(prop.getNombre().equals("grupos")) {
+				prop.setValor(obtenerCodigosGrupos(user.getContactos()));
 			}
 			servPersistencia.modificarPropiedad(prop);
 		}
@@ -114,9 +116,9 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	        .collect(Collectors.joining(","));
 	}
 
-	private String obtenerCodigosGrupos(List<Grupo> grupos) {
+	private String obtenerCodigosGrupos(List<Contacto> grupos) {
 	    return grupos.stream()
-	        .flatMap(grupo -> grupo.getContactos().stream()) // Para cada grupo, obtenemos sus contactos
+	        .filter(grupo -> grupo instanceof Grupo) // Para cada grupo, obtenemos sus contactos
 	        .map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
 	        .collect(Collectors.joining(",")); // Unimos los códigos de los contactos en una cadena separada por comas
 	}

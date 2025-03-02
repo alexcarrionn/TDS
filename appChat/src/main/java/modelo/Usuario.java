@@ -144,8 +144,8 @@ public class Usuario {
 	
 	//Devolver los grupos que tiene el usuario
     
-    public List<Grupo> obtenerGrupos() {
-        List<Grupo> grupos = new ArrayList<>();
+    public List<Contacto> obtenerGrupos() {
+        List<Contacto> grupos = new ArrayList<>();
         for (Contacto contacto : contactos) {
             if (contacto instanceof Grupo) {
                 grupos.add((Grupo) contacto);  // Añadir los grupos a la lista

@@ -1,6 +1,5 @@
 package modelo;
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Grupo extends Contacto{
@@ -8,7 +7,7 @@ public class Grupo extends Contacto{
 	private List<ContactoIndividual> contactos;
 	
 	public List<ContactoIndividual> getContactos() {
-		return new ArrayList<>(contactos);
+		return new LinkedList<>(contactos);
 	}
 
 	public void setContactos(List<ContactoIndividual> contactos) {
@@ -18,7 +17,7 @@ public class Grupo extends Contacto{
 	//Constructor
 	public Grupo(String nombre, List<ContactoIndividual> contactos) {
 		super(nombre);
-		this.contactos = contactos != null ? new ArrayList<>(contactos) : new ArrayList<>(); 
+		this.contactos = contactos != null ? new LinkedList<>(contactos) : new LinkedList<>(); 
 
 	}
 	

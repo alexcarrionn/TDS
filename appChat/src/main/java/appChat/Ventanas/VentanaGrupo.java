@@ -3,6 +3,7 @@ package appChat.Ventanas;
 import javax.swing.*;
 import controlador.AppChat;
 import modelo.Contacto;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.*;
@@ -17,7 +18,7 @@ public class VentanaGrupo extends JFrame {
     private DefaultListModel<String> groupCreationListModel;
     private JList<String> mainList;
     private JList<String> groupCreationList;
-    private Map<String, DefaultListModel<String>> groupsMap;
+    //private Map<String, DefaultListModel<String>> groupsMap;
     private final AppChat controlador = AppChat.getUnicaInstancia();
 
     public VentanaGrupo() {
@@ -26,7 +27,7 @@ public class VentanaGrupo extends JFrame {
         setSize(653, 378);
         getContentPane().setLayout(new BorderLayout());
 
-        groupsMap = new HashMap<>();
+        //groupsMap = new HashMap<>();
 
         // Panel principal
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
@@ -109,6 +110,14 @@ public class VentanaGrupo extends JFrame {
             mainListModel.addElement(contacto.getNombre());
         }
     }
+    
+    private void cargarGrupos() {
+        List<Contacto> contactos = controlador.getUsuarioLogueado().obtenerGrupos(); // Obtener los contactos
+
+        for (Contacto contacto : contactos) {
+            mainListModel.addElement(contacto.getNombre());
+        }
+    }
 
     // Método para añadir un contacto a la lista principal
     private void addContact() {
@@ -153,13 +162,13 @@ public class VentanaGrupo extends JFrame {
     }
 
     // Método para crear un grupo basado en los elementos seleccionados
-    private void createGroup() {
+   /* private void createGroup() {
         String groupName = JOptionPane.showInputDialog(this, "Ingrese el nombre del grupo:");
         if (groupName != null && !groupName.trim().isEmpty()) {
             if (groupsMap.containsKey(groupName)) {
                 JOptionPane.showMessageDialog(this, "El grupo ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-            	AppChat.getUnicaInstancia().agregarGrupo(groupName);
+            	controlador.agregarGrupo(groupName);
                 DefaultListModel<String> groupContacts = new DefaultListModel<>();
                 for (int i = 0; i < groupCreationListModel.size(); i++) {
                     groupContacts.addElement(groupCreationListModel.getElementAt(i));
@@ -170,7 +179,26 @@ public class VentanaGrupo extends JFrame {
             }
         }
     }
+*/
+    // Método para crear un grupo basado en los elementos seleccionados
+    private void createGroup() {
+        String groupName = JOptionPane.showInputDialog(this, "Ingrese el nombre del grupo:");
+        if (groupName != null && !groupName.trim().isEmpty()) {
+            // Obtener los nombres de los contactos seleccionados
+            List<String> selectedContactNames = new ArrayList<>();
+            for (int i = 0; i < groupCreationListModel.size(); i++) {
+                selectedContactNames.add(groupCreationListModel.getElementAt(i));
+            }
 
+            // Crear el grupo y agregar los contactos en el controlador
+            controlador.agregarGrupo(groupName, selectedContactNames);
+
+            // Actualizar la interfaz gráfica
+            cargarGrupos();
+            groupCreationListModel.clear(); // Limpiar la lista de creación
+        }
+    }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VentanaGrupo manager = new VentanaGrupo();

@@ -160,11 +160,22 @@ public class AppChat {
         return null;
     }
     
-    public Grupo agregarGrupo(String groupName) {
+    public Grupo agregarGrupo(String groupName, List<String> contactNames) {
         // Si no tiene el grupo guardado lo guarda
         if (!usuarioLogueado.contieneGrupo(groupName)) {
-            // Crear un nuevo grupo vacío
-            Grupo nuevoGrupo = new Grupo(groupName, new ArrayList<>());
+            // Crear una lista de ContactoIndividual a partir de los nombres proporcionados
+            List<ContactoIndividual> contactos = new ArrayList<>();
+            for (String nombre : contactNames) {
+                ContactoIndividual contacto = getContactoPorNombre(nombre);
+                if (contacto != null) {
+                    contactos.add(contacto);
+                } else {
+                    System.out.println("Contacto no encontrado: " + nombre);
+                }
+            }
+
+            // Crear un nuevo grupo con los contactos proporcionados
+            Grupo nuevoGrupo = new Grupo(groupName, contactos);
             
             // Agregar el nuevo grupo al usuario logueado
             usuarioLogueado.addGrupo(nuevoGrupo);
@@ -175,9 +186,21 @@ public class AppChat {
             // Modificar el usuario en el repositorio
             adaptadorUsuario.modificarUsuario(usuarioLogueado);
             
+            System.out.println("Grupo creado: " + groupName + " con contactos: " + contactos);
             return nuevoGrupo;
         }
+        System.out.println("El grupo ya existe: " + groupName);
         return null; // Retorna null si el grupo ya existe
+    }
+
+    private ContactoIndividual getContactoPorNombre(String nombre) {
+        List<Contacto> contactos = usuarioLogueado.getContactos();
+        for (Contacto contacto : contactos) {
+            if (contacto instanceof ContactoIndividual && contacto.getNombre().equals(nombre)) {
+                return (ContactoIndividual) contacto;
+            }
+        }
+        return null;
     }
 
     public void eliminarContacto(Contacto contacto) {
@@ -256,6 +279,5 @@ public class AppChat {
         }
         return false;
     }
-
 
 }

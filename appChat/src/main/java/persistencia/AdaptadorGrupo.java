@@ -2,6 +2,7 @@ package persistencia;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,7 @@ public class AdaptadorGrupo {
         }
         // Recuperar propiedades que no son objetos
         String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, "nombre");
-        Grupo grupo = new Grupo(nombre, new ArrayList<>());
+        Grupo grupo = new Grupo(nombre, new LinkedList<>());
         grupo.setId(id);
 
         // Metemos al grupo en el pool antes de llamar a otros adaptadores

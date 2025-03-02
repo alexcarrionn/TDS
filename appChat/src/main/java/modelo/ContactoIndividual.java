@@ -82,6 +82,11 @@ public class ContactoIndividual extends Contacto{
 			// TODO Auto-generated method stub
 			this.getMensajes().addAll(mensajes);
 		}
+
+		@Override
+		public String toString() {
+			return "ContactoIndividual [movil=" + movil + ", usuario=" + usuario + "]";
+		}
 		
 		
 
