@@ -14,6 +14,20 @@ public class Mensaje {
 	
 	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
 	
+	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDate hora) {
+		this.texto = texto;
+		this.emisor = emisor;
+		this.receptor = receptor;
+		this.hora=hora; 
+	}
+	
+	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDate hora) {
+		this.emisor = emisor;
+		this.receptor = receptor;
+		this.emoticono=emoticono; 
+		this.hora=hora; 
+	}
+	
 	//getters y setters
 	public String getTexto() {
 		return texto;
@@ -47,19 +61,5 @@ public class Mensaje {
 		this.id = id;
 	}
 
-	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDate hora) {
-		super();
-		this.texto = texto;
-		this.emisor = emisor;
-		this.receptor = receptor;
-		this.hora=hora; 
-	}
-	
-	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDate hora) {
-		super();
-		this.emisor = emisor;
-		this.receptor = receptor;
-		this.emoticono=emoticono; 
-		this.hora=hora; 
-	}
+
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import beans.Entidad;
 import beans.Propiedad;
+import controlador.AppChat;
 import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.Usuario;
@@ -48,7 +48,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
             Arrays.asList(
                 new Propiedad("nombre", c.getNombre()),
                 new Propiedad("movil", c.getMovil()),
-                new Propiedad("mensajes", obtenerIdsMensajes(c.getMensajes())),
+                new Propiedad("mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(c.getMensajes())),
                 new Propiedad("usuario", String.valueOf(c.getUsuario().getId()))
             )
         ));
@@ -87,7 +87,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         contacto.setId(id);
         
         String mensajesId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "mensajes"); 
-        contacto.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
+        contacto.addAllMensajes(AppChat.getUnicaInstancia().obtenerMensajesDesdeCodigos(mensajesId)); 
         
         PoolDAO.getUnicaInstancia().addObjeto(id, contacto);
         return contacto; 
@@ -102,10 +102,13 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         //Cambiamos cada una de las propiedades del contacto 
         servPersistencia.eliminarPropiedadEntidad(eContacto, "nombre"); 
         servPersistencia.anadirPropiedadEntidad(eContacto, "nombre", contacto.getNombre()); 
+        
         servPersistencia.eliminarPropiedadEntidad(eContacto, "movil"); 
         servPersistencia.anadirPropiedadEntidad(eContacto, "movil", contacto.getMovil()); 
+        
         servPersistencia.eliminarPropiedadEntidad(eContacto, "mensajes"); 
-        servPersistencia.anadirPropiedadEntidad(eContacto, "mensajes", obtenerIdsMensajes(contacto.getMensajes()));
+        servPersistencia.anadirPropiedadEntidad(eContacto, "mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(contacto.getMensajes()));
+        
         servPersistencia.eliminarPropiedadEntidad(eContacto, "usuario"); 
         servPersistencia.anadirPropiedadEntidad(eContacto, "usuario", String.valueOf(contacto.getUsuario().getId()));
     }
@@ -115,28 +118,4 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
     	//TODO crear funcion para conseguir todos los Contactos Individuales
     	return null;
     }
-    
-    
-    public static String obtenerIdsMensajes(List<Mensaje> mensajes) {
-        // Usando Java Streams (método moderno)
-        return mensajes.stream()
-                      .map(mensaje -> String.valueOf(mensaje.getId()))
-                      .collect(Collectors.joining(","));}
-    
-    public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
-        AdaptadorMensaje adaptadorMensajes = AdaptadorMensaje.getUnicaInstancia();
-        
-        return Arrays.stream(codigos.split(" "))
-                     .map(code -> {
-                         try {
-                             return adaptadorMensajes.recuperarMensaje(Integer.valueOf(code));
-                         } catch (NumberFormatException e) {
-                             return null;
-                         }
-                     })
-                     .filter(mensaje -> mensaje != null)
-                     .collect(Collectors.toList());
-    }
-    
-   
 }

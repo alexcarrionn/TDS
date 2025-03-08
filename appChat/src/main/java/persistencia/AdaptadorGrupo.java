@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import beans.Entidad;
 import beans.Propiedad;
+import controlador.AppChat;
 import modelo.ContactoIndividual;
 import modelo.Grupo;
 import tds.driver.FactoriaServicioPersistencia;
@@ -118,5 +119,9 @@ public class AdaptadorGrupo {
 		//Eliminamos la propiedad contactos y la agregamos despues con los nuevos valores
 		servPersistencia.eliminarPropiedadEntidad(eGrupo, "contactos");
 		servPersistencia.anadirPropiedadEntidad(eGrupo, "contactos", String.valueOf(grupo.getContactos()));
+		
+		//Eliminamos la propiedad mensajes y la agregamos despues con los nuevos valores
+        servPersistencia.eliminarPropiedadEntidad(eGrupo, "mensajes"); 
+        servPersistencia.anadirPropiedadEntidad(eGrupo, "mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(grupo.getMensajes()));
     }
 }

@@ -238,5 +238,9 @@ public class Usuario {
 							.filter(c-> c instanceof Grupo)
 							.anyMatch(c->c.getNombre().equals(nombre));
 		}
+		
+		public List<Mensaje> getMensajes(Contacto contacto) {
+			return contacto.getMensajes();
+		}
 
 	}

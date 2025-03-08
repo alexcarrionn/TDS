@@ -2,6 +2,7 @@ package controlador;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import modelo.RepositorioUsuario;
 import modelo.Usuario;
 import persistencia.AdaptadorContactoIndividual;
 import persistencia.AdaptadorGrupo;
+import persistencia.AdaptadorMensaje;
 import persistencia.AdaptadorUsuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
@@ -110,8 +112,7 @@ public class AppChat {
 
     // Función para obtener los mensajes
     public List<Mensaje> getMensajes(Contacto contacto) {
-    	//TODO
-        return null; // Devuelve una copia de la lista de mensajes
+        return contacto.getMensajes();
     }
 
 	public List<Contacto> getContactosUsuarioActual() {
@@ -277,6 +278,32 @@ public class AppChat {
             }
         }
         return false;
+    }
+    
+    public String obtenerIdsMensajes(List<Mensaje> mensajes) {
+        // Usando Java Streams (método moderno)
+        return mensajes.stream()
+                      .map(mensaje -> String.valueOf(mensaje.getId()))
+                      .collect(Collectors.joining(","));}
+    
+    public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
+        AdaptadorMensaje adaptadorMensajes = AdaptadorMensaje.getUnicaInstancia();
+        
+        return Arrays.stream(codigos.split(" "))
+                     .map(code -> {
+                         try {
+                             return adaptadorMensajes.recuperarMensaje(Integer.valueOf(code));
+                         } catch (NumberFormatException e) {
+                             return null;
+                         }
+                     })
+                     .filter(mensaje -> mensaje != null)
+                     .collect(Collectors.toList());
+    }
+    
+    //Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
+    public List<Mensaje> obtenerMensajesReMensaje() {
+    	return usuarioLogueado.getMensajes(getChatActual());
     }
 
 }

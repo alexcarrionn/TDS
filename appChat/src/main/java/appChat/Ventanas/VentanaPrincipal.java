@@ -138,6 +138,17 @@ public class VentanaPrincipal extends JFrame {
         contentPane.add(panelLista, BorderLayout.WEST);
         panelLista.setLayout(new BorderLayout(0, 0));
         
+        JList<Mensaje> listaChatsRecientes = new JList<Mensaje>();
+        listaChatsRecientes.setCellRenderer(new MensajeCellRender()); 
+        List<Mensaje> mensajes = AppChat.getUnicaInstancia().obtenerMensajesReMensaje(); 
+        DefaultListModel<Mensaje> modelo = new DefaultListModel<Mensaje>(); 
+        for (Mensaje men : mensajes) {
+            modelo.addElement(men); 
+        }
+        listaChatsRecientes.setModel(modelo); 
+
+        panelLista.add(listaChatsRecientes);
+        
         JPanel chatActual = new JPanel();
         contentPane.add(chatActual, BorderLayout.CENTER);
         chatActual.setLayout(new BorderLayout(0, 0));
@@ -145,6 +156,9 @@ public class VentanaPrincipal extends JFrame {
         JPanel chat = new JPanel();
         chatActual.add(chat, BorderLayout.CENTER);
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+        
+        
+
         
 		// Se extraen los contactos del usuario
 		/*List<Contacto> contactos = appchat.getContactosUsuarioActual();
@@ -243,8 +257,14 @@ public class VentanaPrincipal extends JFrame {
                 // Acción para enviar mensaje
                 String mensajeTexto = mensaje.getText();
                 if (!mensajeTexto.isBlank()) {
-                    // Aquí puedes agregar la lógica para enviar el mensaje
-                    // y actualizar la interfaz según sea necesario.
+                	if(mensajeTexto instanceof String) {
+                		//Mensaje normal
+                		appchat.enviarMensaje(appchat.getChatActual(), mensajeTexto);
+                	}
+                	else {
+                		//Emoji
+                		appchat.enviarMensaje(appchat.getChatActual(), mensajeTexto);
+                	}
                 }
             }
         });
