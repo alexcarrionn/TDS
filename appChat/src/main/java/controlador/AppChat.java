@@ -115,7 +115,6 @@ public class AppChat {
     }
 
 	public List<Contacto> getContactosUsuarioActual() {
-		// TODO Auto-generated method stub
 		List<Contacto> contactosActual = usuarioLogueado.getContactos(); 
 		return contactosActual;
 	}

@@ -27,7 +27,7 @@ import javax.swing.JTextField;
 
 import controlador.AppChat;
 import modelo.Contacto;
-import modelo.ContactoIndividual;
+//import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import tds.BubbleText;
 
@@ -127,11 +127,11 @@ public class VentanaPrincipal extends JFrame {
         // Agregar el botón al panel
         panelBotones.add(botonPremium);
 
-        JLabel labelUsuarioActual = new JLabel("Usuario Actual");
+        JLabel labelUsuarioActual = new JLabel(AppChat.getUnicaInstancia().getUsuarioLogueado().getNombre());
         panelBotones.add(labelUsuarioActual);
 
         JLabel labelImagenUsuarioActual = new JLabel("");
-        labelImagenUsuarioActual.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/avatar.png")));
+        labelImagenUsuarioActual.setIcon(new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen()));
         panelBotones.add(labelImagenUsuarioActual);
 
         JPanel panelLista = new JPanel();
@@ -167,7 +167,7 @@ public class VentanaPrincipal extends JFrame {
 		});
 		
         panelLista.add(listaContactos);*/
-
+        /*
      // Obtener la lista de contactos del usuario
         List<Contacto> contactos = appchat.getContactosUsuarioActual();
 
@@ -182,6 +182,33 @@ public class VentanaPrincipal extends JFrame {
 
         // Crear la JList con el modelo
         JList<ContactoIndividual> listaContactos = new JList<>(modeloLista);
+        listaContactos.setBorder(null);
+        listaContactos.setCellRenderer(new ContactoListCellRenderer());
+
+        listaContactos.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                Contacto contactoActual = listaContactos.getSelectedValue();
+                if (contactoActual != null) {
+                    cargarChat(contactoActual);
+                    appchat.setChatActual(contactoActual);
+                    labelUsuarioActual.setText(contactoActual.getNombre());
+                    labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
+                }
+            }
+        });*/
+        
+     // Obtener la lista de contactos del usuario
+        List<Contacto> contactos = appchat.getContactosUsuarioActual();
+
+        // Convertimos la lista de Contacto a ContactoIndividual si es necesario
+        DefaultListModel<Contacto> modeloLista = new DefaultListModel<>();
+
+        for (Contacto c : contactos) {
+                modeloLista.addElement(c);
+            }
+
+        // Crear la JList con el modelo
+        JList<Contacto> listaContactos = new JList<>(modeloLista);
         listaContactos.setBorder(null);
         listaContactos.setCellRenderer(new ContactoListCellRenderer());
 

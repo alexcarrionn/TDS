@@ -106,45 +106,44 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 			setOpaque(true); // Para que el fondo se muestre correctamente
 			return this;
 		} else {
-			// Configuración de la imagen
-			String fotoUsuario = contacto.getFoto();
-			if (fotoUsuario == null || fotoUsuario.isEmpty()) {
-				fotoUsuario = "https://robohash.org/" + contacto.getNombre();
-			}
+		    // Configuración de la imagen que sera igual para todos los grupos
+		    String fotoGrupo = "https://robohash.org/grupo"; 
+		    
+		    // Intentar cargar desde URL en lugar de archivo local
+		    ImageIcon icono = null;
+		    try {
+		        icono = new ImageIcon(new java.net.URL(fotoGrupo));
+		    } catch (Exception e) {
+		        System.err.println("No se pudo cargar la imagen desde la URL: " + fotoGrupo);
+		        e.printStackTrace();
+		    }
 
-			File file = new File(fotoUsuario);
-			ImageIcon icono = null;
-			if (file.exists()) {
-				icono = new ImageIcon(file.getAbsolutePath());
-			} else {
-				System.err.println("La imagen no existe en la ruta: " + fotoUsuario);
-			}
+		    if (icono != null) {
+		        int anchoDeseado = 50;
+		        int altoDeseado = 50;
+		        Image imagenOriginal = icono.getImage();
+		        Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+		        ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+		        lblImagen.setIcon(iconoEscalado);
+		    } else {
+		        lblImagen.setIcon(null);
+		    }
 
-			if (icono != null) {
-				int anchoDeseado = 50;
-				int altoDeseado = 50;
-				Image imagenOriginal = icono.getImage();
-				Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
-				ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-				lblImagen.setIcon(iconoEscalado);
-			} else {
-				lblImagen.setIcon(null); // Establecer imagen nula si no se pudo cargar
-			}
+		    // Configuración del texto para grupos
+		    lblNombre.setText(contacto.getNombre());
+		    lblTelefono.setText("Grupo");  //
+		    lblSaludo.setText(""); // Limpiar el saludo para grupos
+		 // Configuración de colores para selección
+		 			if (isSelected) {
+		 				setBackground(new Color(184, 207, 229)); // Color de fondo para selección
+		 				setBorder(SELECCIONADO); // Borde azul para mostrar selección
+		 			} else {
+		 				setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
+		 				setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
+		 			}
 
-			// Configuración del texto
-			lblNombre.setText(contacto.getNombre());
-			// Configuración de colores para selección
-			if (isSelected) {
-				setBackground(new Color(184, 207, 229)); // Color de fondo para selección
-				setBorder(SELECCIONADO); // Borde azul para mostrar selección
-			} else {
-				setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
-				setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
-			}
-
-			setOpaque(true); // Para que el fondo se muestre correctamente
-
-			return this;
+		 			setOpaque(true); // Para que el fondo se muestre correctamente
+		 			return this;
 		}
 	}
 }
