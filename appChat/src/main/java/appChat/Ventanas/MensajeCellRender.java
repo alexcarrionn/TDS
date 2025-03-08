@@ -43,7 +43,7 @@ public class MensajeCellRender extends JPanel implements ListCellRenderer<Mensaj
 		textolabel.setText(Mensaje.getTexto());
 		String usuario = "";
 
-		if (Mensaje.getEmisor().getNombre().equals(AppChat.getUnicaInstancia().obtenerMensajesReMensaje())) {
+		if (Mensaje.getEmisor().getNombre().equals(AppChat.getUnicaInstancia().getUsuarioLogueado().getNombre())) {
 			usuario = Mensaje.getReceptor().getNombre();
 		} else {
 			usuario = Mensaje.getEmisor().getNombre();

@@ -41,6 +41,7 @@ public class VentanaPrincipal extends JFrame {
     static VentanaPrincipal frame;
     private AppChat appchat;
     private ChatBurbujas chat;
+    private JPanel panelLista; 
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
@@ -134,7 +135,7 @@ public class VentanaPrincipal extends JFrame {
         labelImagenUsuarioActual.setIcon(new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen()));
         panelBotones.add(labelImagenUsuarioActual);
 
-        JPanel panelLista = new JPanel();
+        panelLista = new JPanel();
         contentPane.add(panelLista, BorderLayout.WEST);
         panelLista.setLayout(new BorderLayout(0, 0));
         
@@ -291,31 +292,58 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void cargarChat(Contacto contacto) {
-        if (contacto == null) {
-            return; // Salir si el contacto es nulo
-        }
+	    if (contacto == null) {
+	        return; // Salir si el contacto es nulo
+	    }
 
-        // Obtener el chat asociado al contacto
-        chat = chatsRecientes.get(contacto);
+	    // Obtener el chat asociado al contacto
+	    chat = chatsRecientes.get(contacto);
 
-        if (chat == null) {
-            // Crear un nuevo panel de chat si no existe
-            chat = crearNuevoChat();
-            scrollBarChatBurbujas.setViewportView(chat);
+	    if (chat == null) {
+	        // Crear un nuevo panel de chat si no existe
+	        chat = crearNuevoChat();
+	        scrollBarChatBurbujas.setViewportView(chat);
 
-            // Añadir burbujas de mensajes al chat
-            appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
+	        // Añadir burbujas de mensajes al chat
+	        appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
 
-            // Guardar el nuevo chat en la caché
-            chatsRecientes.put(contacto, chat);
-        } else {
-            // Mostrar el chat existente
-            configurarChatExistente(chat);
-            scrollBarChatBurbujas.setViewportView(chat);
-        }
-    }
+	        // Guardar el nuevo chat en la caché
+	        chatsRecientes.put(contacto, chat);
+	    } else {
+	        // Mostrar el chat existente
+	        configurarChatExistente(chat);
+	        scrollBarChatBurbujas.setViewportView(chat);
+	    }
 
-    // Método para crear un nuevo chat
+	    // *** Aquí agregamos la actualización de la lista de chats recientes ***
+	    actualizarListaChatsRecientes();
+	}
+
+
+	private void actualizarListaChatsRecientes() {
+	    JList<Mensaje> listaChatsRecientes = new JList<>();
+	    listaChatsRecientes.setCellRenderer(new MensajeCellRender());
+
+	    // Obtener los mensajes del chat actual
+	    List<Mensaje> mensajes = AppChat.getUnicaInstancia().obtenerMensajesReMensaje();
+	    
+	    // Crear el modelo de la lista
+	    DefaultListModel<Mensaje> modelo = new DefaultListModel<>();
+	    for (Mensaje men : mensajes) {
+	        modelo.addElement(men);
+	    }
+
+	    listaChatsRecientes.setModel(modelo);
+
+	    // Agregar la lista al panel (asegúrate de tener una referencia a panelLista)
+	    panelLista.removeAll(); // Limpiar antes de agregar la nueva lista
+	    panelLista.add(new JScrollPane(listaChatsRecientes), BorderLayout.CENTER);
+	    panelLista.revalidate();
+	    panelLista.repaint();
+	}
+
+
+	// Método para crear un nuevo chat
     private ChatBurbujas crearNuevoChat() {
         ChatBurbujas nuevoChat = new ChatBurbujas();
         nuevoChat.setBackground(Color.pink);
