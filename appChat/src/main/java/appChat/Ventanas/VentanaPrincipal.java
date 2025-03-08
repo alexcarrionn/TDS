@@ -3,6 +3,7 @@ package appChat.Ventanas;
 import java.awt.EventQueue;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,16 +151,16 @@ public class VentanaPrincipal extends JFrame {
         }
         listaChatsRecientes.setModel(modelo); 
 
-        panelLista.add(listaChatsRecientes);
+        panelLista.add(new JScrollPane(listaChatsRecientes));
         
         JPanel chatActual = new JPanel();
         contentPane.add(chatActual, BorderLayout.CENTER);
         chatActual.setLayout(new BorderLayout(0, 0));
         chatActual.add(scrollBarChatBurbujas,BorderLayout.CENTER);
         
-        JPanel chat = new JPanel();
-        chatActual.add(chat, BorderLayout.CENTER);
-        chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+        //JPanel chat = new JPanel();
+        //chatActual.add(chat, BorderLayout.CENTER);
+        //chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
 
      // Obtener la lista de contactos del usuario
         List<Contacto> contactos = appchat.getContactosUsuarioActual();
@@ -203,17 +204,26 @@ public class VentanaPrincipal extends JFrame {
         botonEnviarMensaje.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/enviar-mensaje.png")));
         botonEnviarMensaje.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Acción para enviar mensaje
-                String mensajeTexto = mensaje.getText();
-                if (!mensajeTexto.isBlank()) {
-                	if(mensajeTexto instanceof String) {
-                		//Mensaje normal
-                		appchat.enviarMensaje(appchat.getChatActual(), mensajeTexto);
-                	}
-                	else {
-                		//Emoji
-                		appchat.enviarMensaje(appchat.getChatActual(), mensajeTexto);
-                	}
+                String mensajeTexto = mensaje.getText().trim();
+                if (!mensajeTexto.isEmpty()) {
+                    // Obtener contacto actual y enviar mensaje
+                    Contacto contactoActual = appchat.getChatActual();
+                    appchat.enviarMensaje(contactoActual, mensajeTexto);
+                    
+                    // Crear burbuja y añadirla al chat
+                    Mensaje nuevoMensaje = new Mensaje(mensajeTexto,appchat.getUsuarioLogueado(), contactoActual, LocalDate.now());
+                    BubbleText burbuja = crearBurbuja(nuevoMensaje);
+                    
+                    // Obtener el chat actual y actualizar la UI
+                    ChatBurbujas chatActual = chatsRecientes.get(contactoActual);
+                    if (chatActual != null) {
+                        chatActual.agregarBurbuja(burbuja); // Usa el método de ChatBurbujas
+                        scrollBarChatBurbujas.getViewport().revalidate();
+                        scrollBarChatBurbujas.getViewport().repaint();
+                    }
+                    
+                    // Limpiar campo de texto
+                    mensaje.setText("");
                 }
             }
         });
@@ -263,11 +273,29 @@ public class VentanaPrincipal extends JFrame {
             scrollBarChatBurbujas.setViewportView(chat);
         }
     }
+	
+	/*private void cargarChat(Contacto contacto) {
+	    if (contacto == null) return;
+
+	    // Obtener o crear el chat
+	    chat = chatsRecientes.getOrDefault(contacto, crearNuevoChat());
+	    
+	    // Configurar y mostrar el chat
+	    configurarChatExistente(chat);
+	    scrollBarChatBurbujas.setViewportView(chat); // Asocia el chat al JScrollPane
+	    
+	    // Añadir mensajes al chat
+	    appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
+	    
+	    // Forzar actualización del scroll
+	    revalidate();
+	    repaint();
+	}*/
 
     // Método para crear un nuevo chat
     private ChatBurbujas crearNuevoChat() {
         ChatBurbujas nuevoChat = new ChatBurbujas();
-        nuevoChat.setBackground(Color.pink);
+        nuevoChat.setBackground(Color.LIGHT_GRAY);
         nuevoChat.setLayout(new BoxLayout(nuevoChat, BoxLayout.Y_AXIS));
         nuevoChat.setSize(400, 700);
         return nuevoChat;
@@ -275,10 +303,23 @@ public class VentanaPrincipal extends JFrame {
 
     // Método para configurar un chat existente
     private void configurarChatExistente(ChatBurbujas chat) {
-        chat.setBackground(Color.pink);
+        // Configuración básica
+        chat.setBackground(Color.LIGHT_GRAY);
+        chat.setOpaque(true); // Asegura que el fondo se pinte
+        
+        // Layout dinámico
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+        
+        // Tamaño preferido (en lugar de setSize)
         chat.setSize(400, 700);
-        scrollBarChatBurbujas.getViewport().setBackground(Color.pink);
+        
+        // Configuración del scroll
+        scrollBarChatBurbujas.getViewport().setBackground(Color.PINK);
+        scrollBarChatBurbujas.getViewport().setOpaque(true);
+        
+        // Actualización visual
+        chat.revalidate();
+        chat.repaint();
     }
 
     // Método para crear una burbuja de mensaje
