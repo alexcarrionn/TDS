@@ -224,7 +224,7 @@ public class AppChat {
 		if (contacto instanceof ContactoIndividual) {
 			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
 		} else {
-			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
+			AdaptadorGrupo.getUnicaInstancia().modificarGrupo((Grupo) contacto);
 		}
 	}
 
@@ -237,7 +237,7 @@ public class AppChat {
 		if (contacto instanceof ContactoIndividual) {
 			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
 		} else {
-			AdaptadorGrupo.modificarGrupo((Grupo) contacto);
+			AdaptadorGrupo.getUnicaInstancia().modificarGrupo((Grupo) contacto);
 		}
 	}
     

@@ -110,7 +110,7 @@ public class AdaptadorGrupo {
                      .collect(Collectors.toList());
     }
 
-	public static void modificarGrupo(Grupo grupo) {
+	public void modificarGrupo(Grupo grupo) {
 		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getId());
 		//Eliminamos la propiedad nombre y la agregamos despues con el nuevo valor
 		servPersistencia.eliminarPropiedadEntidad(eGrupo, "nombre");
