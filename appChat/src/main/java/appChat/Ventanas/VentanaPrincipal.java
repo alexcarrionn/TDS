@@ -3,6 +3,7 @@ package appChat.Ventanas;
 import java.awt.EventQueue;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -41,7 +42,6 @@ public class VentanaPrincipal extends JFrame {
     static VentanaPrincipal frame;
     private AppChat appchat;
     private ChatBurbujas chat;
-    private JPanel panelLista; 
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
@@ -68,6 +68,8 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
     	//Llamamos a la instancia del controlador
     	appchat=AppChat.getUnicaInstancia();
+    	this.chatsRecientes = new HashMap<>();
+    	scrollBarChatBurbujas = new JScrollPane();
     	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 852, 544);
@@ -135,7 +137,7 @@ public class VentanaPrincipal extends JFrame {
         labelImagenUsuarioActual.setIcon(new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen()));
         panelBotones.add(labelImagenUsuarioActual);
 
-        panelLista = new JPanel();
+        JPanel panelLista = new JPanel();
         contentPane.add(panelLista, BorderLayout.WEST);
         panelLista.setLayout(new BorderLayout(0, 0));
         
@@ -153,65 +155,12 @@ public class VentanaPrincipal extends JFrame {
         JPanel chatActual = new JPanel();
         contentPane.add(chatActual, BorderLayout.CENTER);
         chatActual.setLayout(new BorderLayout(0, 0));
-
+        chatActual.add(scrollBarChatBurbujas,BorderLayout.CENTER);
+        
         JPanel chat = new JPanel();
         chatActual.add(chat, BorderLayout.CENTER);
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
-        
-        
 
-        
-		// Se extraen los contactos del usuario
-		/*List<Contacto> contactos = appchat.getContactosUsuarioActual();
-		
-		// Crear una lista genérica de Contacto
-		JList<ContactoIndividual> listaContactos = new JList<>();
-		listaContactos.setBorder(null);
-		listaContactos.setCellRenderer(new ContactoListCellRenderer());
-		listaContactos.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				Contacto contactoActual = listaContactos.getSelectedValue();
-				if (contactoActual != null) {
-					cargarChat(contactoActual);
-					appchat.setChatActual(contactoActual);
-					labelUsuarioActual.setText(contactoActual.getNombre());
-					labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
-				}
-			}
-
-		});
-		
-        panelLista.add(listaContactos);*/
-        /*
-     // Obtener la lista de contactos del usuario
-        List<Contacto> contactos = appchat.getContactosUsuarioActual();
-
-        // Convertimos la lista de Contacto a ContactoIndividual si es necesario
-        DefaultListModel<ContactoIndividual> modeloLista = new DefaultListModel<>();
-
-        for (Contacto c : contactos) {
-            if (c instanceof ContactoIndividual) { // Verificamos si es del tipo correcto
-                modeloLista.addElement((ContactoIndividual) c);
-            }
-        }
-
-        // Crear la JList con el modelo
-        JList<ContactoIndividual> listaContactos = new JList<>(modeloLista);
-        listaContactos.setBorder(null);
-        listaContactos.setCellRenderer(new ContactoListCellRenderer());
-
-        listaContactos.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                Contacto contactoActual = listaContactos.getSelectedValue();
-                if (contactoActual != null) {
-                    cargarChat(contactoActual);
-                    appchat.setChatActual(contactoActual);
-                    labelUsuarioActual.setText(contactoActual.getNombre());
-                    labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
-                }
-            }
-        });*/
-        
      // Obtener la lista de contactos del usuario
         List<Contacto> contactos = appchat.getContactosUsuarioActual();
 
@@ -233,7 +182,6 @@ public class VentanaPrincipal extends JFrame {
                 if (contactoActual != null) {
                     cargarChat(contactoActual);
                     appchat.setChatActual(contactoActual);
-                    labelUsuarioActual.setText(contactoActual.getNombre());
                     labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
                 }
             }
@@ -292,58 +240,31 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void cargarChat(Contacto contacto) {
-	    if (contacto == null) {
-	        return; // Salir si el contacto es nulo
-	    }
+        if (contacto == null) {
+            return; // Salir si el contacto es nulo
+        }
 
-	    // Obtener el chat asociado al contacto
-	    chat = chatsRecientes.get(contacto);
+        // Obtener el chat asociado al contacto
+        chat = chatsRecientes.get(contacto);
 
-	    if (chat == null) {
-	        // Crear un nuevo panel de chat si no existe
-	        chat = crearNuevoChat();
-	        scrollBarChatBurbujas.setViewportView(chat);
+        if (chat == null) {
+            // Crear un nuevo panel de chat si no existe
+            chat = crearNuevoChat();
+            scrollBarChatBurbujas.setViewportView(chat);
 
-	        // Añadir burbujas de mensajes al chat
-	        appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
+            // Añadir burbujas de mensajes al chat
+            appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
 
-	        // Guardar el nuevo chat en la caché
-	        chatsRecientes.put(contacto, chat);
-	    } else {
-	        // Mostrar el chat existente
-	        configurarChatExistente(chat);
-	        scrollBarChatBurbujas.setViewportView(chat);
-	    }
+            // Guardar el nuevo chat en la caché
+            chatsRecientes.put(contacto, chat);
+        } else {
+            // Mostrar el chat existente
+            configurarChatExistente(chat);
+            scrollBarChatBurbujas.setViewportView(chat);
+        }
+    }
 
-	    // *** Aquí agregamos la actualización de la lista de chats recientes ***
-	    actualizarListaChatsRecientes();
-	}
-
-
-	private void actualizarListaChatsRecientes() {
-	    JList<Mensaje> listaChatsRecientes = new JList<>();
-	    listaChatsRecientes.setCellRenderer(new MensajeCellRender());
-
-	    // Obtener los mensajes del chat actual
-	    List<Mensaje> mensajes = AppChat.getUnicaInstancia().obtenerMensajesReMensaje();
-	    
-	    // Crear el modelo de la lista
-	    DefaultListModel<Mensaje> modelo = new DefaultListModel<>();
-	    for (Mensaje men : mensajes) {
-	        modelo.addElement(men);
-	    }
-
-	    listaChatsRecientes.setModel(modelo);
-
-	    // Agregar la lista al panel (asegúrate de tener una referencia a panelLista)
-	    panelLista.removeAll(); // Limpiar antes de agregar la nueva lista
-	    panelLista.add(new JScrollPane(listaChatsRecientes), BorderLayout.CENTER);
-	    panelLista.revalidate();
-	    panelLista.repaint();
-	}
-
-
-	// Método para crear un nuevo chat
+    // Método para crear un nuevo chat
     private ChatBurbujas crearNuevoChat() {
         ChatBurbujas nuevoChat = new ChatBurbujas();
         nuevoChat.setBackground(Color.pink);

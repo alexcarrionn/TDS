@@ -303,7 +303,11 @@ public class AppChat {
     
     //Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
     public List<Mensaje> obtenerMensajesReMensaje() {
-    	return usuarioLogueado.getMensajes(getChatActual());
+        Contacto contactoActual = getChatActual();
+        if (contactoActual == null) {
+            return new ArrayList<>(); // Retorna lista vacía si no hay contacto
+        }
+        return usuarioLogueado.getMensajes(contactoActual);
     }
 
 }
