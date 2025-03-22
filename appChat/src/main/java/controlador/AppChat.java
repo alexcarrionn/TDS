@@ -214,7 +214,8 @@ public class AppChat {
         System.out.println("El grupo ya existe: " + groupName);
         return null; // Retorna null si el grupo ya existe
     }
-
+    
+    
     private ContactoIndividual getContactoPorNombre(String nombre) {
         List<Contacto> contactos = usuarioLogueado.getContactos();
         for (Contacto contacto : contactos) {
@@ -224,11 +225,13 @@ public class AppChat {
         }
         return null;
     }
-
+    
+    //Eliminar un contacto
     public void eliminarContacto(Contacto contacto) {
         usuarioLogueado.removeContacto(contacto);
     }
-
+    
+    //Función para obtener todos los contactos
     public List<Contacto> obtenerTodosContactos() {
     	if (usuarioLogueado == null)
             return new LinkedList<Contacto>();
@@ -267,30 +270,37 @@ public class AppChat {
     //ENVIAR MENSAJE DE TEXTO
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
         Mensaje mensaje;
-
+        //primero vemos si es un contacto Individual 
         if (contacto instanceof ContactoIndividual) {
+        	//comprobamos que esta en la lista de contactos 
             if (!isEnListaContactos(contacto)) {
+            	//Si no está creamos un contacto Anonimo
                 crearContactoAnonimo((ContactoIndividual) contacto);
             }
+            //Creamos el mensaje y lo registramos  
             mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
             contacto.addMensaje(mensaje);
             adaptadorMensaje.registrarMensaje(mensaje);
             adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-
+         //En el caso en el que sea un grupo 
         } else if (contacto instanceof Grupo) {
             Grupo grupo = (Grupo) contacto;
 
             // Enviar un mensaje a cada participante
             for (ContactoIndividual c : grupo.getContactos()) {
-                if (!isEnListaContactos(c)) {
+            	//Comprobamos si esta en la lista de Contactos del usuario
+            	if (!isEnListaContactos(c)) {
+            		//Si no esta creamos un contacto anónimo
                     crearContactoAnonimo(c);
                 }
-                ContactoIndividual con = getContactoUsuarioGrupo(c);
-                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, con, LocalDateTime.now());
+            	//Conseguimos el ContactoIndiviual del grupo 
+                ContactoIndividual contactoIndividual = getContactoUsuarioGrupo(c);
+                //Enviamos el mensaje al usuario
+                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contactoIndividual, LocalDateTime.now());
                 mensaje.setGrupo(true);
-                con.addMensaje(mensaje);
+                contactoIndividual.addMensaje(mensaje);
                 adaptadorMensaje.registrarMensaje(mensaje);
-                adaptadorContacto.modificarContacto(con);
+                adaptadorContacto.modificarContacto(contactoIndividual);
             }
 
             // Enviar el mensaje al grupo
@@ -304,30 +314,37 @@ public class AppChat {
     //ENVIAR MENSAJE CON EMOJI
     public void enviarMensaje(Contacto contacto, int mensajeEnviar) {
         Mensaje mensaje;
-
+        //primero vemos si es un contacto Individual 
         if (contacto instanceof ContactoIndividual) {
+        	//comprobamos que esta en la lista de contactos 
             if (!isEnListaContactos(contacto)) {
+            	//Si no está creamos un contacto Anonimo
                 crearContactoAnonimo((ContactoIndividual) contacto);
             }
+            //Creamos el mensaje y lo registramos  
             mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
             contacto.addMensaje(mensaje);
             adaptadorMensaje.registrarMensaje(mensaje);
             adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-
+         //En el caso en el que sea un grupo 
         } else if (contacto instanceof Grupo) {
             Grupo grupo = (Grupo) contacto;
 
             // Enviar un mensaje a cada participante
             for (ContactoIndividual c : grupo.getContactos()) {
-                if (!isEnListaContactos(c)) {
+            	//Comprobamos si esta en la lista de Contactos del usuario
+            	if (!isEnListaContactos(c)) {
+            		//Si no esta creamos un contacto anónimo
                     crearContactoAnonimo(c);
                 }
-                ContactoIndividual con = getContactoUsuarioGrupo(c);
-                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, con, LocalDateTime.now());
+            	//Conseguimos el ContactoIndiviual del gruò 
+                ContactoIndividual contactoIndividual = getContactoUsuarioGrupo(c);
+                //Enviamos el mensaje al usuario
+                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contactoIndividual, LocalDateTime.now());
                 mensaje.setGrupo(true);
-                con.addMensaje(mensaje);
+                contactoIndividual.addMensaje(mensaje);
                 adaptadorMensaje.registrarMensaje(mensaje);
-                adaptadorContacto.modificarContacto(con);
+                adaptadorContacto.modificarContacto(contactoIndividual);
             }
 
             // Enviar el mensaje al grupo
@@ -432,7 +449,8 @@ public class AppChat {
         }
         return usuarioLogueado.getMensajes(contactoActual);
     }
-
+    
+    //Función para poder validar un contacto
     public boolean validarContacto(String numero) {
         for (Contacto contacto : usuarioLogueado.getContactos()) { 
             if (contacto instanceof ContactoIndividual) { // Verificar si es de tipo ContactoIndividual
