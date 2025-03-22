@@ -131,10 +131,14 @@ public class VentanaGrupo extends JFrame {
         int option = JOptionPane.showConfirmDialog(this, message, "Añadir Contacto", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             String name = nameField.getText().trim();
-            String phone = phoneField.getText().trim();
-            if (!name.isEmpty() && !phone.isEmpty()) {
-                controlador.agregarContacto(name, phone);
+            String numero = phoneField.getText().trim();
+            if (!name.isEmpty() && !numero.isEmpty()) {
+            	if (!controlador.validarContacto(numero)) {
+                controlador.agregarContacto(name, numero);
                 cargarContactos(); // Actualizar la lista con el nuevo contacto
+            	}else {
+            		JOptionPane.showMessageDialog(this, "Ya existe un contacto con ese número");
+            	}
             } else {
                 JOptionPane.showMessageDialog(this, "Debe ingresar el nombre y el teléfono.", "Error", JOptionPane.ERROR_MESSAGE);
             }

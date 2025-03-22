@@ -44,8 +44,8 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         eMensaje.setPropiedades(new ArrayList<Propiedad>(
                 Arrays.asList(
                         new Propiedad("texto", mensaje.getTexto()),
-                        new Propiedad("emisor", String.valueOf(mensaje.getEmisor().getTelefono())),
-                        new Propiedad("receptor", String.valueOf(mensaje.getReceptor().getTelefono())),
+                        new Propiedad("emisor", String.valueOf(mensaje.getEmisor().getId())),
+                        new Propiedad("receptor", String.valueOf(mensaje.getReceptor().getId())),
                         new Propiedad("fecha", mensaje.getHora().toString())
                 )));
         // registrar entidad mensaje
@@ -68,9 +68,9 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             if (prop.getNombre().equals("texto")) {
                 prop.setValor(mensaje.getTexto());
             } else if (prop.getNombre().equals("emisor")) {
-                prop.setValor(String.valueOf(mensaje.getEmisor().getTelefono()));
+                prop.setValor(String.valueOf(mensaje.getEmisor().getId()));
             } else if (prop.getNombre().equals("receptor")) {
-                prop.setValor(String.valueOf(mensaje.getReceptor().getTelefono()));
+                prop.setValor(String.valueOf(mensaje.getReceptor().getId()));
             } else if (prop.getNombre().equals("fecha")) {
                 prop.setValor(mensaje.getHora().toString());
             }

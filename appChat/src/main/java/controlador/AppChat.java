@@ -128,7 +128,7 @@ public class AppChat {
 		chatActual = contactoActual;	
 	}
 
-
+	/*
     public List<Contacto> buscarContactos(String texto, String telefono) {
         // Crear variables locales para las versiones procesadas
         final String textoFiltrado = (texto != null) ? texto.trim().toLowerCase() : "";
@@ -141,7 +141,7 @@ public class AppChat {
                          (telefonoFiltrado.isEmpty() || String.valueOf(c.getTelefono()).contains(telefonoFiltrado)))
             .collect(Collectors.toList());
     }
-
+*/
     public ContactoIndividual agregarContacto(String nombre, String telefono) {
         // Si no tiene el contacto guardado lo guarda
         if (!usuarioLogueado.contieneContacto(nombre)) {
@@ -309,5 +309,19 @@ public class AppChat {
         }
         return usuarioLogueado.getMensajes(contactoActual);
     }
+
+    public boolean validarContacto(String numero) {
+        for (Contacto contacto : usuarioLogueado.getContactos()) { 
+            if (contacto instanceof ContactoIndividual) { // Verificar si es de tipo ContactoIndividual
+                ContactoIndividual contactoIndividual = (ContactoIndividual) contacto; // Hacer cast
+                if (contactoIndividual.getMovil().equals(numero)) { // Comparar el número
+                    return true; // El número ya existe en la lista
+                }
+            }
+        }
+        return false; // No se encontró el número en la lista
+    }
+
+
 
 }
