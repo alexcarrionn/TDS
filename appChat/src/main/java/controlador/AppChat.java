@@ -1,12 +1,16 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import modelo.Contacto;
 import modelo.ContactoIndividual;
 import modelo.Descuento;
@@ -15,12 +19,10 @@ import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
 import modelo.Usuario;
-import persistencia.AdaptadorContactoIndividual;
-import persistencia.AdaptadorGrupo;
-import persistencia.AdaptadorMensaje;
-import persistencia.AdaptadorUsuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
+import persistencia.IAdaptadorContactoIndividualDAO;
+import persistencia.IAdaptadorGrupoDAO;
 import persistencia.IAdaptadorMensajeDAO;
 import persistencia.IAdaptadorUsuarioDAO;
 
@@ -33,6 +35,8 @@ public class AppChat {
     //Adapatadores
     private IAdaptadorMensajeDAO adaptadorMensaje;
     private IAdaptadorUsuarioDAO adaptadorUsuario;
+    private IAdaptadorContactoIndividualDAO adaptadorContacto;
+    private IAdaptadorGrupoDAO adaptadorGrupo;
     
     //Chat Seleccionado
     private Contacto chatActual;
@@ -68,6 +72,8 @@ public class AppChat {
         }
         adaptadorMensaje = factoria.getMensajeDAO();
         adaptadorUsuario = factoria.getUsuarioDAO();
+        adaptadorContacto = factoria.getContactoIndividualDAO();
+        adaptadorGrupo = factoria.getGrupoDAO();
     }
 
     public Usuario getUsuarioLogueado() {
@@ -112,6 +118,22 @@ public class AppChat {
 
     // Función para obtener los mensajes
     public List<Mensaje> getMensajes(Contacto contacto) {
+        // Caso 1: Si el contacto es IndividualContact y no es el usuario actual
+        if (contacto instanceof ContactoIndividual && !((ContactoIndividual) contacto).isUsuario(usuarioLogueado)) {
+        	ContactoIndividual individual = (ContactoIndividual) contacto;
+
+            // Combinar, ordenar y filtrar los mensajes usando Stream.of() y flatMap()
+            return Stream.of(
+                        individual.getMensajes(),
+                        individual.getMensajesRecibidos(Optional.of(usuarioLogueado))
+                    )
+                    .flatMap(Collection::stream) // Aplanar la lista de listas en un solo Stream<Message>
+                    .sorted() // Ordenar los mensajes
+                    .filter(m -> !(m.getEmisor().getTelefono().equals(usuarioLogueado.getTelefono()) && m.isGrupo())) // Filtrar mensajes grupales enviados por el usuario
+                    .collect(Collectors.toList());
+        }
+
+        // Caso 2: Si el contacto es un grupo, devolver directamente los mensajes enviados
         return contacto.getMensajes();
     }
 
@@ -151,7 +173,7 @@ public class AppChat {
                 ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono, usuarioOpt.get());
                 usuarioLogueado.addContacto(nuevoContacto);
 
-                AdaptadorContactoIndividual.getUnicaInstancia().registrarContacto(nuevoContacto);
+                adaptadorContacto.registrarContacto(nuevoContacto);
 
                 adaptadorUsuario.modificarUsuario(usuarioLogueado);
                 return nuevoContacto;
@@ -181,7 +203,7 @@ public class AppChat {
             usuarioLogueado.addGrupo(nuevoGrupo);
 
             // Registrar el grupo en el adaptador (si es necesario)
-            AdaptadorGrupo.getUnicaInstancia().registrarGrupo(nuevoGrupo);
+            adaptadorGrupo.registrarGrupo(nuevoGrupo);
 
             // Modificar el usuario en el repositorio
             adaptadorUsuario.modificarUsuario(usuarioLogueado);
@@ -214,34 +236,137 @@ public class AppChat {
         return usuarioLogueado.getContactos();
     }
     
-      
+   /*   
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
-		Mensaje mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto,LocalDate.now());
+		Mensaje mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto,LocalDateTime.now());
 		contacto.addMensaje(mensaje);
 
 		adaptadorMensaje.registrarMensaje(mensaje);
 
 		if (contacto instanceof ContactoIndividual) {
-			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
+			adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
 		} else {
-			AdaptadorGrupo.getUnicaInstancia().modificarGrupo((Grupo) contacto);
+			adaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 	}
 
 
     public void enviarMensaje(Contacto contacto, int emoji) {
-		Mensaje mensaje = new Mensaje(emoji, usuarioLogueado, contacto, LocalDate.now());
+		Mensaje mensaje = new Mensaje(emoji, usuarioLogueado, contacto, LocalDateTime.now());
 		contacto.addMensaje(mensaje);
 		adaptadorMensaje.registrarMensaje(mensaje);
 
 		if (contacto instanceof ContactoIndividual) {
-			AdaptadorContactoIndividual.getUnicaInstancia().modificarContacto((ContactoIndividual) contacto);
+			adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
 		} else {
-			AdaptadorGrupo.getUnicaInstancia().modificarGrupo((Grupo) contacto);
+			adaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 	}
+    */
     
-    public double getDescuento() {
+    //ENVIAR MENSAJE DE TEXTO
+    public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
+        Mensaje mensaje;
+
+        if (contacto instanceof ContactoIndividual) {
+            if (!isEnListaContactos(contacto)) {
+                crearContactoAnonimo((ContactoIndividual) contacto);
+            }
+            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
+            contacto.addMensaje(mensaje);
+            adaptadorMensaje.registrarMensaje(mensaje);
+            adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
+
+        } else if (contacto instanceof Grupo) {
+            Grupo grupo = (Grupo) contacto;
+
+            // Enviar un mensaje a cada participante
+            for (ContactoIndividual c : grupo.getContactos()) {
+                if (!isEnListaContactos(c)) {
+                    crearContactoAnonimo(c);
+                }
+                ContactoIndividual con = getContactoUsuarioGrupo(c);
+                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, con, LocalDateTime.now());
+                mensaje.setGrupo(true);
+                con.addMensaje(mensaje);
+                adaptadorMensaje.registrarMensaje(mensaje);
+                adaptadorContacto.modificarContacto(con);
+            }
+
+            // Enviar el mensaje al grupo
+            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, grupo, LocalDateTime.now());
+            grupo.addMensaje(mensaje);
+            adaptadorMensaje.registrarMensaje(mensaje);
+            adaptadorGrupo.modificarGrupo(grupo);
+        }
+    }
+    
+    //ENVIAR MENSAJE CON EMOJI
+    public void enviarMensaje(Contacto contacto, int mensajeEnviar) {
+        Mensaje mensaje;
+
+        if (contacto instanceof ContactoIndividual) {
+            if (!isEnListaContactos(contacto)) {
+                crearContactoAnonimo((ContactoIndividual) contacto);
+            }
+            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
+            contacto.addMensaje(mensaje);
+            adaptadorMensaje.registrarMensaje(mensaje);
+            adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
+
+        } else if (contacto instanceof Grupo) {
+            Grupo grupo = (Grupo) contacto;
+
+            // Enviar un mensaje a cada participante
+            for (ContactoIndividual c : grupo.getContactos()) {
+                if (!isEnListaContactos(c)) {
+                    crearContactoAnonimo(c);
+                }
+                ContactoIndividual con = getContactoUsuarioGrupo(c);
+                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, con, LocalDateTime.now());
+                mensaje.setGrupo(true);
+                con.addMensaje(mensaje);
+                adaptadorMensaje.registrarMensaje(mensaje);
+                adaptadorContacto.modificarContacto(con);
+            }
+
+            // Enviar el mensaje al grupo
+            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, grupo, LocalDateTime.now());
+            grupo.addMensaje(mensaje);
+            adaptadorMensaje.registrarMensaje(mensaje);
+            adaptadorGrupo.modificarGrupo(grupo);
+        }
+    }
+        
+ // Método para obtener el contacto de un usuario dentro de un grupo
+    private ContactoIndividual getContactoUsuarioGrupo(ContactoIndividual c) {
+        for (Contacto contacto : usuarioLogueado.getContactos()) {
+            if (contacto instanceof ContactoIndividual && contacto.getId() == c.getId()) {
+                return (ContactoIndividual) contacto;
+            }
+        }
+        return null;
+    }
+
+ // Método para crear un contacto anónimo si no existe
+    private void crearContactoAnonimo(ContactoIndividual contacto) {
+        Optional<Usuario> usuarioOpt = repo.buscarUsuario(contacto.getMovil());
+        
+        if (usuarioOpt.isPresent()) {
+            ContactoIndividual nuevoContacto = new ContactoIndividual(usuarioOpt.get().getTelefono(), usuarioOpt.get().getTelefono(), usuarioOpt.get());
+            contacto.getUsuario().addContacto(nuevoContacto);
+            adaptadorContacto.registrarContacto(nuevoContacto);
+            adaptadorUsuario.modificarUsuario(usuarioOpt.get());
+        }
+    }
+    
+	//Busca un contacto que este dentro de la lista de los cotnactos del usuario logueado y retorna true si lo encuentra
+	private boolean isEnListaContactos(Contacto contacto) {
+		return usuarioLogueado.getContactos().stream()
+											 .anyMatch(c -> c.getId()==contacto.getId());
+	}
+
+	public double getDescuento() {
     	return usuarioLogueado.getPrecio(); 
     }
     
@@ -266,14 +391,14 @@ public class AppChat {
         if ("Descuento Mensajes".equals(tipo)) {
             if(usuarioLogueado.getNumMensajes() >= 100) {
                 usuarioLogueado.setPremium();
-                AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+                adaptadorUsuario.modificarUsuario(usuarioLogueado);
                 return true;
             }
         } else if("Descuento Fecha".equals(tipo)) {
             if((usuarioLogueado.getFecha().isAfter(inicio) || usuarioLogueado.getFecha().equals(inicio)) 
                && (usuarioLogueado.getFecha().isBefore(fin) || usuarioLogueado.getFecha().equals(fin))) {
                 usuarioLogueado.setPremium();
-                AdaptadorUsuario.getUnicaInstancia().modificarUsuario(usuarioLogueado);
+                adaptadorUsuario.modificarUsuario(usuarioLogueado);
                 return true;
             }
         }
@@ -286,13 +411,11 @@ public class AppChat {
                       .map(mensaje -> String.valueOf(mensaje.getId()))
                       .collect(Collectors.joining(","));}
     
-    public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
-        AdaptadorMensaje adaptadorMensajes = AdaptadorMensaje.getUnicaInstancia();
-        
+    public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {      
         return Arrays.stream(codigos.split(" "))
                      .map(code -> {
                          try {
-                             return adaptadorMensajes.recuperarMensaje(Integer.valueOf(code));
+                             return adaptadorMensaje.recuperarMensaje(Integer.valueOf(code));
                          } catch (NumberFormatException e) {
                              return null;
                          }

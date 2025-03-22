@@ -3,7 +3,7 @@ package persistencia;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +46,8 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
                         new Propiedad("texto", mensaje.getTexto()),
                         new Propiedad("emisor", String.valueOf(mensaje.getEmisor().getId())),
                         new Propiedad("receptor", String.valueOf(mensaje.getReceptor().getId())),
-                        new Propiedad("fecha", mensaje.getHora().toString())
+                        new Propiedad("fecha", mensaje.getHora().toString()),
+                        new Propiedad("grupo", String.valueOf(mensaje.isGrupo()))
                 )));
         // registrar entidad mensaje
         eMensaje = servPersistencia.registrarEntidad(eMensaje);
@@ -73,36 +74,14 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
                 prop.setValor(String.valueOf(mensaje.getReceptor().getId()));
             } else if (prop.getNombre().equals("fecha")) {
                 prop.setValor(mensaje.getHora().toString());
+            } else if (prop.getNombre().equals("grupo")) {
+            	prop.setValor(String.valueOf(mensaje.isGrupo()));
             }
             servPersistencia.modificarPropiedad(prop);
         }
     }
-
-    /*public Mensaje recuperarMensaje(int id) {
-        Entidad eMensaje = servPersistencia.recuperarEntidad(id);
-        String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
-        Usuario emisor = null;
-        Contacto receptor = null;
-        LocalDate fecha = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));
-
-        Mensaje mensaje = new Mensaje(texto, emisor, receptor, fecha);
-        mensaje.setId(eMensaje.getId());
-        
-        PoolDAO.getUnicaInstancia().addObjeto(id, mensaje);
-        
-        AdaptadorUsuario adaptadorU = AdaptadorUsuario.getUnicaInstancia();
-		int codigoUsuario = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emisor"));
-		emisor = adaptadorU.recuperarUsuario(codigoUsuario);
-		mensaje.setEmisor(emisor);
-        
-		AdaptadorContactoIndividual adaptadorC = AdaptadorContactoIndividual.getUnicaInstancia();
-		int codigoContacto = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor"));
-		receptor = adaptadorC.recuperarContacto(codigoContacto);
-		
-        return mensaje;
-    }
-	*/
-    
+   
+    /*
     public Mensaje recuperarMensaje(int id) {
     	 // Si la entidad está en el pool, la devuelve directamente
 	    if (PoolDAO.getUnicaInstancia().contiene(id))
@@ -117,7 +96,7 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
 	    Usuario emisor = AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(emisorId));
 	    String receptorId = servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor");
 	    Contacto receptor = AdaptadorContactoIndividual.getUnicaInstancia().recuperarContacto(Integer.valueOf(receptorId)); 
-	    LocalDate fecha = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));; 
+	    LocalDateTime fecha = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));; 
 	    
 	    // Crear el objeto Usuario
 	    Mensaje mensaje = new Mensaje(texto, emisor, receptor, fecha);
@@ -128,6 +107,41 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
 	  
 	    return mensaje;
     }
+    */
+    
+    public Mensaje recuperarMensaje(int codigo) {
+        // Si el mensaje está en el pool, se devuelve directamente
+        if (PoolDAO.getUnicaInstancia().contiene(codigo))
+            return (Mensaje) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+
+        Entidad eMensaje = servPersistencia.recuperarEntidad(codigo);
+
+        // Recuperar propiedades
+        String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
+        LocalDateTime fecha = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));
+
+        // Crear el mensaje sin emisor ni receptor al principio
+        Mensaje mensaje = new Mensaje(texto, null, null, fecha);
+        mensaje.setId(codigo);
+
+        // Añadir al pool antes de recuperar más propiedades
+        PoolDAO.getUnicaInstancia().addObjeto(codigo, mensaje);
+
+        // Recuperar emisor
+        AdaptadorUsuario adaptadorU = AdaptadorUsuario.getUnicaInstancia();
+        int codigoUsuario = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emisor"));
+        Usuario emisor = adaptadorU.recuperarUsuario(codigoUsuario);
+        mensaje.setEmisor(emisor);
+
+        // Recuperar receptor
+        AdaptadorContactoIndividual adaptadorContactoIndividual = AdaptadorContactoIndividual.getUnicaInstancia();
+        int codigoContacto = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor"));
+        Contacto receptor = adaptadorContactoIndividual.recuperarContacto(codigoContacto);
+        mensaje.setReceptor(receptor);
+
+        return mensaje;
+    }
+    
     
     public List<Mensaje> recuperarTodosMensajes() {
         List<Mensaje> mensajes = new ArrayList<>();

@@ -3,6 +3,7 @@ package modelo;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ContactoIndividual extends Contacto{
 
@@ -77,7 +78,33 @@ public class ContactoIndividual extends Contacto{
 		public void setUsuario(Usuario usuario) {
 			this.usuario = usuario;
 		}
+		
+		//Funcion para buscar un tipo de contactoindividual de la lista de contactos del usuario actual y lo devuelve si lo encuentra
+		private ContactoIndividual getContacto(Usuario usuario) {
+			return usuario.getContactos().stream()
+										 .filter(contacto -> contacto instanceof ContactoIndividual)
+										 .map(contacto -> (ContactoIndividual) contacto)
+										 .filter(contacto -> contacto.getUsuario().equals(usuario))
+										 .findFirst()
+										 .orElse(null);
+		}
+		
+		
+		//Funcion para devolver la lista de mensajes recibidos del contacto
+		public List<Mensaje> getMensajesRecibidos(Optional<Usuario> usuario) {
+			ContactoIndividual contacto = getContacto(usuario.orElse(null));
+			if(contacto != null) {
+				return contacto.getMensajes();
+			} else {
+				return new LinkedList<>();
+			}
+		}	
 
+		//Comprueba si el contacto esta asociado a un usuario en concreto
+		public boolean isUsuario(Usuario otro) {
+			return usuario.equals(otro);
+		}
+		
 		public void addAllMensajes(List<Mensaje> mensajes) {
 			// TODO Auto-generated method stub
 			this.getMensajes().addAll(mensajes);
@@ -87,7 +114,4 @@ public class ContactoIndividual extends Contacto{
 		public String toString() {
 			return "ContactoIndividual [movil=" + movil + ", usuario=" + usuario + "]";
 		}
-		
-		
-
 }

@@ -14,7 +14,7 @@ import modelo.Grupo;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-public class AdaptadorGrupo {
+public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorGrupo unicaInstancia = null;
 

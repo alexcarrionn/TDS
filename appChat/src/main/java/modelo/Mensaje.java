@@ -1,6 +1,6 @@
 package modelo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Mensaje {
 	
@@ -8,25 +8,27 @@ public class Mensaje {
 	private String texto; 
 	private Usuario emisor; 
 	private Contacto receptor;
-	private LocalDate hora;
+	private LocalDateTime hora;
 	private int emoticono; 
 	private int id;
+	private boolean grupo=false;
 	
 	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
 	
-	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDate hora) {
+	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDateTime hora) {
 		this.texto = texto;
 		this.emisor = emisor;
 		this.receptor = receptor;
 		this.hora=hora; 
 	}
 	
-	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDate hora) {
+	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDateTime hora) {
 		this.emisor = emisor;
 		this.receptor = receptor;
 		this.emoticono=emoticono; 
 		this.hora=hora; 
 	}
+	
 	
 	//getters y setters
 	public String getTexto() {
@@ -45,7 +47,11 @@ public class Mensaje {
 		return receptor;
 	}
 	
-	public LocalDate getHora() {
+	public void setReceptor(Contacto receptor) {
+		this.receptor = receptor;
+	}
+	
+	public LocalDateTime getHora() {
 		return hora;
 	}
 
@@ -61,5 +67,11 @@ public class Mensaje {
 		this.id = id;
 	}
 
+	public boolean isGrupo() {
+		return grupo;
+	}
 
+	public void setGrupo(boolean grupo) {
+		this.grupo = grupo;
+	}
 }

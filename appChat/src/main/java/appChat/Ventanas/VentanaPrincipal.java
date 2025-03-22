@@ -3,7 +3,7 @@ package appChat.Ventanas;
 import java.awt.EventQueue;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +211,7 @@ public class VentanaPrincipal extends JFrame {
                     appchat.enviarMensaje(contactoActual, mensajeTexto);
                     
                     // Crear burbuja y añadirla al chat
-                    Mensaje nuevoMensaje = new Mensaje(mensajeTexto,appchat.getUsuarioLogueado(), contactoActual, LocalDate.now());
+                    Mensaje nuevoMensaje = new Mensaje(mensajeTexto,appchat.getUsuarioLogueado(), contactoActual, LocalDateTime.now());
                     BubbleText burbuja = crearBurbuja(nuevoMensaje);
                     
                     // Obtener el chat actual y actualizar la UI
