@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,13 +80,14 @@ public class AppChat {
     public Usuario getUsuarioLogueado() {
         return usuarioLogueado;
     }
+    
+	public double getDescuento() {
+    	return usuarioLogueado.getPrecio(); 
+    }
 
     public boolean hacerLogin(String tel, String contraseña) {
         Usuario usuario = repo.getUsuario(tel);
-        if (usuario == null) {
-            return false;
-        }
-        if (!usuario.getContraseña().equals(contraseña)) {
+        if (usuario == null || !usuario.getContraseña().equals(contraseña)) {
             return false;
         }
         usuarioLogueado = usuario;
@@ -99,8 +101,7 @@ public class AppChat {
 			return false;
 		}
 		
-		if(fecha ==null) {
-		fecha = LocalDate.now();}
+		if(fecha ==null) {fecha = LocalDate.now();}
 
 		Usuario nuevoUsuario = new Usuario(telefono, nombre, foto, contraseña, fecha, estado, null);
 
@@ -156,64 +157,74 @@ public class AppChat {
         final String textoFiltrado = (texto != null) ? texto.trim().toLowerCase() : "";
         final String telefonoFiltrado = (telefono != null) ? telefono.trim() : "";
 
-        List<Contacto> listaContactos = usuarioLogueado.getContactos();
 		// Usar estas variables en la lambda
-        return listaContactos.stream()
+        return usuarioLogueado.getContactos().stream()
             .filter(c -> (textoFiltrado.isEmpty() || c.getNombre().toLowerCase().contains(textoFiltrado)) &&
                          (telefonoFiltrado.isEmpty() || String.valueOf(c.getTelefono()).contains(telefonoFiltrado)))
             .collect(Collectors.toList());
     }
 */
-    public ContactoIndividual agregarContacto(String nombre, String telefono) {
-        // Si no tiene el contacto guardado lo guarda
-        if (!usuarioLogueado.contieneContacto(nombre)) {
-            Optional<Usuario> usuarioOpt = repo.buscarUsuario(telefono);
+	
+	//Funcion para agregar los contactos
+	public ContactoIndividual agregarContacto(String nombre, String telefono) {
+	    if (usuarioLogueado.contieneContacto(nombre)) {
+	        return null; // Ya existe el contacto
+	    }
+	    
+	    //buscamos en el repositorio el usuario
+	    return repo.buscarUsuario(telefono)
+	        .map(usuario -> crearYRegistrarContacto(nombre, telefono, usuario))
+	        .orElse(null);
+	}
 
-            if (usuarioOpt.isPresent()) {
-                ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, telefono, usuarioOpt.get());
-                usuarioLogueado.addContacto(nuevoContacto);
+	//Funcion que te permite crear y registar un contacto 
+	private ContactoIndividual crearYRegistrarContacto(String nombre, String telefono, Usuario usuario) {
+	    ContactoIndividual nuevoContacto = usuarioLogueado.crearContactoIndividual(nombre, telefono, usuario); 
+	    usuarioLogueado.addContacto(nuevoContacto);
 
-                adaptadorContacto.registrarContacto(nuevoContacto);
+	    adaptadorContacto.registrarContacto(nuevoContacto);
+	    adaptadorUsuario.modificarUsuario(usuarioLogueado);
 
-                adaptadorUsuario.modificarUsuario(usuarioLogueado);
-                return nuevoContacto;
-            }
-        }
-        return null;
-    }
+	    return nuevoContacto;
+	}
+
     
-    public Grupo agregarGrupo(String groupName, List<String> contactNames) {
-        // Si no tiene el grupo guardado lo guarda
-        if (!usuarioLogueado.contieneGrupo(groupName)) {
-            // Crear una lista de ContactoIndividual a partir de los nombres proporcionados
-            List<ContactoIndividual> contactos = new ArrayList<>();
-            for (String nombre : contactNames) {
-                ContactoIndividual contacto = getContactoPorNombre(nombre);
-                if (contacto != null) {
-                    contactos.add(contacto);
-                } else {
-                    System.out.println("Contacto no encontrado: " + nombre);
-                }
-            }
+    
+    //Funcion para poder agregar un Grupo
+	public Grupo agregarGrupo(String groupName, List<String> contactNames) {
+	    //Si ya existe el grupo 
+		if (usuarioLogueado.contieneGrupo(groupName)) {
+	        System.out.println("El grupo ya existe: " + groupName);
+	        //retorna null
+	        return null;
+	    }
+		//si no existe coge la lista de contactos pasados para crear el grupo
+	    List<ContactoIndividual> contactos = contactNames.stream()
+	        .map(this::getContactoPorNombre)
+	        .filter(Objects::nonNull) // Filtra los contactos no encontrados
+	        .toList(); // Devuelve una lista inmutable
+	    //si no hay ninguno retorna null
+	    if (contactos.isEmpty()) {
+	        System.out.println("No se encontraron contactos válidos para el grupo: " + groupName);
+	        return null;
+	    }
+	    //Crea el nuevo grupo
+	    return crearYRegistrarGrupo(groupName, contactos);
+	}
+	
+	//Funcion para poder crear y registrar el gurpo 
+	private Grupo crearYRegistrarGrupo(String groupName, List<ContactoIndividual> contactos) {
+	    //creamos el grupo y lo añadimos a los contactos del usuario
+		Grupo nuevoGrupo = usuarioLogueado.crearGrupo(groupName, contactos);
+	    usuarioLogueado.addGrupo(nuevoGrupo);
+	    //registramos el grupo y modificamos el grupo en la bbdd
+	    adaptadorGrupo.registrarGrupo(nuevoGrupo);
+	    adaptadorUsuario.modificarUsuario(usuarioLogueado);
 
-            // Crear un nuevo grupo con los contactos proporcionados
-            Grupo nuevoGrupo = new Grupo(groupName, contactos);
-            
-            // Agregar el nuevo grupo al usuario logueado
-            usuarioLogueado.addGrupo(nuevoGrupo);
+	    System.out.println("Grupo creado: " + groupName + " con contactos: " + contactos);
+	    return nuevoGrupo;
+	}
 
-            // Registrar el grupo en el adaptador (si es necesario)
-            adaptadorGrupo.registrarGrupo(nuevoGrupo);
-
-            // Modificar el usuario en el repositorio
-            adaptadorUsuario.modificarUsuario(usuarioLogueado);
-            
-            System.out.println("Grupo creado: " + groupName + " con contactos: " + contactos);
-            return nuevoGrupo;
-        }
-        System.out.println("El grupo ya existe: " + groupName);
-        return null; // Retorna null si el grupo ya existe
-    }
     
     
     private ContactoIndividual getContactoPorNombre(String nombre) {
@@ -267,6 +278,7 @@ public class AppChat {
 	}
     */
     
+    //TODO CAMBIAR Y REFACTRORIZAR
     //ENVIAR MENSAJE DE TEXTO
     public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
         Mensaje mensaje;
@@ -370,7 +382,7 @@ public class AppChat {
         Optional<Usuario> usuarioOpt = repo.buscarUsuario(contacto.getMovil());
         
         if (usuarioOpt.isPresent()) {
-            ContactoIndividual nuevoContacto = new ContactoIndividual(usuarioOpt.get().getTelefono(), usuarioOpt.get().getTelefono(), usuarioOpt.get());
+            ContactoIndividual nuevoContacto = usuarioLogueado.crearContactoIndividual(usuarioOpt.get().getNombre(), usuarioOpt.get().getTelefono(), usuarioOpt.get());
             contacto.getUsuario().addContacto(nuevoContacto);
             adaptadorContacto.registrarContacto(nuevoContacto);
             adaptadorUsuario.modificarUsuario(usuarioOpt.get());
@@ -382,10 +394,6 @@ public class AppChat {
 		return usuarioLogueado.getContactos().stream()
 											 .anyMatch(c -> c.getId()==contacto.getId());
 	}
-
-	public double getDescuento() {
-    	return usuarioLogueado.getPrecio(); 
-    }
     
     
     //esta funcion te aplica el descuento concreto si se cumple la condicion
@@ -402,32 +410,35 @@ public class AppChat {
     
     //Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
     public boolean hacerPremium(String tipo) {
-        LocalDate inicio = LocalDate.of(2024, 12, 24);
-        LocalDate fin = LocalDate.of(2025, 1, 6);
-        
-        if ("Descuento Mensajes".equals(tipo)) {
-            if(usuarioLogueado.getNumMensajes() >= 100) {
-                usuarioLogueado.setPremium();
-                adaptadorUsuario.modificarUsuario(usuarioLogueado);
-                return true;
-            }
-        } else if("Descuento Fecha".equals(tipo)) {
-            if((usuarioLogueado.getFecha().isAfter(inicio) || usuarioLogueado.getFecha().equals(inicio)) 
-               && (usuarioLogueado.getFecha().isBefore(fin) || usuarioLogueado.getFecha().equals(fin))) {
-                usuarioLogueado.setPremium();
-                adaptadorUsuario.modificarUsuario(usuarioLogueado);
-                return true;
-            }
+    	//Fijamos las dos fechas de inicio  y fin donde se aplicará el descuento
+        LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
+        LocalDate finDescuento = LocalDate.of(2025, 1, 6);
+        //Vemos si se cumple la condicion de que sea Premium según sea Descuento por mensaje o por Fecha
+        boolean cumpleCondicion = switch (tipo) {
+            case "Descuento Mensajes" -> usuarioLogueado.getNumMensajes() >= 100 && !usuarioLogueado.isPremium();
+            case "Descuento Fecha" -> 
+                !usuarioLogueado.getFecha().isBefore(inicioDescuento) && 
+                !usuarioLogueado.getFecha().isAfter(finDescuento) && !usuarioLogueado.isPremium();
+            default -> false;
+        };
+        //Si cumple la condicion revolverá true y hará al usuario Premium
+        if (cumpleCondicion) {
+            usuarioLogueado.setPremium();
+            adaptadorUsuario.modificarUsuario(usuarioLogueado);
+            return true;
         }
+        //Sino, devolverá false
         return false;
     }
-    
+
+    //Funcion para obtener los ids de los mensajes 
     public String obtenerIdsMensajes(List<Mensaje> mensajes) {
-        // Usando Java Streams (método moderno)
+        // Usando Java Streams 
         return mensajes.stream()
                       .map(mensaje -> String.valueOf(mensaje.getId()))
                       .collect(Collectors.joining(","));}
     
+    //Funcion para obtener los mensajes desde los ids
     public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {      
         return Arrays.stream(codigos.split(" "))
                      .map(code -> {
@@ -450,19 +461,14 @@ public class AppChat {
         return usuarioLogueado.getMensajes(contactoActual);
     }
     
-    //Función para poder validar un contacto
-    public boolean validarContacto(String numero) {
-        for (Contacto contacto : usuarioLogueado.getContactos()) { 
-            if (contacto instanceof ContactoIndividual) { // Verificar si es de tipo ContactoIndividual
-                ContactoIndividual contactoIndividual = (ContactoIndividual) contacto; // Hacer cast
-                if (contactoIndividual.getMovil().equals(numero)) { // Comparar el número
-                    return true; // El número ya existe en la lista
-                }
-            }
-        }
-        return false; // No se encontró el número en la lista
-    }
 
+    //Funcion utilizada para saber si existe o no un contacto en la lista de contactos del usuarioLogueado
+    public boolean validarContacto(String numero) {
+        return usuarioLogueado.getContactos().stream()
+            .filter(ContactoIndividual.class::isInstance) // Filtrar solo ContactoIndividual
+            .map(ContactoIndividual.class::cast)         // Hacer cast automáticamente
+            .anyMatch(contacto -> contacto.getMovil().equals(numero)); // Comparar número
+    }
 
 
 }

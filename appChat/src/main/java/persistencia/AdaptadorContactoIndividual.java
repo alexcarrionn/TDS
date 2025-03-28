@@ -113,9 +113,10 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         servPersistencia.anadirPropiedadEntidad(eContacto, "usuario", String.valueOf(contacto.getUsuario().getId()));
     }
     
+	/*
     //Para recuperar todos los Contactos Individuales lo que hacemos es 
     public List<ContactoIndividual> recuperarTodosContactos(){
-    	//TODO crear funcion para conseguir todos los Contactos Individuales
+    	//crear funcion para conseguir todos los Contactos Individuales
     	return null;
-    }
+    }*/
 }

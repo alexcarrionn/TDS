@@ -1,6 +1,7 @@
 package appChat.Ventanas;
 
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
@@ -135,7 +136,10 @@ public class VentanaPrincipal extends JFrame {
         panelBotones.add(labelUsuarioActual);
 
         JLabel labelImagenUsuarioActual = new JLabel("");
-        labelImagenUsuarioActual.setIcon(new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen()));
+        ImageIcon imageIcon = new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen());
+        Image image = imageIcon.getImage().getScaledInstance(50,50, Image.SCALE_AREA_AVERAGING);
+        ImageIcon imageResized= new ImageIcon(image);
+        labelImagenUsuarioActual.setIcon(imageResized);
         panelBotones.add(labelImagenUsuarioActual);
 
         JPanel panelLista = new JPanel();
@@ -157,10 +161,6 @@ public class VentanaPrincipal extends JFrame {
         contentPane.add(chatActual, BorderLayout.CENTER);
         chatActual.setLayout(new BorderLayout(0, 0));
         chatActual.add(scrollBarChatBurbujas,BorderLayout.CENTER);
-        
-        //JPanel chat = new JPanel();
-        //chatActual.add(chat, BorderLayout.CENTER);
-        //chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
 
      // Obtener la lista de contactos del usuario
         List<Contacto> contactos = appchat.getContactosUsuarioActual();
@@ -245,8 +245,14 @@ public class VentanaPrincipal extends JFrame {
     
     
 	private Icon resizeIcon(String foto, int iconSizeMini) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+	        Image img = new ImageIcon(foto).getImage(); // Cargar la imagen
+	        Image resizedImg = img.getScaledInstance(iconSizeMini, iconSizeMini, Image.SCALE_SMOOTH);
+	        return new ImageIcon(resizedImg); // Devolver la imagen redimensionada como Icon
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null; // Si falla, devuelve null
+	    }
 	}
 
 	private void cargarChat(Contacto contacto) {
@@ -274,23 +280,6 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 	
-	/*private void cargarChat(Contacto contacto) {
-	    if (contacto == null) return;
-
-	    // Obtener o crear el chat
-	    chat = chatsRecientes.getOrDefault(contacto, crearNuevoChat());
-	    
-	    // Configurar y mostrar el chat
-	    configurarChatExistente(chat);
-	    scrollBarChatBurbujas.setViewportView(chat); // Asocia el chat al JScrollPane
-	    
-	    // Añadir mensajes al chat
-	    appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
-	    
-	    // Forzar actualización del scroll
-	    revalidate();
-	    repaint();
-	}*/
 
     // Método para crear un nuevo chat
     private ChatBurbujas crearNuevoChat() {

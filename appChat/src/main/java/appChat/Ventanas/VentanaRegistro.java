@@ -297,7 +297,6 @@ public class VentanaRegistro {
     }
 
     public void setVisible(boolean b) {
-        // TODO Auto-generated method stub
         frame.setVisible(b);
     }
 }

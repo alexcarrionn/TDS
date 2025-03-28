@@ -52,7 +52,7 @@ public class VentanaLogin {
                 vp.setVisible(true);
                 frame.setVisible(false);
             } else {
-                JOptionPane.showMessageDialog(frame, "El Usuario no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "El Usuario no está registrado o la contraseña es incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

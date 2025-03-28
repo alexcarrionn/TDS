@@ -81,7 +81,8 @@ public class Grupo extends Contacto{
 
 		@Override
 		public String getFoto() {
-			// TODO 
-			return null;
+			return "https://robohash.org/"+ this.getNombre();
 		}
+
+
 }

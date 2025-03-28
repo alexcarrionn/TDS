@@ -95,7 +95,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	            new Propiedad("nombre", usuario.getNombre()),
 	            new Propiedad("contraseña", usuario.getContraseña()),
 	            new Propiedad("estado", usuario.getEstado()),
-	            new Propiedad("premium", String.valueOf(usuario.getPremium())),
+	            new Propiedad("premium", String.valueOf(usuario.isPremium())),
 	            new Propiedad("fecha", usuario.getFecha().toString()),
 	            new Propiedad("imagen", usuario.getImagen()),
 	            new Propiedad("contactos", obtenerCodigosContactos(usuario.getContactos())),
@@ -211,41 +211,12 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	    }
 
 	    for (String codigo : codigos.split(",")) {
-	        Grupo grupo = (Grupo) recuperarGrupo(Integer.parseInt(codigo));
+	        Grupo grupo = AdaptadorGrupo.getUnicaInstancia().recuperarGrupo(Integer.parseInt(codigo));
 	        if (grupo != null) {
 	            grupos.add(grupo);
 	        }
 	    }
 
 	    return grupos;
-	}
-	
-	private Grupo recuperarGrupo(int codigo) {
-	    // Intentar obtener el grupo del pool
-	    Grupo grupo = (Grupo) PoolDAO.getUnicaInstancia().getObjeto(codigo);
-	    if (grupo != null) {
-	        return grupo; // Si el grupo ya está en el pool, se devuelve directamente
-	    }
-
-	    // Recuperar la entidad desde la persistencia
-	    Entidad entidadGrupo = servPersistencia.recuperarEntidad(codigo);
-	    if (entidadGrupo == null) {
-	        return null; // Si no se encuentra la entidad, devolver null
-	    }
-
-	    // Recuperar propiedades del grupo
-	    String nombre = servPersistencia.recuperarPropiedadEntidad(entidadGrupo, "nombre");
-	    String contactosStr = servPersistencia.recuperarPropiedadEntidad(entidadGrupo, "contactos");
-
-	    // Obtener la lista de contactos del grupo
-	    List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(contactosStr);
-
-	    // Crear el grupo con los datos recuperados
-	    grupo = new Grupo(nombre, contactos);
-
-	    // Añadir el grupo al pool para futuras recuperaciones
-	    PoolDAO.getUnicaInstancia().addObjeto(codigo, grupo);
-
-	    return grupo;
 	}
 }

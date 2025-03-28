@@ -121,10 +121,6 @@ public class Usuario {
 		this.contactos = contactos;
 	}
 
-	public Boolean getPremium() {
-		return premium;
-	} 
-	
 	public void setPremium() {
 		premium=true; 
 	}
@@ -241,6 +237,14 @@ public class Usuario {
 		
 		public List<Mensaje> getMensajes(Contacto contacto) {
 			return contacto.getMensajes();
+		}
+
+		public ContactoIndividual crearContactoIndividual(String nombre2, String telefono2, Usuario usuario) {
+			return new ContactoIndividual(nombre2, telefono2, usuario);
+		}
+
+		public Grupo crearGrupo(String groupName, List<ContactoIndividual> contactos2) {
+			return new Grupo(groupName, contactos2);
 		}
 
 	}

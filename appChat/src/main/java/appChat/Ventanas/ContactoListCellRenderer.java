@@ -48,6 +48,8 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 		add(panelTexto, BorderLayout.CENTER); // Texto a la derecha
 	}
 
+	
+	//TODO Refactoring???
 	@Override
 	public Component getListCellRendererComponent(JList<? extends Contacto> listacontactos, Contacto contacto,
 			int index, boolean isSelected, boolean cellHasFocus) {

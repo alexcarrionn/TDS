@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 public class Mensaje {
 	
+	//CAMBIAR EMISOR Y RECEPTOR A TIPO 
+	
 	//propiedades
 	private String texto; 
 	private Usuario emisor; 
@@ -74,4 +76,12 @@ public class Mensaje {
 	public void setGrupo(boolean grupo) {
 		this.grupo = grupo;
 	}
+
+	@Override
+	public String toString() {
+		return "Mensaje [texto=" + texto + ", emisor=" + emisor + ", receptor=" + receptor + ", hora=" + hora
+				+ ", emoticono=" + emoticono + ", id=" + id + ", grupo=" + grupo + "]";
+	}
+	
+	
 }

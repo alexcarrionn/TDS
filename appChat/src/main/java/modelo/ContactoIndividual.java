@@ -106,7 +106,6 @@ public class ContactoIndividual extends Contacto{
 		}
 		
 		public void addAllMensajes(List<Mensaje> mensajes) {
-			// TODO Auto-generated method stub
 			this.getMensajes().addAll(mensajes);
 		}
 

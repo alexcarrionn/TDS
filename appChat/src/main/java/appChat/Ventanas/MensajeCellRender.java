@@ -35,7 +35,7 @@ public class MensajeCellRender extends JPanel implements ListCellRenderer<Mensaj
 		add(imageLabel, BorderLayout.WEST);
 		add(panelCentro, BorderLayout.CENTER);
 	}
-
+	
 	@Override
 	public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje Mensaje, int index,
 			boolean isSelected, boolean cellHasFocus) {
