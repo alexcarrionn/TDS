@@ -247,16 +247,13 @@ public class Usuario {
 			return new Grupo(groupName, contactos2);
 		}
 
-		public Optional<ContactoIndividual> getContactoIndividual(String telefono) {
+		public ContactoIndividual getContactoIndividual(String telefono) {
 		    return contactos.stream()
-		                    .map(c -> {
-		                        try {
-		                            return (ContactoIndividual) c;
-		                        } catch (ClassCastException e) {
-		                            return null;
-		                        }
-		                    })
-		                    .filter(c -> c != null && c.getMovil().equals(telefono))
-		                    .findFirst();
+		                    .filter(c -> c instanceof ContactoIndividual)
+		                    .map(c -> (ContactoIndividual) c)
+		                    .filter(c -> c.getMovil().equals(telefono))
+		                    .findFirst()
+		                    .orElse(null);
 		}
+
 	}

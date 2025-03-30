@@ -1,6 +1,5 @@
 package appChat.Ventanas;
 
-import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -30,6 +29,8 @@ import javax.swing.JTextField;
 
 import controlador.AppChat;
 import modelo.Contacto;
+import modelo.ContactoIndividual;
+import modelo.Grupo;
 //import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.TipoMensaje;
@@ -48,22 +49,6 @@ public class VentanaPrincipal extends JFrame {
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
-
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    frame = new VentanaPrincipal();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 
     /**
      * Create the frame.
@@ -137,7 +122,7 @@ public class VentanaPrincipal extends JFrame {
         panelBotones.add(labelUsuarioActual);
 
         JLabel labelImagenUsuarioActual = new JLabel("");
-        ImageIcon imageIcon = new ImageIcon(AppChat.getUnicaInstancia().getUsuarioLogueado().getImagen());
+        ImageIcon imageIcon = new ImageIcon(appchat.getUsuarioLogueado().getImagen());
         Image image = imageIcon.getImage().getScaledInstance(50,50, Image.SCALE_AREA_AVERAGING);
         ImageIcon imageResized= new ImageIcon(image);
         labelImagenUsuarioActual.setIcon(imageResized);
@@ -209,7 +194,9 @@ public class VentanaPrincipal extends JFrame {
                 if (!mensajeTexto.isEmpty()) {
                     // Obtener contacto actual y enviar mensaje
                     Contacto contactoActual = appchat.getChatActual();
-                    appchat.enviarMensaje(contactoActual, mensajeTexto);
+                   
+                    //Comprobar y ver si el mensaje es un emoticono o un texto y enviar el mensaje
+                    comprobarEmojioTexto(mensajeTexto);
                     
                     // Crear burbuja y añadirla al chat
                     Mensaje nuevoMensaje = new Mensaje(mensajeTexto,TipoMensaje.ENVIADO, LocalDateTime.now());
@@ -231,7 +218,44 @@ public class VentanaPrincipal extends JFrame {
         enviar.add(botonEnviarMensaje);
     }
     
-    //FUNCIONES AUXILIARES
+    
+	//FUNCIONES AUXILIARES
+    
+    private void comprobarEmojioTexto(String mensajeTexto) {
+    	if(esEntero(mensajeTexto)) {
+    		enviarMensajeEmoji(Integer.parseInt(mensajeTexto)); 
+    	}else {
+    		enviarMensajeTexto(mensajeTexto); 
+    	}
+		
+	}
+    
+    private void enviarMensajeEmoji(int emoji){
+    	if(appchat.getChatActual() instanceof ContactoIndividual) {
+    		appchat.enviarMensajeEmoticonoContacto((ContactoIndividual)appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
+    	}
+    	else {
+    		appchat.enviarMensajeEmoticonoGrupo((Grupo)appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
+    	}
+    }
+    
+    private void enviarMensajeTexto(String mensaje) {
+    	if(appchat.getChatActual() instanceof ContactoIndividual) {
+    		appchat.enviarMensajeTextoContacto((ContactoIndividual)appchat.getChatActual(), mensaje, TipoMensaje.ENVIADO);
+    	}
+    	else {
+    		appchat.enviarMensajeTextoGrupo((Grupo)appchat.getChatActual(), mensaje, TipoMensaje.ENVIADO);
+    	}
+    }
+    
+    private static boolean esEntero(String str) {
+    	try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
     
     private void actualizarComboBox(JComboBox<String> comboBox) {
         List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();

@@ -36,48 +36,20 @@ public class ContactoIndividual extends Contacto{
 		return usuario.getEstado();	
 	}
 	
+	@Override
+	public String getFoto() {
+		return usuario.getImagen();
+	}
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
 	//Metodos
-	
-	/*Dado un usuario me devuelve el contacto de este usuario(como lo ve desde su perspectiva)
-	 *La lista de mensajes de ese Usuario
-	 *el estado
-	 *añade a un grupo 
-	 *elimina del gupo  */
-	
-
-
-		@Override
-		public String getFoto() {
-			return usuario.getImagen();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = super.hashCode();
-			result = prime * result + Objects.hash(movil);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (!super.equals(obj))
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ContactoIndividual other = (ContactoIndividual) obj;
-			return Objects.equals(movil, other.movil);
-		}
-
-		public Usuario getUsuario() {
-			return usuario;
-		}
-
-		public void setUsuario(Usuario usuario) {
-			this.usuario = usuario;
-		}
 		
 		//Funcion para buscar un tipo de contactoindividual de la lista de contactos del usuario actual y lo devuelve si lo encuentra
 		private ContactoIndividual getContacto(Usuario usuario) {
@@ -108,6 +80,28 @@ public class ContactoIndividual extends Contacto{
 		public void addAllMensajes(List<Mensaje> mensajes) {
 			this.getMensajes().addAll(mensajes);
 		}
+
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + Objects.hash(movil);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ContactoIndividual other = (ContactoIndividual) obj;
+			return Objects.equals(movil, other.movil);
+		}
+
 
 		@Override
 		public String toString() {

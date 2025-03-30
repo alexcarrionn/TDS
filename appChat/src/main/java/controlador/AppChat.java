@@ -1,7 +1,6 @@
 package controlador;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -251,30 +250,58 @@ public class AppChat {
         return usuarioLogueado.getContactos();
     }
     
-  //ENVIAR MENSAJE
+  //ENVIAR MENSAJE DE TEXTO
     
     // Método para crear un mensaje entre usuarios
-    private void crearMensajeUsuarioContacto(ContactoIndividual contacto, String texto, int emoticono, TipoMensaje tipo) {
-        Usuario usuarioReceptor = contacto.getUsuario();
-        ContactoIndividual contactoInverso = usuarioReceptor.getContactoIndividual(usuarioLogueado.getTelefono());
-
+	@SuppressWarnings("null")
+	private void crearMensajeTextoUsuarioContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
+		//Cogemos el usuario receptor
+		Usuario usuarioReceptor = contacto.getUsuario();
+        //Vemos el contacto que se lo envio
+		ContactoIndividual contactoInverso = usuarioReceptor.getContactoIndividual(usuarioLogueado.getTelefono());
+		
+		//Si el usuario no existe entre los contactos del usuario, creamos uno vacio
         if (contactoInverso == null) {
-            contactoInverso = usuarioReceptor.nuevoContacto("", usuarioLogueado);
+            contactoInverso = usuarioReceptor.crearContactoIndividual("", contactoInverso.getMovil(),usuarioLogueado);
             adaptadorContacto.registrarContacto(contactoInverso);
             adaptadorUsuario.modificarUsuario(usuarioReceptor);
         }
-
-        Mensaje mensajeRecibido = contactoInverso.nuevoMensaje(texto, emoticono, TipoMensaje.RECIBIDO);
-        mensajeDAO.registrarMensaje(mensajeRecibido);
-        contactoIndividualDAO.modificarContacto(contactoInverso);
+        
+        //Creamos el nuevo mensaje como recibido
+        Mensaje mensajeRecibido = contactoInverso.creaMensajeTexto(texto,TipoMensaje.RECIBIDO);
+        adaptadorMensaje.registrarMensaje(mensajeRecibido);
+        adaptadorContacto.modificarContacto(contactoInverso);
+    }
+	
+    // Método para crear un mensaje entre usuarios
+	@SuppressWarnings("null")
+	private void crearMensajeEmoticonoUsuarioContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
+		//Cogemos el usuario receptor
+		Usuario usuarioReceptor = contacto.getUsuario();
+        //Vemos el contacto que se lo envio
+		ContactoIndividual contactoInverso = usuarioReceptor.getContactoIndividual(usuarioLogueado.getTelefono());
+		
+		//Si el usuario no existe entre los contactos del usuario, creamos uno vacio
+        if (contactoInverso == null) {
+            contactoInverso = usuarioReceptor.crearContactoIndividual("", contactoInverso.getMovil(),usuarioLogueado);
+            adaptadorContacto.registrarContacto(contactoInverso);
+            adaptadorUsuario.modificarUsuario(usuarioReceptor);
+        }
+        
+        //Creamos el nuevo mensaje como recibido
+        Mensaje mensajeRecibido = contactoInverso.creaMensajeEmoticono(emoticono,TipoMensaje.RECIBIDO);
+        adaptadorMensaje.registrarMensaje(mensajeRecibido);
+        adaptadorContacto.modificarContacto(contactoInverso);
     }
     
+	//Metodo para crear un mensaje de texto para el contacto
     private void crearMensajeContactoTexto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
         Mensaje mensaje = contacto.creaMensajeTexto(texto, tipo);
         adaptadorMensaje.registrarMensaje(mensaje);
         adaptadorContacto.modificarContacto(contacto);
     }
     
+    //Metedo para crear Mensaje con emoticono para el contacto
     private void crearMensajeContactoEmoticono(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
         Mensaje mensaje = contacto.creaMensajeEmoticono(emoticono, tipo);
         adaptadorMensaje.registrarMensaje(mensaje);
@@ -282,40 +309,39 @@ public class AppChat {
     }
     
     // Método para enviar un mensaje a un contacto individual
-    public void enviarMensajeContacto(ContactoIndividual contacto, String texto, int emoticono, TipoMensaje tipo) {
-        this.crearMensajeContactoTexto(contacto, texto, emoticono, tipo);
-        this.crearMensajeUsuarioContacto(contacto, texto, emoticono, tipo);
+    public void enviarMensajeTextoContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
+        this.crearMensajeContactoTexto(contacto, texto, tipo);
+        this.crearMensajeTextoUsuarioContacto(contacto, texto, tipo);
     }
     
-        
- // Método para obtener el contacto de un usuario dentro de un grupo
-    private ContactoIndividual getContactoUsuarioGrupo(ContactoIndividual c) {
-        for (Contacto contacto : usuarioLogueado.getContactos()) {
-            if (contacto instanceof ContactoIndividual && contacto.getId() == c.getId()) {
-                return (ContactoIndividual) contacto;
-            }
-        }
-        return null;
+    //Metodo para enviar un mendaje de emoticono a un contacto individual
+    public void enviarMensajeEmoticonoContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
+        this.crearMensajeContactoEmoticono(contacto, emoticono, tipo);
+        this.crearMensajeEmoticonoUsuarioContacto(contacto, emoticono, tipo);
     }
-
- // Método para crear un contacto anónimo si no existe
-    private void crearContactoAnonimo(ContactoIndividual contacto) {
-        Optional<Usuario> usuarioOpt = repo.buscarUsuario(contacto.getMovil());
-        
-        if (usuarioOpt.isPresent()) {
-            ContactoIndividual nuevoContacto = usuarioLogueado.crearContactoIndividual(usuarioOpt.get().getNombre(), usuarioOpt.get().getTelefono(), usuarioOpt.get());
-            contacto.getUsuario().addContacto(nuevoContacto);
-            adaptadorContacto.registrarContacto(nuevoContacto);
-            adaptadorUsuario.modificarUsuario(usuarioOpt.get());
-        }
+  
+    
+    //ENVIAR MENSAJE DE EMOJI A UN GRUPO 
+    
+    // Método para enviar un mensaje de texto a un grupo
+    public void enviarMensajeTextoGrupo(Grupo grupo, String texto, TipoMensaje tipo) {
+        this.crearMensajeTextoGrupo(grupo, texto, tipo);
+        grupo.getContactos().forEach(c -> this.crearMensajeTextoUsuarioContacto(c, texto, tipo));
     }
     
-	//Busca un contacto que este dentro de la lista de los cotnactos del usuario logueado y retorna true si lo encuentra
-	private boolean isEnListaContactos(Contacto contacto) {
-		return usuarioLogueado.getContactos().stream()
-											 .anyMatch(c -> c.getId()==contacto.getId());
-	}
+    // Método para enviar un mensaje con emoji a un grupo
+    public void enviarMensajeEmoticonoGrupo(Grupo grupo, int emoticono, TipoMensaje tipo) {
+        this.crearMensajeEmojiGrupo(grupo, emoticono, tipo);
+        grupo.getContactos().forEach(c -> this.crearMensajeEmoticonoUsuarioContacto(c, emoticono, tipo));
+    }
     
+    public void crearMensajeTextoGrupo(Grupo g, String texto, TipoMensaje tipo) {
+    	
+    }
+    
+    public void crearMensajeEmojiGrupo(Grupo g, int emoticono, TipoMensaje tipo) {
+    	
+    }
     
     //esta funcion te aplica el descuento concreto si se cumple la condicion
     public void aplicarDescuento(String tipoDescuento) {
