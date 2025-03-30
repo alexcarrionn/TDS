@@ -1,5 +1,6 @@
 package modelo;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +44,14 @@ public abstract class Contacto {
 
     public void removeMensaje(Mensaje mensaje) {
         this.mensajes.remove(mensaje);
+    }
+    
+    public Mensaje creaMensajeTexto(String texto, TipoMensaje tipo) {
+    	return new Mensaje(texto,tipo,LocalDateTime.now());
+    }
+    
+    public Mensaje creaMensajeEmoticono(int emoticono, TipoMensaje tipo) {
+    	return new Mensaje(emoticono,tipo,LocalDateTime.now());
     }
 
     public List<Mensaje> buscarMensajes(String texto) {

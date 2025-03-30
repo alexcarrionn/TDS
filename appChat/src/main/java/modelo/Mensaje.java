@@ -8,8 +8,7 @@ public class Mensaje {
 	
 	//propiedades
 	private String texto; 
-	private Usuario emisor; 
-	private Contacto receptor;
+	private TipoMensaje tipo;
 	private LocalDateTime hora;
 	private int emoticono; 
 	private int id;
@@ -17,16 +16,14 @@ public class Mensaje {
 	
 	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
 	
-	public Mensaje(String texto, Usuario emisor, Contacto receptor, LocalDateTime hora) {
+	public Mensaje(String texto, TipoMensaje tipo, LocalDateTime hora) {
 		this.texto = texto;
-		this.emisor = emisor;
-		this.receptor = receptor;
+		this.tipo=tipo;
 		this.hora=hora; 
 	}
 	
-	public Mensaje(int emoticono, Usuario emisor, Contacto receptor, LocalDateTime hora) {
-		this.emisor = emisor;
-		this.receptor = receptor;
+	public Mensaje(int emoticono, TipoMensaje tipo, LocalDateTime hora) {
+		this.tipo=tipo;
 		this.emoticono=emoticono; 
 		this.hora=hora; 
 	}
@@ -37,20 +34,8 @@ public class Mensaje {
 		return texto;
 	}
 	
-	public Usuario getEmisor() {
-		return emisor;
-	}
-	
-	public void setEmisor(Usuario emisor) {
-		this.emisor = emisor;
-	}
-
-	public Contacto getReceptor() {
-		return receptor;
-	}
-	
-	public void setReceptor(Contacto receptor) {
-		this.receptor = receptor;
+	public TipoMensaje getTipo() {
+		return tipo;
 	}
 	
 	public LocalDateTime getHora() {
@@ -76,12 +61,14 @@ public class Mensaje {
 	public void setGrupo(boolean grupo) {
 		this.grupo = grupo;
 	}
+	
+	public void setTipo(TipoMensaje tipo) {
+		this.tipo = tipo;
+	}
 
 	@Override
 	public String toString() {
-		return "Mensaje [texto=" + texto + ", emisor=" + emisor + ", receptor=" + receptor + ", hora=" + hora
+		return "Mensaje [texto=" + texto + ", TipoMensaje=" + tipo + ", hora=" + hora
 				+ ", emoticono=" + emoticono + ", id=" + id + ", grupo=" + grupo + "]";
 	}
-	
-	
 }

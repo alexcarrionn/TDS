@@ -19,6 +19,7 @@ import modelo.DescuentoFactory;
 import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
+import modelo.TipoMensaje;
 import modelo.Usuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
@@ -130,7 +131,7 @@ public class AppChat {
                     )
                     .flatMap(Collection::stream) // Aplanar la lista de listas en un solo Stream<Message>
                     .sorted() // Ordenar los mensajes
-                    .filter(m -> !(m.getEmisor().getTelefono().equals(usuarioLogueado.getTelefono()) && m.isGrupo())) // Filtrar mensajes grupales enviados por el usuario
+                    .filter(m -> !(m.getTipo().equals(TipoMensaje.ENVIADO) && m.isGrupo())) // Filtrar mensajes grupales enviados por el usuario
                     .collect(Collectors.toList());
         }
 
@@ -250,122 +251,42 @@ public class AppChat {
         return usuarioLogueado.getContactos();
     }
     
-   /*   
-    public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
-		Mensaje mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto,LocalDateTime.now());
-		contacto.addMensaje(mensaje);
-
-		adaptadorMensaje.registrarMensaje(mensaje);
-
-		if (contacto instanceof ContactoIndividual) {
-			adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-		} else {
-			adaptadorGrupo.modificarGrupo((Grupo) contacto);
-		}
-	}
-
-
-    public void enviarMensaje(Contacto contacto, int emoji) {
-		Mensaje mensaje = new Mensaje(emoji, usuarioLogueado, contacto, LocalDateTime.now());
-		contacto.addMensaje(mensaje);
-		adaptadorMensaje.registrarMensaje(mensaje);
-
-		if (contacto instanceof ContactoIndividual) {
-			adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-		} else {
-			adaptadorGrupo.modificarGrupo((Grupo) contacto);
-		}
-	}
-    */
+  //ENVIAR MENSAJE
     
-    //TODO CAMBIAR Y REFACTRORIZAR
-    //ENVIAR MENSAJE DE TEXTO
-    public void enviarMensaje(Contacto contacto, String mensajeEnviar) {
-        Mensaje mensaje;
-        //primero vemos si es un contacto Individual 
-        if (contacto instanceof ContactoIndividual) {
-        	//comprobamos que esta en la lista de contactos 
-            if (!isEnListaContactos(contacto)) {
-            	//Si no está creamos un contacto Anonimo
-                crearContactoAnonimo((ContactoIndividual) contacto);
-            }
-            //Creamos el mensaje y lo registramos  
-            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
-            contacto.addMensaje(mensaje);
-            adaptadorMensaje.registrarMensaje(mensaje);
-            adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-         //En el caso en el que sea un grupo 
-        } else if (contacto instanceof Grupo) {
-            Grupo grupo = (Grupo) contacto;
+    // Método para crear un mensaje entre usuarios
+    private void crearMensajeUsuarioContacto(ContactoIndividual contacto, String texto, int emoticono, TipoMensaje tipo) {
+        Usuario usuarioReceptor = contacto.getUsuario();
+        ContactoIndividual contactoInverso = usuarioReceptor.getContactoIndividual(usuarioLogueado.getTelefono());
 
-            // Enviar un mensaje a cada participante
-            for (ContactoIndividual c : grupo.getContactos()) {
-            	//Comprobamos si esta en la lista de Contactos del usuario
-            	if (!isEnListaContactos(c)) {
-            		//Si no esta creamos un contacto anónimo
-                    crearContactoAnonimo(c);
-                }
-            	//Conseguimos el ContactoIndiviual del grupo 
-                ContactoIndividual contactoIndividual = getContactoUsuarioGrupo(c);
-                //Enviamos el mensaje al usuario
-                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contactoIndividual, LocalDateTime.now());
-                mensaje.setGrupo(true);
-                contactoIndividual.addMensaje(mensaje);
-                adaptadorMensaje.registrarMensaje(mensaje);
-                adaptadorContacto.modificarContacto(contactoIndividual);
-            }
-
-            // Enviar el mensaje al grupo
-            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, grupo, LocalDateTime.now());
-            grupo.addMensaje(mensaje);
-            adaptadorMensaje.registrarMensaje(mensaje);
-            adaptadorGrupo.modificarGrupo(grupo);
+        if (contactoInverso == null) {
+            contactoInverso = usuarioReceptor.nuevoContacto("", usuarioLogueado);
+            adaptadorContacto.registrarContacto(contactoInverso);
+            adaptadorUsuario.modificarUsuario(usuarioReceptor);
         }
+
+        Mensaje mensajeRecibido = contactoInverso.nuevoMensaje(texto, emoticono, TipoMensaje.RECIBIDO);
+        mensajeDAO.registrarMensaje(mensajeRecibido);
+        contactoIndividualDAO.modificarContacto(contactoInverso);
     }
     
-    //ENVIAR MENSAJE CON EMOJI
-    public void enviarMensaje(Contacto contacto, int mensajeEnviar) {
-        Mensaje mensaje;
-        //primero vemos si es un contacto Individual 
-        if (contacto instanceof ContactoIndividual) {
-        	//comprobamos que esta en la lista de contactos 
-            if (!isEnListaContactos(contacto)) {
-            	//Si no está creamos un contacto Anonimo
-                crearContactoAnonimo((ContactoIndividual) contacto);
-            }
-            //Creamos el mensaje y lo registramos  
-            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contacto, LocalDateTime.now());
-            contacto.addMensaje(mensaje);
-            adaptadorMensaje.registrarMensaje(mensaje);
-            adaptadorContacto.modificarContacto((ContactoIndividual) contacto);
-         //En el caso en el que sea un grupo 
-        } else if (contacto instanceof Grupo) {
-            Grupo grupo = (Grupo) contacto;
-
-            // Enviar un mensaje a cada participante
-            for (ContactoIndividual c : grupo.getContactos()) {
-            	//Comprobamos si esta en la lista de Contactos del usuario
-            	if (!isEnListaContactos(c)) {
-            		//Si no esta creamos un contacto anónimo
-                    crearContactoAnonimo(c);
-                }
-            	//Conseguimos el ContactoIndiviual del gruò 
-                ContactoIndividual contactoIndividual = getContactoUsuarioGrupo(c);
-                //Enviamos el mensaje al usuario
-                mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, contactoIndividual, LocalDateTime.now());
-                mensaje.setGrupo(true);
-                contactoIndividual.addMensaje(mensaje);
-                adaptadorMensaje.registrarMensaje(mensaje);
-                adaptadorContacto.modificarContacto(contactoIndividual);
-            }
-
-            // Enviar el mensaje al grupo
-            mensaje = new Mensaje(mensajeEnviar, usuarioLogueado, grupo, LocalDateTime.now());
-            grupo.addMensaje(mensaje);
-            adaptadorMensaje.registrarMensaje(mensaje);
-            adaptadorGrupo.modificarGrupo(grupo);
-        }
+    private void crearMensajeContactoTexto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
+        Mensaje mensaje = contacto.creaMensajeTexto(texto, tipo);
+        adaptadorMensaje.registrarMensaje(mensaje);
+        adaptadorContacto.modificarContacto(contacto);
     }
+    
+    private void crearMensajeContactoEmoticono(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
+        Mensaje mensaje = contacto.creaMensajeEmoticono(emoticono, tipo);
+        adaptadorMensaje.registrarMensaje(mensaje);
+        adaptadorContacto.modificarContacto(contacto);
+    }
+    
+    // Método para enviar un mensaje a un contacto individual
+    public void enviarMensajeContacto(ContactoIndividual contacto, String texto, int emoticono, TipoMensaje tipo) {
+        this.crearMensajeContactoTexto(contacto, texto, emoticono, tipo);
+        this.crearMensajeUsuarioContacto(contacto, texto, emoticono, tipo);
+    }
+    
         
  // Método para obtener el contacto de un usuario dentro de un grupo
     private ContactoIndividual getContactoUsuarioGrupo(ContactoIndividual c) {

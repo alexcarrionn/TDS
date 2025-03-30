@@ -32,6 +32,7 @@ import controlador.AppChat;
 import modelo.Contacto;
 //import modelo.ContactoIndividual;
 import modelo.Mensaje;
+import modelo.TipoMensaje;
 import tds.BubbleText;
 
 public class VentanaPrincipal extends JFrame {
@@ -211,7 +212,7 @@ public class VentanaPrincipal extends JFrame {
                     appchat.enviarMensaje(contactoActual, mensajeTexto);
                     
                     // Crear burbuja y añadirla al chat
-                    Mensaje nuevoMensaje = new Mensaje(mensajeTexto,appchat.getUsuarioLogueado(), contactoActual, LocalDateTime.now());
+                    Mensaje nuevoMensaje = new Mensaje(mensajeTexto,TipoMensaje.ENVIADO, LocalDateTime.now());
                     BubbleText burbuja = crearBurbuja(nuevoMensaje);
                     
                     // Obtener el chat actual y actualizar la UI
@@ -317,13 +318,13 @@ public class VentanaPrincipal extends JFrame {
         int direccionMensaje;
         Color colorBurbuja;
 
-        if (m.getEmisor().equals(appchat.getUsuarioLogueado())) {
+        if (m.getTipo().equals(TipoMensaje.ENVIADO)) {
             colorBurbuja = Color.GREEN;
             emisor = "You";
             direccionMensaje = BubbleText.SENT;
         } else {
             colorBurbuja = Color.DARK_GRAY;
-            emisor = m.getEmisor().getNombre();
+            emisor="Other";
             direccionMensaje = BubbleText.RECEIVED;
         }
 

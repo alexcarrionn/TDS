@@ -14,7 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import modelo.Mensaje;
-import controlador.AppChat;
+import modelo.TipoMensaje;
+
 
 public class MensajeCellRender extends JPanel implements ListCellRenderer<Mensaje> {
 	private static final long serialVersionUID = 1L;
@@ -43,10 +44,10 @@ public class MensajeCellRender extends JPanel implements ListCellRenderer<Mensaj
 		textolabel.setText(Mensaje.getTexto());
 		String usuario = "";
 
-		if (Mensaje.getEmisor().getNombre().equals(AppChat.getUnicaInstancia().getUsuarioLogueado().getNombre())) {
-			usuario = Mensaje.getReceptor().getNombre();
+		if (Mensaje.getTipo().equals(TipoMensaje.ENVIADO)) {
+			usuario = "You";
 		} else {
-			usuario = Mensaje.getEmisor().getNombre();
+			usuario = "Other";
 		}
 		usuarioLabel.setText(usuario);
 		// Load the image from a random URL (for example, using "https://robohash.org")
