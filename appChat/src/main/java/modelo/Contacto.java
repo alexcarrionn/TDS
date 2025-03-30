@@ -30,7 +30,7 @@ public abstract class Contacto {
     }
 
     public List<Mensaje> getMensajes() {
-        return new LinkedList<>(mensajes);
+        return mensajes;
     }
     //Metodo de gestion de mensajes, en este metodo se añaden todos los mensajes pasados como parametro
     public void setMensajes(List<Mensaje> mensajes) {
@@ -47,11 +47,15 @@ public abstract class Contacto {
     }
     
     public Mensaje creaMensajeTexto(String texto, TipoMensaje tipo) {
-    	return new Mensaje(texto,tipo,LocalDateTime.now());
+    	Mensaje m= new Mensaje(texto,tipo,LocalDateTime.now());
+    	mensajes.add(m);
+    	return m;
     }
     
     public Mensaje creaMensajeEmoticono(int emoticono, TipoMensaje tipo) {
-    	return new Mensaje(emoticono,tipo,LocalDateTime.now());
+    	Mensaje m= new Mensaje(emoticono,tipo,LocalDateTime.now());
+    	mensajes.add(m);
+    	return m;
     }
 
     public List<Mensaje> buscarMensajes(String texto) {
@@ -76,4 +80,6 @@ public abstract class Contacto {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	
 }

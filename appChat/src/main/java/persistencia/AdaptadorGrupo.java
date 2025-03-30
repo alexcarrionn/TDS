@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import beans.Entidad;
+import modelo.Mensaje;
 import beans.Propiedad;
-import controlador.AppChat;
 import modelo.ContactoIndividual;
 import modelo.Grupo;
 import tds.driver.FactoriaServicioPersistencia;
@@ -122,6 +122,12 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
 		
 		//Eliminamos la propiedad mensajes y la agregamos despues con los nuevos valores
         servPersistencia.eliminarPropiedadEntidad(eGrupo, "mensajes"); 
-        servPersistencia.anadirPropiedadEntidad(eGrupo, "mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(grupo.getMensajes()));
+        servPersistencia.anadirPropiedadEntidad(eGrupo, "mensajes", obtenerIdsMensajes(grupo.getMensajes()));
     }
+	
+	private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
+        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
+                .trim();
+    }
+	
 }

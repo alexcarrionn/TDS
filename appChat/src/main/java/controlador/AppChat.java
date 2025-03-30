@@ -2,7 +2,6 @@ package controlador;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -165,6 +164,10 @@ public class AppChat {
     }
 */
 	
+	public Optional<Usuario> buscarUsuario(String telefono) {
+		return repo.obtenerUsuarioPorTelefono(telefono);
+	}
+	
 	//Funcion para agregar los contactos
 	public ContactoIndividual agregarContacto(String nombre, String telefono) {
 	    if (usuarioLogueado.contieneContacto(nombre)) {
@@ -172,7 +175,7 @@ public class AppChat {
 	    }
 	    
 	    //buscamos en el repositorio el usuario
-	    return repo.buscarUsuario(telefono)
+	    return buscarUsuario(telefono)
 	        .map(usuario -> crearYRegistrarContacto(nombre, telefono, usuario))
 	        .orElse(null);
 	}
@@ -188,8 +191,7 @@ public class AppChat {
 	    return nuevoContacto;
 	}
 
-    
-    
+        
     //Funcion para poder agregar un Grupo
 	public Grupo agregarGrupo(String groupName, List<String> contactNames) {
 	    //Si ya existe el grupo 
@@ -262,7 +264,7 @@ public class AppChat {
 		
 		//Si el usuario no existe entre los contactos del usuario, creamos uno vacio
         if (contactoInverso == null) {
-            contactoInverso = usuarioReceptor.crearContactoIndividual("", contactoInverso.getMovil(),usuarioLogueado);
+            contactoInverso = usuarioReceptor.crearContactoIndividual("", contacto.getMovil(),usuarioLogueado);
             adaptadorContacto.registrarContacto(contactoInverso);
             adaptadorUsuario.modificarUsuario(usuarioReceptor);
         }
@@ -380,27 +382,6 @@ public class AppChat {
         }
         //Sino, devolverá false
         return false;
-    }
-
-    //Funcion para obtener los ids de los mensajes 
-    public String obtenerIdsMensajes(List<Mensaje> mensajes) {
-        // Usando Java Streams 
-        return mensajes.stream()
-                      .map(mensaje -> String.valueOf(mensaje.getId()))
-                      .collect(Collectors.joining(","));}
-    
-    //Funcion para obtener los mensajes desde los ids
-    public List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {      
-        return Arrays.stream(codigos.split(" "))
-                     .map(code -> {
-                         try {
-                             return adaptadorMensaje.recuperarMensaje(Integer.valueOf(code));
-                         } catch (NumberFormatException e) {
-                             return null;
-                         }
-                     })
-                     .filter(mensaje -> mensaje != null)
-                     .collect(Collectors.toList());
     }
     
     //Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado

@@ -2,7 +2,7 @@ package modelo;
 
 import java.time.LocalDateTime;
 
-public class Mensaje {
+public class Mensaje implements Comparable<Mensaje>{
 	
 	//CAMBIAR EMISOR Y RECEPTOR A TIPO 
 	
@@ -70,5 +70,10 @@ public class Mensaje {
 	public String toString() {
 		return "Mensaje [texto=" + texto + ", TipoMensaje=" + tipo + ", hora=" + hora
 				+ ", emoticono=" + emoticono + ", id=" + id + ", grupo=" + grupo + "]";
+	}
+
+	@Override
+	public int compareTo(Mensaje o) {
+		return hora.compareTo(o.hora);
 	}
 }

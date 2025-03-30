@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -48,7 +49,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
             Arrays.asList(
                 new Propiedad("nombre", c.getNombre()),
                 new Propiedad("movil", c.getMovil()),
-                new Propiedad("mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(c.getMensajes())),
+                new Propiedad("mensajes", obtenerIdsMensajes(c.getMensajes())),
                 new Propiedad("usuario", String.valueOf(c.getUsuario().getId()))
             )
         ));
@@ -87,7 +88,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         contacto.setId(id);
         
         String mensajesId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "mensajes"); 
-        contacto.addAllMensajes(AppChat.getUnicaInstancia().obtenerMensajesDesdeCodigos(mensajesId)); 
+        contacto.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
         
         PoolDAO.getUnicaInstancia().addObjeto(id, contacto);
         return contacto; 
@@ -97,7 +98,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(codigo));
     }*/
 
-	public void modificarContacto(ContactoIndividual contacto) {
+	/*public void modificarContacto(ContactoIndividual contacto) {
         Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
         //Cambiamos cada una de las propiedades del contacto 
         servPersistencia.eliminarPropiedadEntidad(eContacto, "nombre"); 
@@ -111,12 +112,47 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         
         servPersistencia.eliminarPropiedadEntidad(eContacto, "usuario"); 
         servPersistencia.anadirPropiedadEntidad(eContacto, "usuario", String.valueOf(contacto.getUsuario().getId()));
+    */
+    
+    public void modificarContacto(ContactoIndividual contacto) {
+        // Recuperar la entidad asociada al contacto
+        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
+
+        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
+        for (Propiedad p : eContacto.getPropiedades()) {
+            switch (p.getNombre()) {
+                case "nombre":
+                    p.setValor(contacto.getNombre());
+                    break;
+                case "movil":
+                    p.setValor(contacto.getMovil());
+                    break;
+                case "mensajes":
+                    p.setValor(obtenerIdsMensajes(contacto.getMensajes()));
+                    break;
+                case "usuario":
+                    p.setValor(String.valueOf(contacto.getUsuario().getId()));
+                    break;
+            }
+            // Guardar los cambios en la propiedad actualizada
+            servPersistencia.modificarPropiedad(p);
+        }
     }
     
-	/*
-    //Para recuperar todos los Contactos Individuales lo que hacemos es 
-    public List<ContactoIndividual> recuperarTodosContactos(){
-    	//crear funcion para conseguir todos los Contactos Individuales
-    	return null;
-    }*/
+    private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
+        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
+                .trim();
+    }
+
+    private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
+        List<Mensaje> mensajes = new LinkedList<>();
+        StringTokenizer strTok = new StringTokenizer(codigos, " ");
+        AdaptadorMensaje adaptadorMensaje = AdaptadorMensaje.getUnicaInstancia();
+        while (strTok.hasMoreTokens()) {
+            String code = (String) strTok.nextElement();
+            mensajes.add(adaptadorMensaje.recuperarMensaje(Integer.valueOf(code)));
+        }
+        return mensajes;
+    }
+    
 }

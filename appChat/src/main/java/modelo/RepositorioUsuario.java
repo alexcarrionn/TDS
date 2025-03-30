@@ -78,7 +78,7 @@ public class RepositorioUsuario {
 		return usuarios.containsValue(usuario);
 	}
 
-	public Optional<Usuario> buscarUsuario(String telefono) {
+	public Optional<Usuario> obtenerUsuarioPorTelefono(String telefono) {
 		return usuarios.values().stream()
 			    .filter(u -> u.getTelefono().equals(telefono))
 			    .findAny();

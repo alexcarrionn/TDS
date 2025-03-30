@@ -295,6 +295,7 @@ public class VentanaPrincipal extends JFrame {
 
             // Añadir burbujas de mensajes al chat
             appchat.getMensajes(contacto).forEach(m -> chat.add(crearBurbuja(m)));
+            System.out.println(appchat.getMensajes(contacto));
 
             // Guardar el nuevo chat en la caché
             chatsRecientes.put(contacto, chat);
