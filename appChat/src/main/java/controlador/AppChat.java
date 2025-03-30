@@ -336,11 +336,15 @@ public class AppChat {
     }
     
     public void crearMensajeTextoGrupo(Grupo g, String texto, TipoMensaje tipo) {
-    	
+    	 Mensaje mensaje = g.creaMensajeTexto(texto, tipo);
+         adaptadorMensaje.registrarMensaje(mensaje);
+         adaptadorGrupo.modificarGrupo(g);
     }
     
     public void crearMensajeEmojiGrupo(Grupo g, int emoticono, TipoMensaje tipo) {
-    	
+    	Mensaje mensaje = g.creaMensajeEmoticono(emoticono, tipo);
+        adaptadorMensaje.registrarMensaje(mensaje);
+        adaptadorGrupo.modificarGrupo(g);
     }
     
     //esta funcion te aplica el descuento concreto si se cumple la condicion
