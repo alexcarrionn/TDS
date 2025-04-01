@@ -8,7 +8,6 @@ import java.util.StringTokenizer;
 
 import beans.Entidad;
 import beans.Propiedad;
-import controlador.AppChat;
 import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.Usuario;
@@ -61,16 +60,18 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         PoolDAO.getUnicaInstancia().addObjeto(c.getId(), c); 
     }
 
-    
+    //Funcion auxiliar para registrar los mensajes 
     private void siNoExisteMensajes(List<Mensaje> mensajes) {
         mensajes.stream()
                 .forEach(AdaptadorMensaje.getUnicaInstancia()::registrarMensaje); // Registramos cada mensaje
     }
-
+    
+    //Funcion auxiliar para registar el usuario
     private void siNoExisteUsuario(Usuario usuario) {
         AdaptadorUsuario.getUnicaInstancia().registrarUsuario(usuario);        
     }
     
+    //Funcion para recuperar un contactoIndividual de la BBDDs
     public ContactoIndividual recuperarContacto(int id) {
     	if (PoolDAO.getUnicaInstancia().contiene(id))
             return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(id);
@@ -82,68 +83,30 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
     	String nombre = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "nombre");
         String movil = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "movil");
         String usuarioId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "usuario");
-        Usuario usuario = AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(usuarioId));
         
-        ContactoIndividual contacto = new ContactoIndividual(nombre, movil,new LinkedList<Mensaje>(),usuario);
+        
+        ContactoIndividual contacto = new ContactoIndividual(nombre, movil,new LinkedList<Mensaje>(),null);
         contacto.setId(id);
         
+        //IMPORTANTE: Llamar primero al DAO antes de llamar a otros adaptadores
+        PoolDAO.getUnicaInstancia().addObjeto(id, contacto);
+        
+        //Recuperamos al usuario y se lo añadimos
+        Usuario usuario = obtenerUsuarioDesdeCodigo(usuarioId);
+        contacto.setUsuario(usuario);
+        //recuperamos los mensajes y se lo añadimos
         String mensajesId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "mensajes"); 
         contacto.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
         
-        PoolDAO.getUnicaInstancia().addObjeto(id, contacto);
+        
         return contacto; 
     }
 	
-   /* private Usuario obtenerUsuarioDesdeCodigo(String codigo) {
-        return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(codigo));
-    }*/
-
-	/*public void modificarContacto(ContactoIndividual contacto) {
-        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
-        //Cambiamos cada una de las propiedades del contacto 
-        servPersistencia.eliminarPropiedadEntidad(eContacto, "nombre"); 
-        servPersistencia.anadirPropiedadEntidad(eContacto, "nombre", contacto.getNombre()); 
-        
-        servPersistencia.eliminarPropiedadEntidad(eContacto, "movil"); 
-        servPersistencia.anadirPropiedadEntidad(eContacto, "movil", contacto.getMovil()); 
-        
-        servPersistencia.eliminarPropiedadEntidad(eContacto, "mensajes"); 
-        servPersistencia.anadirPropiedadEntidad(eContacto, "mensajes", AppChat.getUnicaInstancia().obtenerIdsMensajes(contacto.getMensajes()));
-        
-        servPersistencia.eliminarPropiedadEntidad(eContacto, "usuario"); 
-        servPersistencia.anadirPropiedadEntidad(eContacto, "usuario", String.valueOf(contacto.getUsuario().getId()));
-    */
-    
-    public void modificarContacto(ContactoIndividual contacto) {
-        // Recuperar la entidad asociada al contacto
-        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
-
-        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
-        for (Propiedad p : eContacto.getPropiedades()) {
-            switch (p.getNombre()) {
-                case "nombre":
-                    p.setValor(contacto.getNombre());
-                    break;
-                case "movil":
-                    p.setValor(contacto.getMovil());
-                    break;
-                case "mensajes":
-                    p.setValor(obtenerIdsMensajes(contacto.getMensajes()));
-                    break;
-                case "usuario":
-                    p.setValor(String.valueOf(contacto.getUsuario().getId()));
-                    break;
-            }
-            // Guardar los cambios en la propiedad actualizada
-            servPersistencia.modificarPropiedad(p);
-        }
+    //Funcion auxiliar par obtener al usuario desde el codigo 
+    private Usuario obtenerUsuarioDesdeCodigo(String usuarioId) {
+    	return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(usuarioId));
     }
-    
-    private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
-        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
-                .trim();
-    }
-
+    //funcion auxiliar para obtener los mensajes desde los codigos 
     private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
         List<Mensaje> mensajes = new LinkedList<>();
         StringTokenizer strTok = new StringTokenizer(codigos, " ");
@@ -154,5 +117,35 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         }
         return mensajes;
     }
+    
+    
+    //Funcion para modificar un contacto
+    public void modificarContacto(ContactoIndividual contacto) {
+        // Recuperar la entidad asociada al contacto
+        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
+
+        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
+        for (Propiedad p : eContacto.getPropiedades()) {
+            if (p.getNombre().equals("nombre")) {
+                p.setValor(contacto.getNombre());
+            } else if (p.getNombre().equals("movil")) {
+                p.setValor(contacto.getMovil());
+            } else if (p.getNombre().equals("mensajes")) {
+                p.setValor(obtenerIdsMensajes(contacto.getMensajes()));
+            } else if (p.getNombre().equals("usuario")) {
+                p.setValor(String.valueOf(contacto.getUsuario().getId()));
+            }
+            // Guardar los cambios en la propiedad actualizada
+            servPersistencia.modificarPropiedad(p);
+        }
+    }
+
+    //Funcion auxiliar para obtener los ids de los mensajes pasados como parametros
+    private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
+        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
+                .trim();
+    }
+
+
     
 }

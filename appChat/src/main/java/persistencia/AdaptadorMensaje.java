@@ -6,7 +6,6 @@ import tds.driver.ServicioPersistencia;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -54,12 +53,15 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         // Guardamos en el pool
         PoolDAO.getUnicaInstancia().addObjeto(mensaje.getId(), mensaje);
     }
-
+    
+    /*
     public void borrarMensaje(Mensaje mensaje) {
         Entidad eMensaje = servPersistencia.recuperarEntidad(mensaje.getId());
         servPersistencia.borrarEntidad(eMensaje);
-    }
-
+    }*/
+    
+    /*
+    //Funcion para modificar un mensaje de la bbdd
     public void modificarMensaje(Mensaje mensaje) {
         Entidad eMensaje = servPersistencia.recuperarEntidad(mensaje.getId());
 
@@ -75,8 +77,9 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             }
             servPersistencia.modificarPropiedad(prop);
         }
-    }
+    }*/
     
+    //Funcion para recuperar los mensajes 
     public Mensaje recuperarMensaje(int codigo) {
         // Si el mensaje está en el pool, se devuelve directamente
         if (PoolDAO.getUnicaInstancia().contiene(codigo))
@@ -99,7 +102,7 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         return mensaje;
     }
     
-    
+    /*
     public List<Mensaje> recuperarTodosMensajes() {
         List<Mensaje> mensajes = new ArrayList<>();
         List<Entidad> eMensajes = servPersistencia.recuperarEntidades("Mensaje");
@@ -107,5 +110,5 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             mensajes.add(recuperarMensaje(eMensaje.getId()));
         }
         return mensajes;
-    }
+    }*/
 }

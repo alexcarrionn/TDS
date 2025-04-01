@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -26,12 +25,10 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JTextField;
-
 import controlador.AppChat;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
 import modelo.Grupo;
-//import modelo.ContactoIndividual;
 import modelo.Mensaje;
 import modelo.TipoMensaje;
 import tds.BubbleText;
@@ -49,6 +46,7 @@ public class VentanaPrincipal extends JFrame {
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
+	JComboBox<String> comboUsuarioReceptor; 
 
     /**
      * Create the frame.
@@ -73,10 +71,9 @@ public class VentanaPrincipal extends JFrame {
         
         
         //TODO VER SI SE PUEDE REINICIAR CADA VEZ QUE SE AÑADA UN NUEVO CONTACTO 
-        JComboBox<String> comboUsuarioReceptor = new JComboBox<String>();
+        comboUsuarioReceptor = new JComboBox<String>();
         comboUsuarioReceptor.setEditable(true);
-        //comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(new String[] { "Contacto Javier", "Contacto Ana" }));
-        actualizarComboBox(comboUsuarioReceptor);
+        actualizarComboBox();
         
         
         panelBotones.add(comboUsuarioReceptor);
@@ -118,15 +115,80 @@ public class VentanaPrincipal extends JFrame {
         // Agregar el botón al panel
         panelBotones.add(botonPremium);
 
-        JLabel labelUsuarioActual = new JLabel(AppChat.getUnicaInstancia().getUsuarioLogueado().getNombre());
+        //TODO Ver si lo ponemos o no 
+        /*JLabel labelUsuarioActual = new JLabel(appchat.getUsuarioLogueado().getNombre());
         panelBotones.add(labelUsuarioActual);
+        
+        JLabel labelImagenUsuarioActual = new JLabel("");
+        String imagen = appchat.getUsuarioLogueado().getImagen(); 
+        if (imagen == null || imagen.isEmpty()) {
+            // Si no hay imagen, usa RoboHash con el nombre del usuario
+            try {
+                imagen = "https://robohash.org/" + appchat.getUsuarioLogueado().getNombre();
+                // Convertir la URL en un objeto ImageIcon
+                URL imageUrl = new URL(imagen);
+                ImageIcon imageIcon = new ImageIcon(imageUrl);
+                Image image = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_AREA_AVERAGING);
+                ImageIcon imageResized = new ImageIcon(image);
+                labelImagenUsuarioActual.setIcon(imageResized);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                // Manejar el caso de error en la URL, puedes poner una imagen predeterminada aquí.
+            }
+        } else {
+            // Si hay imagen, usa la imagen del usuario
+            ImageIcon imageIcon = new ImageIcon(imagen);
+            Image image = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_AREA_AVERAGING);
+            ImageIcon imageResized = new ImageIcon(image);
+            labelImagenUsuarioActual.setIcon(imageResized);
+        }
 
+        panelBotones.add(labelImagenUsuarioActual);*/
+        
         JLabel labelImagenUsuarioActual = new JLabel("");
         ImageIcon imageIcon = new ImageIcon(appchat.getUsuarioLogueado().getImagen());
         Image image = imageIcon.getImage().getScaledInstance(50,50, Image.SCALE_AREA_AVERAGING);
         ImageIcon imageResized= new ImageIcon(image);
         labelImagenUsuarioActual.setIcon(imageResized);
         panelBotones.add(labelImagenUsuarioActual);
+        
+        /*JButton botonImagenUsuarioActual = new JButton();
+        String imagen = appchat.getUsuarioLogueado().getImagen();
+        if (imagen == null || imagen.equals(" ") || imagen.equals("")) {
+        	imagen = "https://robohash.org/" + appchat.getUsuarioLogueado().getNombre();
+        }
+        ImageIcon imageIcon = new ImageIcon(imagen);
+        Image image = imageIcon.getImage().getScaledInstance(45, 45, Image.SCALE_AREA_AVERAGING);
+        ImageIcon imageResized = new ImageIcon(image);
+        botonImagenUsuarioActual.setIcon(imageResized);
+        panelBotones.add(botonImagenUsuarioActual);
+        botonImagenUsuarioActual.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Crear un JFileChooser para seleccionar la imagen
+                JFileChooser fileChooser = new JFileChooser();
+                
+                // Filtrar solo imágenes (opcional)
+                fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imágenes", "jpg", "png", "gif"));
+
+                // Mostrar el diálogo para seleccionar el archivo
+                int result = fileChooser.showOpenDialog(null);
+
+                // Si el usuario selecciona un archivo
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    
+                    // Crear un ImageIcon con la imagen seleccionada
+                    ImageIcon selectedImageIcon = new ImageIcon(selectedFile.getAbsolutePath());
+                    Image selectedImage = selectedImageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_AREA_AVERAGING);
+                    ImageIcon resizedImageIcon = new ImageIcon(selectedImage);
+                    
+                    // Establecer la imagen en el botón
+                    botonImagenUsuarioActual.setIcon(resizedImageIcon);
+                    //appchat.actualizarFoto(selectedImage.toString()); 
+            }}
+        });
+		*/
 
         JPanel panelLista = new JPanel();
         contentPane.add(panelLista, BorderLayout.WEST);
@@ -257,13 +319,13 @@ public class VentanaPrincipal extends JFrame {
         }
     }
     
-    private void actualizarComboBox(JComboBox<String> comboBox) {
+    private void actualizarComboBox() {
         List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();
         String[] nombresContactos = contactosUsuarioActual.stream()
             .map(contacto -> "Contacto " + contacto.getNombre())
             .toArray(String[]::new);
 
-        comboBox.setModel(new DefaultComboBoxModel<String>(nombresContactos));
+        comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(nombresContactos));
     }
     
     
@@ -348,7 +410,7 @@ public class VentanaPrincipal extends JFrame {
             emisor = "You";
             direccionMensaje = BubbleText.SENT;
         } else {
-            colorBurbuja = Color.DARK_GRAY;
+            colorBurbuja = Color.BLUE;
             emisor="Other";
             direccionMensaje = BubbleText.RECEIVED;
         }

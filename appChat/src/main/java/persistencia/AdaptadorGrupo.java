@@ -29,6 +29,7 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
 
+    //Funcion para registar un grupo en la bbdd
     public void registrarGrupo(Grupo grupo) {
         // Comprobar si el contacto ya está registrado
         if (servPersistencia.recuperarEntidad(grupo.getId()) != null) {
@@ -57,18 +58,20 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         //Guardamos en el pool 
         PoolDAO.getUnicaInstancia().addObjeto(grupo.getId(), grupo); 
     }
-
+    
+    //Funcion auxiliar para registar los contactos
     private void siNoExistenContactos(List<ContactoIndividual> contactos) {
 		contactos.stream()
 				 .forEach(AdaptadorContactoIndividual.getUnicaInstancia()::registrarContacto); // Registramos cada contacto
 	}
-
+    //Funcion auxiliar para obtener los ids de los contactos pasados como parametros 
 	private String obtenerIdsContactos(List<ContactoIndividual> contactos) {
     	return contactos.stream()
     					.map(contacto -> String.valueOf(contacto.getId()))
     					.collect(Collectors.joining(","));
 	}
-
+	
+	//Función para poder recuperar un grupo
 	public Grupo recuperarGrupo(int id) {
         // Si la entidad está en el pool, la devuelve directamente
         if (PoolDAO.getUnicaInstancia().contiene(id)) {
@@ -95,7 +98,8 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         return grupo;
     }
     
-    public List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
+	//Funcion auxiliar para obtener los contactos desde los codigos 
+    private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
         AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
 
         return Arrays.stream(codigos.split(","))
@@ -109,22 +113,28 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
                      .filter(contacto -> contacto != null)
                      .collect(Collectors.toList());
     }
+    
+    
+    //Funcion que te permitirá modificar un grupo 
+    public void modificarGrupo(Grupo grupo) {
+        // Recuperar la entidad asociada al grupo
+        Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getId());
 
-	public void modificarGrupo(Grupo grupo) {
-		Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getId());
-		//Eliminamos la propiedad nombre y la agregamos despues con el nuevo valor
-		servPersistencia.eliminarPropiedadEntidad(eGrupo, "nombre");
-		servPersistencia.anadirPropiedadEntidad(eGrupo, "nombre", grupo.getNombre());
-		
-		//Eliminamos la propiedad contactos y la agregamos despues con los nuevos valores
-		servPersistencia.eliminarPropiedadEntidad(eGrupo, "contactos");
-		servPersistencia.anadirPropiedadEntidad(eGrupo, "contactos", String.valueOf(grupo.getContactos()));
-		
-		//Eliminamos la propiedad mensajes y la agregamos despues con los nuevos valores
-        servPersistencia.eliminarPropiedadEntidad(eGrupo, "mensajes"); 
-        servPersistencia.anadirPropiedadEntidad(eGrupo, "mensajes", obtenerIdsMensajes(grupo.getMensajes()));
+        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
+        for (Propiedad prop : eGrupo.getPropiedades()) {
+            if (prop.getNombre().equals("nombre")) {
+                prop.setValor(grupo.getNombre());
+            } else if (prop.getNombre().equals("contactos")) {
+                prop.setValor(String.valueOf(grupo.getContactos()));
+            } else if (prop.getNombre().equals("mensajes")) {
+                prop.setValor(obtenerIdsMensajes(grupo.getMensajes()));
+            }
+            // Guardar los cambios en la propiedad actualizada
+            servPersistencia.modificarPropiedad(prop);
+        }
     }
 	
+    //Funcion auxiliar para obtener los ids de los mensajes recibidos como parametros
 	private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
         return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
                 .trim();

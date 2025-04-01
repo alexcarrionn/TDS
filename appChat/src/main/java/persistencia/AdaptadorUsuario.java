@@ -66,6 +66,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		}
 
 	}
+	
 
 	public void registrarUsuario(Usuario usuario) {
 	    Entidad eUsuario = null;
