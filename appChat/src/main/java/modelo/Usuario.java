@@ -120,10 +120,6 @@ public class Usuario {
 	public void setContactos(List<Contacto> contactos) {
 		this.contactos = contactos;
 	}
-
-	public void setPremium() {
-		premium=true; 
-	}
 	
 	public Optional<Descuento> getDescuento() {
 		return descuento;

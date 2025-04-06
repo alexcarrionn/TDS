@@ -24,6 +24,7 @@ import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import controlador.AppChat;
 import modelo.Contacto;
@@ -97,6 +98,19 @@ public class VentanaPrincipal extends JFrame {
             grupo.setVisible(true);
         });
         panelBotones.add(btnContactos);
+        
+        
+     // Botón para crear un nuevo contacto
+        JButton btnCrearContacto = new JButton("+C");
+        btnCrearContacto.setToolTipText("Crear nuevo contacto"); // Tooltip para mayor claridad
+        btnCrearContacto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Llamar a la función crearContacto()
+                crearContacto();
+            }
+        });
+        panelBotones.add(btnCrearContacto);
 
         Component horizontalGlue = Box.createHorizontalGlue();
         panelBotones.add(horizontalGlue);
@@ -278,6 +292,36 @@ public class VentanaPrincipal extends JFrame {
             }
         });
         enviar.add(botonEnviarMensaje);
+    }
+    
+    
+    //Dialogo para crear el contacto al pulsar el boton de Crear Contacto
+    private ContactoIndividual crearContacto() {
+        JTextField nombreContacto = new JTextField();
+        JTextField telefonoContacto = new JTextField();
+
+        Object[] mensaje = {
+                "Nombre ", nombreContacto,
+                "Teléfono ", telefonoContacto
+        };
+
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Contacto", JOptionPane.OK_CANCEL_OPTION);
+        if (opcion == JOptionPane.OK_OPTION) {
+            String nombre = nombreContacto.getText();
+            String telefono = telefonoContacto.getText();
+
+            //Verificamos que hayan entradas en ambos campos
+            if(!nombre.isEmpty() && !telefono.isEmpty()) {
+                //CREAMOS EL CONTACTO
+                return appchat.agregarContacto(nombre, telefono);
+            } else {
+                JOptionPane.showMessageDialog(this, "Uno de las entradas esta vacía", "Error", JOptionPane.ERROR_MESSAGE);
+
+            }
+        }
+
+        //Si se pulsa cancelar
+        return null;
     }
     
     

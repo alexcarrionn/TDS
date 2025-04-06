@@ -25,6 +25,7 @@ public class VentanaPremium extends JFrame {
         JPanel panelCentral = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel lblCantidad = new JLabel("Cantidad a pagar: ");
         panelCentral.add(lblCantidad);
+        
 
         // Panel inferior para los botones
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -43,6 +44,17 @@ public class VentanaPremium extends JFrame {
 
         JButton botonCancelar = new JButton("Cancelar");
         botonCancelar.addActionListener(e -> dispose());
+        
+        JButton btnDesactivar = new JButton("Desactivar");
+        btnDesactivar.addActionListener(e-> {
+        	boolean comprobacion = AppChat.getUnicaInstancia().desactivarPremium();
+        	if (!comprobacion) {
+        		JOptionPane.showMessageDialog(this,"No eres premium no puede desactivar la cuenta", "Error", JOptionPane.ERROR_MESSAGE);
+        	}else {
+        		JOptionPane.showMessageDialog(this,"Has desactivado Premium", "Information", JOptionPane.INFORMATION_MESSAGE);
+        	}
+        });
+        panelInferior.add(btnDesactivar);
 
         panelInferior.add(botonAceptar);
         panelInferior.add(botonCancelar);

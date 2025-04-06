@@ -362,21 +362,12 @@ public class AppChat {
     }
     
     //Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
-    public boolean hacerPremium(String tipo) {
-    	//Fijamos las dos fechas de inicio  y fin donde se aplicará el descuento
-        LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
-        LocalDate finDescuento = LocalDate.of(2025, 1, 6);
+    public boolean hacerPremium(String tipo) {     
         //Vemos si se cumple la condicion de que sea Premium según sea Descuento por mensaje o por Fecha
-        boolean cumpleCondicion = switch (tipo) {
-            case "Descuento Mensajes" -> usuarioLogueado.getNumMensajes() >= 100 && !usuarioLogueado.isPremium();
-            case "Descuento Fecha" -> 
-                !usuarioLogueado.getFecha().isBefore(inicioDescuento) && 
-                !usuarioLogueado.getFecha().isAfter(finDescuento) && !usuarioLogueado.isPremium();
-            default -> false;
-        };
+        boolean cumpleCondicion = cumpleCondicion(tipo);
         //Si cumple la condicion revolverá true y hará al usuario Premium
         if (cumpleCondicion) {
-            usuarioLogueado.setPremium();
+            usuarioLogueado.setPremium(true);
             adaptadorUsuario.modificarUsuario(usuarioLogueado);
             return true;
         }
@@ -384,7 +375,25 @@ public class AppChat {
         return false;
     }
     
-    //Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
+    private boolean cumpleCondicion(String tipo) {
+    	//Fijamos las dos fechas de inicio  y fin donde se aplicará el descuento
+    	LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
+        LocalDate finDescuento = LocalDate.of(2025, 1, 6);
+        switch (tipo) {
+        case "Descuento Mensajes":
+            return usuarioLogueado.getNumMensajes() >= 100 && !usuarioLogueado.isPremium();
+
+        case "Descuento Fecha":
+            LocalDate fechaUsuario = usuarioLogueado.getFecha();
+            boolean enRangoFechas = !fechaUsuario.isBefore(inicioDescuento) && !fechaUsuario.isAfter(finDescuento);
+            return enRangoFechas && !usuarioLogueado.isPremium();
+
+        default:
+            return false;
+    }
+	}
+
+	//Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
     public List<Mensaje> obtenerMensajesReMensaje() {
         Contacto contactoActual = getChatActual();
         if (contactoActual == null) {
@@ -401,6 +410,12 @@ public class AppChat {
             .map(ContactoIndividual.class::cast)         // Hacer cast automáticamente
             .anyMatch(contacto -> contacto.getMovil().equals(numero)); // Comparar número
     }
-
-
+    
+    public boolean desactivarPremium() {
+		if(usuarioLogueado.isPremium()) {
+			usuarioLogueado.setPremium(false);
+			return true;
+		}
+		return false;
+	}
 }
