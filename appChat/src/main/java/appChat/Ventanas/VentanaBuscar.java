@@ -2,13 +2,21 @@ package appChat.Ventanas;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import controlador.AppChat;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import modelo.Mensaje;
 
 public class VentanaBuscar {
 
     private JFrame frame;
+    private JTextArea mensajesArea;
+    private AppChat appchat= AppChat.getUnicaInstancia();
 
     /**
      * @wbp.parser.entryPoint
@@ -65,7 +73,14 @@ public class VentanaBuscar {
         buscarButton.setSelectedIcon(null);
         panelCampos.add(buscarButton);
         
-        //TODO evento del boton
+        buscarButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String texto = textoField.getText();
+        		String numero = telefonoField.getText();
+        		String contacto = contactoField.getText();
+        		buscarMensaje(texto, numero, contacto);
+        	}		
+        });
         
 
         // Añadir ambos paneles (texto y campos) al panel superior
@@ -78,7 +93,7 @@ public class VentanaBuscar {
         panelInferior.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
         // Área de texto dentro de un JScrollPane, que se agrandará con la ventana
-        JTextArea mensajesArea = new JTextArea();
+        mensajesArea = new JTextArea();
         mensajesArea.setEditable(false); // Para que solo muestre mensajes
         JScrollPane scrollPane = new JScrollPane(mensajesArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -99,7 +114,13 @@ public class VentanaBuscar {
         frame.setVisible(true);
     }
 
-    // Método para agregar placeholders en los campos de texto
+    private void buscarMensaje(String texto, String numero, String contacto) {
+    	mensajesArea.removeAll();
+    	
+    	List<Mensaje> mensajes = appchat.buscarMensajes(texto,numero,contacto);
+	}
+
+	// Método para agregar placeholders en los campos de texto
     private void addPlaceholder(JTextField textField, String placeholderText) {
         textField.setText(placeholderText);
         textField.setForeground(Color.GRAY);

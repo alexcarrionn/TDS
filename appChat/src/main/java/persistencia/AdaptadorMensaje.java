@@ -6,6 +6,7 @@ import tds.driver.ServicioPersistencia;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -102,7 +103,6 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         return mensaje;
     }
     
-    /*
     public List<Mensaje> recuperarTodosMensajes() {
         List<Mensaje> mensajes = new ArrayList<>();
         List<Entidad> eMensajes = servPersistencia.recuperarEntidades("Mensaje");
@@ -110,5 +110,5 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             mensajes.add(recuperarMensaje(eMensaje.getId()));
         }
         return mensajes;
-    }*/
+    }
 }

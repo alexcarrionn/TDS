@@ -416,4 +416,31 @@ public class AppChat {
 		usuarioLogueado.setImagen(string);
 		adaptadorUsuario.modificarUsuario(usuarioLogueado);
 	}
+
+	public List<Mensaje> buscarMensajes(String texto, String numero, String contacto) {
+	    List<Mensaje> todosLosMensajes = adaptadorMensaje.recuperarTodosMensajes();
+
+	    return todosLosMensajes.stream()
+	        .filter(m -> {
+	            boolean coincideTexto = true;
+	            boolean coincideNumero = true;
+	            boolean coincideContacto = true;
+
+	            if (texto != null && !texto.isBlank()) {
+	                coincideTexto = m.getTexto() != null && m.getTexto().toLowerCase().contains(texto.toLowerCase());
+	            }
+
+	            if (numero != null && !numero.isBlank()) {
+	                coincideNumero = m.getNumeroTelefono() != null && m.getNumeroTelefono().contains(numero);
+	            }
+
+	            if (contacto != null && !contacto.isBlank()) {
+	                coincideContacto = m.getNombreContacto() != null && m.getNombreContacto().toLowerCase().contains(contacto.toLowerCase());
+	            }
+
+	            return coincideTexto && coincideNumero && coincideContacto;
+	        })
+	        .toList();
+	}
+
 }
