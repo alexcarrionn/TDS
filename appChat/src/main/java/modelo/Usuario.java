@@ -121,9 +121,10 @@ public class Usuario {
 		this.contactos = contactos;
 	}
 	
+	/*
 	public Optional<Descuento> getDescuento() {
 		return descuento;
-	}
+	}*/
 	
 	public double getPrecio() {
 		if (descuento.isPresent()){
@@ -160,20 +161,22 @@ public class Usuario {
 		contactos.add(grupo);
 	}
 	
+	/*
 	public void addAllContactos(List<Contacto> Contactos) {
 		//aqui tenemos que hacer un for each para añadir todos los contactos
 		for (Contacto c: Contactos) {
 			contactos.add(c);
 		}
-	}
+	}*/
 	
+	/*
 	//Función que sirve para poder contar todos los mensajes que tiene el usuario
 	public int contarMensajesTotales() {
 	    return contactos.stream() // Convertimos la lista de contactos en un Stream
 	            .mapToInt(contacto -> contacto.getMensajes().size()) // Obtenemos el número de mensajes por contacto
 	            .sum(); // Sumamos todos los tamaños de las listas de mensajes
 	}
-
+	*/
 	
 	//To string y el hashCode y el equals
 		@Override

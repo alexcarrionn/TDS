@@ -1,6 +1,7 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -10,6 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import filtrosStrategy.FiltroCombinado;
+import filtrosStrategy.FiltroFechaHora;
+import filtrosStrategy.FiltroTexto;
+import filtrosStrategy.FiltroTipoMensaje;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
 import modelo.Descuento;
@@ -404,6 +409,7 @@ public class AppChat {
             .anyMatch(contacto -> contacto.getMovil().equals(numero)); // Comparar número
     }
     
+    //Funcion que sirve para desactivar el premium del usuario 
     public boolean desactivarPremium() {
 		if(usuarioLogueado.isPremium()) {
 			usuarioLogueado.setPremium(false);
@@ -411,36 +417,40 @@ public class AppChat {
 		}
 		return false;
 	}
-
+    
+    //Funcion que sirve para actualizar la foto de perfil del usuario
 	public void actualizarFoto(String string) {
 		usuarioLogueado.setImagen(string);
 		adaptadorUsuario.modificarUsuario(usuarioLogueado);
 	}
-
-	public List<Mensaje> buscarMensajes(String texto, String numero, String contacto) {
-	    List<Mensaje> todosLosMensajes = adaptadorMensaje.recuperarTodosMensajes();
-
-	    return todosLosMensajes.stream()
-	        .filter(m -> {
-	            boolean coincideTexto = true;
-	            boolean coincideNumero = true;
-	            boolean coincideContacto = true;
-
-	            if (texto != null && !texto.isBlank()) {
-	                coincideTexto = m.getTexto() != null && m.getTexto().toLowerCase().contains(texto.toLowerCase());
-	            }
-
-	            if (numero != null && !numero.isBlank()) {
-	                coincideNumero = m.getNumeroTelefono() != null && m.getNumeroTelefono().contains(numero);
-	            }
-
-	            if (contacto != null && !contacto.isBlank()) {
-	                coincideContacto = m.getNombreContacto() != null && m.getNombreContacto().toLowerCase().contains(contacto.toLowerCase());
-	            }
-
-	            return coincideTexto && coincideNumero && coincideContacto;
-	        })
-	        .toList();
+	
+	
+	public List<Mensaje> buscarMensajes(String texto, TipoMensaje tipo, LocalDateTime desde, LocalDateTime hasta) {
+		//Primero cogemos todos los mensajes que existen
+		List<Mensaje> mensajes = getContactosUsuarioActual().stream()
+								.flatMap(c -> getMensajes(c).stream())
+								.collect(Collectors.toList());
+		
+		//Creamos un filtroCombiando
+		FiltroCombinado filtro = new FiltroCombinado(); 
+		
+		//Añadimos los filtros en caso de que queramos 
+		
+		//Primero el del texto
+		if(texto != null && !texto.isEmpty())
+			filtro.anadirFiltro(new FiltroTexto(texto));
+		
+		//Despues haremos el del tipo
+		if(tipo != null)
+			filtro.anadirFiltro(new FiltroTipoMensaje(tipo));
+		
+		//Por último el de la fecha y la hora 
+		if (desde != null && hasta != null)
+			filtro.anadirFiltro(new FiltroFechaHora(desde, hasta));
+		
+		return filtro.filtrarMensaje(mensajes);
 	}
+
+
 
 }

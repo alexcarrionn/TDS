@@ -10,7 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
 import modelo.Mensaje;
+import modelo.TipoMensaje;
 
 public class VentanaBuscar {
 
@@ -56,16 +61,23 @@ public class VentanaBuscar {
         panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.X_AXIS));
 
         // Campo de teléfono con placeholder
-        JTextField telefonoField = new JTextField();
-        addPlaceholder(telefonoField, "teléfono");
-        panelCampos.add(telefonoField);
+        JTextField tipoField = new JTextField();
+        addPlaceholder(tipoField, "Tipo");
+        panelCampos.add(tipoField);
         panelCampos.add(Box.createRigidArea(new Dimension(10, 0))); // Espacio entre campos
 
-        // Campo de contacto con placeholder
-        JTextField contactoField = new JTextField();
-        addPlaceholder(contactoField, "contacto");
-        panelCampos.add(contactoField);
+     // Campo de fecha desde
+        JTextField desdeField = new JTextField();
+        addPlaceholder(desdeField, "Desde (YYYY-MM-DDTHH:MM)");
+        panelCampos.add(desdeField);
         panelCampos.add(Box.createRigidArea(new Dimension(10, 0))); // Espacio entre campos
+
+        // Campo de fecha hasta
+        JTextField hastaField = new JTextField();
+        addPlaceholder(hastaField, "Hasta (YYYY-MM-DDTHH:MM)");
+        panelCampos.add(hastaField);
+        panelCampos.add(Box.createRigidArea(new Dimension(10, 0))); // Espacio entre campos
+
 
         // Botón de buscar
         JButton buscarButton = new JButton("Buscar");
@@ -75,12 +87,39 @@ public class VentanaBuscar {
         
         buscarButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		String texto = textoField.getText();
-        		String numero = telefonoField.getText();
-        		String contacto = contactoField.getText();
-        		buscarMensaje(texto, numero, contacto);
-        	}		
-        });
+        		String texto = textoField.getText().trim();
+        		LocalDateTime desde = null;
+        		LocalDateTime hasta = null;
+        		TipoMensaje tipo = null;
+
+        		try {
+        		    // --- Tipo de mensaje ---
+        		    String tipoTexto = tipoField.getText().trim();
+        		    if (!tipoTexto.isEmpty() && !tipoTexto.equalsIgnoreCase("Tipo")) {
+        		        tipo = TipoMensaje.valueOf(tipoTexto.toUpperCase()); // Asegura que coincida con los enums
+        		    }
+
+        		    // --- Fecha Desde ---
+        		    String desdeTexto = desdeField.getText().trim();
+        		    if (!desdeTexto.isEmpty() && !desdeTexto.equalsIgnoreCase("Desde (YYYY-MM-DDTHH:MM)")) {
+        		        desde = LocalDateTime.parse(desdeTexto);
+        		    }
+
+        		    // --- Fecha Hasta ---
+        		    String hastaTexto = hastaField.getText().trim();
+        		    if (!hastaTexto.isEmpty() && !hastaTexto.equalsIgnoreCase("Hasta (YYYY-MM-DDTHH:MM)")) {
+        		        hasta = LocalDateTime.parse(hastaTexto);
+        		    }
+
+        		    // Llamada a la función de búsqueda
+        		    buscarMensaje(texto, tipo, desde, hasta);
+
+        		} catch (IllegalArgumentException ex) {
+        		    JOptionPane.showMessageDialog(frame, "Tipo de mensaje no válido. Usa uno de: " + Arrays.toString(TipoMensaje.values()), "Error", JOptionPane.ERROR_MESSAGE);
+        		} catch (DateTimeParseException ex) {
+        		    JOptionPane.showMessageDialog(frame, "Formato de fecha inválido. Usa el formato: YYYY-MM-DDTHH:MM (Ej: 2025-04-06T15:30)", "Error", JOptionPane.ERROR_MESSAGE);
+        		}
+        	}});
         
 
         // Añadir ambos paneles (texto y campos) al panel superior
@@ -114,12 +153,52 @@ public class VentanaBuscar {
         frame.setVisible(true);
     }
 
-    private void buscarMensaje(String texto, String numero, String contacto) {
+    private void buscarMensaje(String texto,TipoMensaje tipo, LocalDateTime desde, LocalDateTime hasta) {
     	mensajesArea.removeAll();
+    
+    	List<Mensaje> mensajes = appchat.buscarMensajes(texto,tipo,desde, hasta);
     	
-    	List<Mensaje> mensajes = appchat.buscarMensajes(texto,numero,contacto);
+     	for(Mensaje m: mensajes) {
+     		mensajesArea.add(CrearMensaje(m));
+     	}
+     	
+     	mensajesArea.revalidate();
+     	mensajesArea.repaint();
 	}
+    
+    //Metodo para crear el Mensaje que se verá en el Panel de los mensajes
+    private JPanel CrearMensaje(Mensaje m) {
+        // Crear un panel para el mensaje
+        JPanel panelMensaje = new JPanel();
+        panelMensaje.setLayout(new BoxLayout(panelMensaje, BoxLayout.Y_AXIS)); // Organiza los elementos verticalmente
+        panelMensaje.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Añadir un poco de espacio al borde
 
+        // Mostrar el texto del mensaje
+        JLabel textoLabel = new JLabel(m.getTexto());
+        textoLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        textoLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Alinear a la izquierda
+        panelMensaje.add(textoLabel);
+
+        // Mostrar la hora del mensaje
+        JLabel horaLabel = new JLabel("Hora: " + m.getHora().toLocalTime().toString());
+        horaLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        horaLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Alinear a la izquierda
+        panelMensaje.add(horaLabel);
+
+        // Si el mensaje tiene emoticono, lo mostramos también
+        if (m.getEmoticono() != 0) {
+            JLabel emoticonoLabel = new JLabel(new ImageIcon("ruta/a/tus/emoticonos/" + m.getEmoticono() + ".png"));
+            emoticonoLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Alinear a la izquierda
+            panelMensaje.add(emoticonoLabel);
+        }
+
+        // Agregar un separador si lo deseas entre mensajes
+        panelMensaje.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        return panelMensaje;
+    }
+
+    
 	// Método para agregar placeholders en los campos de texto
     private void addPlaceholder(JTextField textField, String placeholderText) {
         textField.setText(placeholderText);
