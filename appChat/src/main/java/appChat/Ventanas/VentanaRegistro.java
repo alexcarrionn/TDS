@@ -268,7 +268,7 @@ public class VentanaRegistro {
                             .toLocalDate();
                 }
               
-                String nombre = nombreField.getText() + apellidosField.getText();
+                String nombre = nombreField.getText() +" "+ apellidosField.getText();
                 String movil =telefono.getText();
                 String contrasena = contraseña.getText(); 
                 String estado = areaEstado.getText(); 

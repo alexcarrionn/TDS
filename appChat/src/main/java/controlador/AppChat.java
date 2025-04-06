@@ -411,4 +411,9 @@ public class AppChat {
 		}
 		return false;
 	}
+
+	public void actualizarFoto(String string) {
+		usuarioLogueado.setImagen(string);
+		adaptadorUsuario.modificarUsuario(usuarioLogueado);
+	}
 }

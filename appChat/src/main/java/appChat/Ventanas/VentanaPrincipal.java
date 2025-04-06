@@ -3,6 +3,7 @@ package appChat.Ventanas;
 import java.awt.Image;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +18,7 @@ import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.Box;
@@ -44,10 +44,10 @@ public class VentanaPrincipal extends JFrame {
     static VentanaPrincipal frame;
     private AppChat appchat;
     private ChatBurbujas chat;
+    private JList<Contacto> listaContactos;
     
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
-	JComboBox<String> comboUsuarioReceptor; 
 
     /**
      * Create the frame.
@@ -69,15 +69,6 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelBotones = new JPanel();
         contentPane.add(panelBotones, BorderLayout.NORTH);
         panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.X_AXIS));
-        
-        
-        //TODO VER SI SE PUEDE REINICIAR CADA VEZ QUE SE AÑADA UN NUEVO CONTACTO 
-        comboUsuarioReceptor = new JComboBox<String>();
-        comboUsuarioReceptor.setEditable(true);
-        actualizarComboBox();
-        
-        
-        panelBotones.add(comboUsuarioReceptor);
 
         JButton btnEnviar = new JButton("");
         btnEnviar.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/enviar-mensaje.png")));
@@ -91,18 +82,18 @@ public class VentanaPrincipal extends JFrame {
         });
         panelBotones.add(btnBuscarMensajes);
 
-        JButton btnContactos = new JButton("Contactos");
-        btnContactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/reunion.png")));
+        JButton btnContactos = new JButton("Nuevo Grupo");
+        btnContactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-grupo.png")));
         btnContactos.addActionListener(ev -> {
             VentanaGrupo grupo = new VentanaGrupo();
             grupo.setVisible(true);
         });
-        panelBotones.add(btnContactos);
         
         
-     // Botón para crear un nuevo contacto
-        JButton btnCrearContacto = new JButton("+C");
+        // Botón para crear un nuevo contacto
+        JButton btnCrearContacto = new JButton("Nuevo Contacto");
         btnCrearContacto.setToolTipText("Crear nuevo contacto"); // Tooltip para mayor claridad
+        btnCrearContacto.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-contacto.png")));
         btnCrearContacto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,28 +102,9 @@ public class VentanaPrincipal extends JFrame {
             }
         });
         panelBotones.add(btnCrearContacto);
-
-        Component horizontalGlue = Box.createHorizontalGlue();
-        panelBotones.add(horizontalGlue);
-
-        JButton botonPremium = new JButton("Premium");
-        botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
-        botonPremium.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Mostrar la ventana premium, independientemente del estado
-                VentanaPremium ventana = new VentanaPremium();
-                ventana.setVisible(true);
-            }
-        });
-
-        // Agregar el botón al panel
-        panelBotones.add(botonPremium);
-
-        //TODO Ver si lo ponemos o no 
-        /*JLabel labelUsuarioActual = new JLabel(appchat.getUsuarioLogueado().getNombre());
-        panelBotones.add(labelUsuarioActual);
+        panelBotones.add(btnContactos);
         
+        /*
         JLabel labelImagenUsuarioActual = new JLabel("");
         String imagen = appchat.getUsuarioLogueado().getImagen(); 
         if (imagen == null || imagen.isEmpty()) {
@@ -159,24 +131,44 @@ public class VentanaPrincipal extends JFrame {
 
         panelBotones.add(labelImagenUsuarioActual);*/
         
-        JLabel labelImagenUsuarioActual = new JLabel("");
+        /*JLabel labelImagenUsuarioActual = new JLabel("");
         ImageIcon imageIcon = new ImageIcon(appchat.getUsuarioLogueado().getImagen());
         Image image = imageIcon.getImage().getScaledInstance(50,50, Image.SCALE_AREA_AVERAGING);
         ImageIcon imageResized= new ImageIcon(image);
         labelImagenUsuarioActual.setIcon(imageResized);
-        panelBotones.add(labelImagenUsuarioActual);
-        
-        /*JButton botonImagenUsuarioActual = new JButton();
-        String imagen = appchat.getUsuarioLogueado().getImagen();
-        if (imagen == null || imagen.equals(" ") || imagen.equals("")) {
-        	imagen = "https://robohash.org/" + appchat.getUsuarioLogueado().getNombre();
-        }
-        ImageIcon imageIcon = new ImageIcon(imagen);
-        Image image = imageIcon.getImage().getScaledInstance(45, 45, Image.SCALE_AREA_AVERAGING);
-        ImageIcon imageResized = new ImageIcon(image);
-        botonImagenUsuarioActual.setIcon(imageResized);
-        panelBotones.add(botonImagenUsuarioActual);
-        botonImagenUsuarioActual.addActionListener(new ActionListener() {
+        panelBotones.add(labelImagenUsuarioActual);*/
+		String imagen = appchat.getUsuarioLogueado().getImagen();
+		if (imagen == null || imagen.equals(" ") || imagen.equals("")) {
+			imagen = "https://robohash.org/" + appchat.getUsuarioLogueado().getNombre();
+		}
+		ImageIcon imageIcon = new ImageIcon(imagen);
+		Image image = imageIcon.getImage().getScaledInstance(45, 45, Image.SCALE_AREA_AVERAGING);
+		ImageIcon imageResized = new ImageIcon(image);
+
+		JButton botonPremium = new JButton("Premium");
+		botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
+		botonPremium.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Mostrar la ventana premium, independientemente del estado
+				VentanaPremium ventana = new VentanaPremium();
+				ventana.setVisible(true);
+			}
+		});
+
+		// Agregar el botón al panel
+		panelBotones.add(botonPremium);
+
+		Component horizontalGlue = Box.createHorizontalGlue();
+		panelBotones.add(horizontalGlue);
+
+		JLabel labelUsuarioActual = new JLabel(appchat.getUsuarioLogueado().getNombre());
+		panelBotones.add(labelUsuarioActual);
+
+		JButton botonImagenUsuarioActual = new JButton();
+		botonImagenUsuarioActual.setIcon(imageResized);
+		panelBotones.add(botonImagenUsuarioActual);
+		botonImagenUsuarioActual.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Crear un JFileChooser para seleccionar la imagen
@@ -199,10 +191,10 @@ public class VentanaPrincipal extends JFrame {
                     
                     // Establecer la imagen en el botón
                     botonImagenUsuarioActual.setIcon(resizedImageIcon);
-                    //appchat.actualizarFoto(selectedImage.toString()); 
+                    appchat.actualizarFoto(selectedFile.getAbsolutePath()); 
             }}
         });
-		*/
+		
 
         JPanel panelLista = new JPanel();
         contentPane.add(panelLista, BorderLayout.WEST);
@@ -224,7 +216,7 @@ public class VentanaPrincipal extends JFrame {
         chatActual.setLayout(new BorderLayout(0, 0));
         chatActual.add(scrollBarChatBurbujas,BorderLayout.CENTER);
 
-     // Obtener la lista de contactos del usuario
+        // Obtener la lista de contactos del usuario
         List<Contacto> contactos = appchat.getContactosUsuarioActual();
 
         // Convertimos la lista de Contacto a ContactoIndividual si es necesario
@@ -235,7 +227,7 @@ public class VentanaPrincipal extends JFrame {
             }
 
         // Crear la JList con el modelo
-        JList<Contacto> listaContactos = new JList<>(modeloLista);
+        listaContactos = new JList<>(modeloLista);
         listaContactos.setBorder(null);
         listaContactos.setCellRenderer(new ContactoListCellRenderer());
 
@@ -245,7 +237,7 @@ public class VentanaPrincipal extends JFrame {
                 if (contactoActual != null) {
                     cargarChat(contactoActual);
                     appchat.setChatActual(contactoActual);
-                    labelImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
+                    botonImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(), ICON_SIZE_MINI));
                 }
             }
         });
@@ -301,33 +293,49 @@ public class VentanaPrincipal extends JFrame {
         JTextField telefonoContacto = new JTextField();
 
         Object[] mensaje = {
-                "Nombre ", nombreContacto,
-                "Teléfono ", telefonoContacto
+            "Nombre", nombreContacto,
+            "Teléfono", telefonoContacto
         };
 
         int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Contacto", JOptionPane.OK_CANCEL_OPTION);
-        if (opcion == JOptionPane.OK_OPTION) {
-            String nombre = nombreContacto.getText();
-            String telefono = telefonoContacto.getText();
-
-            //Verificamos que hayan entradas en ambos campos
-            if(!nombre.isEmpty() && !telefono.isEmpty()) {
-                //CREAMOS EL CONTACTO
-                return appchat.agregarContacto(nombre, telefono);
-            } else {
-                JOptionPane.showMessageDialog(this, "Uno de las entradas esta vacía", "Error", JOptionPane.ERROR_MESSAGE);
-
-            }
+        if (opcion != JOptionPane.OK_OPTION) {
+            return null; // Se pulsó cancelar
         }
 
-        //Si se pulsa cancelar
-        return null;
+        String nombre = nombreContacto.getText();
+        String telefono = telefonoContacto.getText();
+
+        if (nombre.isEmpty() || telefono.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Uno de las entradas está vacía", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        if (appchat.validarContacto(telefono)) {
+            JOptionPane.showMessageDialog(this, "Ya existe un contacto con ese número");
+            return null;
+        }
+        
+        ContactoIndividual nuevoContacto = appchat.agregarContacto(nombre, telefono);
+        actualizarListaContactos();
+        return nuevoContacto;
     }
+
     
     
 	//FUNCIONES AUXILIARES
     
-    private void comprobarEmojioTexto(String mensajeTexto) {
+    private void actualizarListaContactos() {
+        List<Contacto> contactos = appchat.getContactosUsuarioActual();
+        DefaultListModel<Contacto> modeloActualizado = new DefaultListModel<>();
+
+        for (Contacto c : contactos) {
+            modeloActualizado.addElement(c);
+        }
+
+        listaContactos.setModel(modeloActualizado);
+    }
+
+	private void comprobarEmojioTexto(String mensajeTexto) {
     	if(esEntero(mensajeTexto)) {
     		enviarMensajeEmoji(Integer.parseInt(mensajeTexto)); 
     	}else {
@@ -362,18 +370,6 @@ public class VentanaPrincipal extends JFrame {
             return false;
         }
     }
-    
-    private void actualizarComboBox() {
-        List<Contacto> contactosUsuarioActual = AppChat.getUnicaInstancia().getUsuarioLogueado().getContactos();
-        String[] nombresContactos = contactosUsuarioActual.stream()
-            .map(contacto -> "Contacto " + contacto.getNombre())
-            .toArray(String[]::new);
-
-        comboUsuarioReceptor.setModel(new DefaultComboBoxModel<String>(nombresContactos));
-    }
-    
-    
-    
     
 	private Icon resizeIcon(String foto, int iconSizeMini) {
 		try {
