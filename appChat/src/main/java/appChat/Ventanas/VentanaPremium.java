@@ -33,12 +33,13 @@ public class VentanaPremium extends JFrame {
         botonAceptar.addActionListener(e -> {
             String tipoDescuentoSeleccionado = (String) comboBoxDescuentos.getSelectedItem();
             
-            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);
+            
             boolean comprobacion = AppChat.getUnicaInstancia().hacerPremium(tipoDescuentoSeleccionado); 
             if (!comprobacion) {
             	 JOptionPane.showMessageDialog(this, "No cumple los requisitos para el descuento aplicado o ya es premium", "Error", JOptionPane.ERROR_MESSAGE);
             }
             // Actualizar el texto de la etiqueta en lugar de agregar una nueva
+            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);
             lblCantidad.setText("Cantidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
         });
 

@@ -351,22 +351,14 @@ public class AppChat {
     
     //esta funcion te aplica el descuento concreto si se cumple la condicion
     public void aplicarDescuento(String tipoDescuento) {
-        // Solo aplicamos el descuento si cumple las condiciones
-        if (hacerPremium(tipoDescuento)) {
             Descuento nuevoDescuento = DescuentoFactory.crearDescuento(tipoDescuento);
             usuarioLogueado.setDescuento(Optional.of(nuevoDescuento));
-        } else {
-            // Si no cumple, eliminamos cualquier descuento existente
-            usuarioLogueado.setDescuento(Optional.empty());
-        }
     }
     
     //Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
     public boolean hacerPremium(String tipo) {     
-        //Vemos si se cumple la condicion de que sea Premium según sea Descuento por mensaje o por Fecha
-        boolean cumpleCondicion = cumpleCondicion(tipo);
         //Si cumple la condicion revolverá true y hará al usuario Premium
-        if (cumpleCondicion) {
+        if (cumpleCondicion(tipo)) {
             usuarioLogueado.setPremium(true);
             adaptadorUsuario.modificarUsuario(usuarioLogueado);
             return true;
@@ -379,6 +371,7 @@ public class AppChat {
     	//Fijamos las dos fechas de inicio  y fin donde se aplicará el descuento
     	LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
         LocalDate finDescuento = LocalDate.of(2025, 1, 6);
+        //Vemos si se cumple la condicion de que sea Premium según sea Descuento por mensaje o por Fecha
         switch (tipo) {
         case "Descuento Mensajes":
             return usuarioLogueado.getNumMensajes() >= 100 && !usuarioLogueado.isPremium();
@@ -390,7 +383,7 @@ public class AppChat {
 
         default:
             return false;
-    }
+        }
 	}
 
 	//Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
