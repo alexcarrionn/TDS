@@ -2,10 +2,11 @@ package modelo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import descuentoStrategy.Descuento;
 
 public class Usuario {
 	private static final double PRECIO_PREMIUM = 10.00;
@@ -54,7 +55,8 @@ public class Usuario {
 		fecha=parse; 
 		imagen=imagen2; 
 		estado=saludo;
-		premium=false; 
+		premium=false;
+		descuento = Optional.empty();
 	}
 
 	//Getters y Setters
@@ -114,7 +116,7 @@ public class Usuario {
 	}
 
 	public List<Contacto> getContactos() {
-		return new LinkedList<>(contactos);
+		return new ArrayList<>(contactos);
 	}
 
 	public void setContactos(List<Contacto> contactos) {
@@ -133,7 +135,6 @@ public class Usuario {
 			return PRECIO_PREMIUM;
 	}
 	
-	//Tenemos que hacer una funcion que nos devuelva el numero de mensajes enviados en cada mes del año, para calcular si se puede o no hacer el desceunto
 	
 	//Devolver los grupos que tiene el usuario
     
@@ -211,9 +212,10 @@ public class Usuario {
 					&& Objects.equals(telefono, other.telefono);
 		}
 
-		public void setDescuento(Optional<Descuento> of) {
-			this.descuento=of;	
+		public void setDescuento(Descuento d) {
+			this.descuento = Optional.ofNullable(d);
 		}
+
 		
 		public int getNumMensajes() {
 			return contactos.stream()

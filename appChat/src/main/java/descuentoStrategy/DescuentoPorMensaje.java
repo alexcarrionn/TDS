@@ -1,4 +1,4 @@
-package modelo;
+package descuentoStrategy;
 
 public class DescuentoPorMensaje extends Descuento {
     private final static double porcentajeDescuento = 0.5;

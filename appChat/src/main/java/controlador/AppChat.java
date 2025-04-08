@@ -17,8 +17,9 @@ import filtrosStrategy.FiltroTexto;
 import filtrosStrategy.FiltroTipoMensaje;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
-import modelo.Descuento;
-import modelo.DescuentoFactory;
+import descuentoStrategy.Descuento;
+import descuentoStrategy.DescuentoPorFecha;
+import descuentoStrategy.DescuentoPorMensaje;
 import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuario;
@@ -354,13 +355,32 @@ public class AppChat {
         adaptadorGrupo.modificarGrupo(g);
     }
     
-    //esta funcion te aplica el descuento concreto si se cumple la condicion
-    public void aplicarDescuento(String tipoDescuento) {
-            Descuento nuevoDescuento = DescuentoFactory.crearDescuento(tipoDescuento);
-            usuarioLogueado.setDescuento(Optional.of(nuevoDescuento));
-    }
+    /**
+     * Método que aplica el descuento concreto si se cumple la condicion
+     * @param tipoDescuento tipo de descuento que se va a aplicar
+     */
     
-    //Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
+    public void aplicarDescuento(String tipoDescuento) {
+        Descuento descuento;
+
+        // Aquí decides manualmente qué implementación usar
+        if ("Descuento Fecha".equals(tipoDescuento)) {
+            descuento = new DescuentoPorFecha();
+            usuarioLogueado.setDescuento(descuento);
+        } else if ("Descuento Mensajes".equals(tipoDescuento)) {
+            descuento = new DescuentoPorMensaje();
+            usuarioLogueado.setDescuento(descuento);
+        } else {
+            throw new IllegalArgumentException("Tipo de descuento no válido");
+        }
+    }
+
+    
+    /**
+     * Esta funcion te permite saber si un usuario cumple las condiciones o no de ser premium
+     * @param tipo de descuento seleccionado
+     * @return devuelve true si se ha podido hacer premium y false en caso contrario
+     */
     public boolean hacerPremium(String tipo) {     
         //Si cumple la condicion revolverá true y hará al usuario Premium
         if (cumpleCondicion(tipo)) {
@@ -372,6 +392,11 @@ public class AppChat {
         return false;
     }
     
+    /**
+     * Metodo privado que sirva para saber si el usuario cumple con la condicion dependiendo del tipo que haya escogido
+     * @param tipo
+     * @return devuelve true en caso de que cumpla la condicion y false en caso contrario
+     */
     private boolean cumpleCondicion(String tipo) {
     	//Fijamos las dos fechas de inicio  y fin donde se aplicará el descuento
     	LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
@@ -391,7 +416,10 @@ public class AppChat {
         }
 	}
 
-	//Sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
+	/**
+	 * Metodo que sirve para devolver la lista de mensajes entre el usuarioLogueado y el contactoseleccionado
+	 * @return devuelve una lista de mensajes
+	 */
     public List<Mensaje> obtenerMensajesReMensaje() {
         Contacto contactoActual = getChatActual();
         if (contactoActual == null) {
@@ -401,7 +429,11 @@ public class AppChat {
     }
     
 
-    //Funcion utilizada para saber si existe o no un contacto en la lista de contactos del usuarioLogueado
+    /**
+     * Método utilizadp para saber si existe o no un contacto en la lista de contactos del usuarioLogueado
+     * @param numero del usuario que se quiere comprobar
+     * @return devuelve segun exista o no el usuario en la lista de contactos
+     */
     public boolean validarContacto(String numero) {
         return usuarioLogueado.getContactos().stream()
             .filter(ContactoIndividual.class::isInstance) // Filtrar solo ContactoIndividual
@@ -409,7 +441,10 @@ public class AppChat {
             .anyMatch(contacto -> contacto.getMovil().equals(numero)); // Comparar número
     }
     
-    //Funcion que sirve para desactivar el premium del usuario 
+    /**
+     * Metodo que sirve para desactivar el premium del usuario 
+     * @return true si se ha podido desactivar el premium y false en caso contrario
+     */
     public boolean desactivarPremium() {
 		if(usuarioLogueado.isPremium()) {
 			usuarioLogueado.setPremium(false);
@@ -418,13 +453,23 @@ public class AppChat {
 		return false;
 	}
     
-    //Funcion que sirve para actualizar la foto de perfil del usuario
+    /**
+     * Método que sirve para actualizar la foto de perfil del usuario
+     * @param string Cadena de la foto que quiere actualizar 
+     */
 	public void actualizarFoto(String string) {
 		usuarioLogueado.setImagen(string);
 		adaptadorUsuario.modificarUsuario(usuarioLogueado);
 	}
 	
-	
+	/**
+	 * Método que sirve para poder Buscar Mensajes específico despendiendo del filtro que corresponda
+	 * @param texto
+	 * @param tipo
+	 * @param desde
+	 * @param hasta
+	 * @return Lista de Mensajes que se hayan encontrado
+	 */
 	public List<Mensaje> buscarMensajes(String texto, TipoMensaje tipo, LocalDateTime desde, LocalDateTime hasta) {
 		//Primero cogemos todos los mensajes que existen
 		List<Mensaje> mensajes = getContactosUsuarioActual().stream()

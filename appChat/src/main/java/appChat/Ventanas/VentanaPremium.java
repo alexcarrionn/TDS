@@ -37,9 +37,9 @@ public class VentanaPremium extends JFrame {
             boolean comprobacion = AppChat.getUnicaInstancia().hacerPremium(tipoDescuentoSeleccionado); 
             if (!comprobacion) {
             	 JOptionPane.showMessageDialog(this, "No cumple los requisitos para el descuento aplicado o ya es premium", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            }else {
             // Actualizar el texto de la etiqueta en lugar de agregar una nueva
-            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);
+            AppChat.getUnicaInstancia().aplicarDescuento(tipoDescuentoSeleccionado);}
             lblCantidad.setText("Cantidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
         });
 
@@ -53,6 +53,7 @@ public class VentanaPremium extends JFrame {
         		JOptionPane.showMessageDialog(this,"No eres premium no puede desactivar la cuenta", "Error", JOptionPane.ERROR_MESSAGE);
         	}else {
         		JOptionPane.showMessageDialog(this,"Has desactivado Premium", "Information", JOptionPane.INFORMATION_MESSAGE);
+        		lblCantidad.setText("Cantidad a pagar: " + AppChat.getUnicaInstancia().getDescuento());
         	}
         });
         panelInferior.add(btnDesactivar);
