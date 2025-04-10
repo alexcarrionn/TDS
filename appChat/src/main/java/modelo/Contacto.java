@@ -5,7 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Contacto {
-    // Propiedades
+    
+	//Atributos de la clase Contacto 
 	private int id;
     private String nombre;
     private List<Mensaje> mensajes;
@@ -32,7 +33,17 @@ public abstract class Contacto {
     public List<Mensaje> getMensajes() {
         return mensajes;
     }
-    //Metodo de gestion de mensajes, en este metodo se añaden todos los mensajes pasados como parametro
+    
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	
+/*
     public void setMensajes(List<Mensaje> mensajes) {
         this.mensajes.addAll(mensajes);
     }
@@ -44,20 +55,42 @@ public abstract class Contacto {
 
     public void removeMensaje(Mensaje mensaje) {
         this.mensajes.remove(mensaje);
-    }
+    }*/
     
+	/**
+	 * Método que sirve para crear un mensaje de texto
+	 * @param texto
+	 * @param tipo
+	 * @return
+	 */
     public Mensaje creaMensajeTexto(String texto, TipoMensaje tipo) {
     	Mensaje m= new Mensaje(texto,tipo,LocalDateTime.now());
     	mensajes.add(m);
     	return m;
     }
     
+    /**
+     * Método que sirve para crear un mensaje con un emoji
+     * @param emoticono
+     * @param tipo
+     * @return
+     */
+    
     public Mensaje creaMensajeEmoticono(int emoticono, TipoMensaje tipo) {
     	Mensaje m= new Mensaje(emoticono,tipo,LocalDateTime.now());
     	mensajes.add(m);
     	return m;
     }
+    
+    /**
+     * Metodo que se ha definido en ContactoIndividual y en Grupo
+     * @return la imagen del ContactoIndividual o del grupo
+     */
+	public abstract String getFoto();
 
+
+    
+    /*
     public List<Mensaje> buscarMensajes(String texto) {
         List<Mensaje> resultados = new LinkedList<>();
         for (Mensaje mensaje : mensajes) {
@@ -66,20 +99,16 @@ public abstract class Contacto {
             }
         }
         return resultados;
-    }
+    }*/
 
-    // Mostrar Contacto
-   
-
-	public abstract String getFoto();
-
-	public int getId() {
-		return id;
+    /**
+     *  Método para mostrar Contacto
+     */
+	@Override
+	public String toString() {
+		return "Contacto [id=" + id + ", nombre=" + nombre + ", mensajes=" + mensajes + "]";
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	
 }

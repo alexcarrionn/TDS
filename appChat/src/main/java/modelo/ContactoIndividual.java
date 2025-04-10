@@ -6,7 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ContactoIndividual extends Contacto{
-
+	
+	//Atributos de ContactoIndividual
 	private String movil;
 	private Usuario usuario;
 	
@@ -22,6 +23,8 @@ public class ContactoIndividual extends Contacto{
 		this.movil=movil;
 		this.usuario=usuario;
 	}
+	
+	//Getters y setters
 		
 	public String getMovil() {
 		return movil;
@@ -51,18 +54,11 @@ public class ContactoIndividual extends Contacto{
 	
 	//Metodos
 		
-		//Funcion para buscar un tipo de contactoindividual de la lista de contactos del usuario actual y lo devuelve si lo encuentra
-		private ContactoIndividual getContacto(Usuario usuario) {
-			return usuario.getContactos().stream()
-										 .filter(contacto -> contacto instanceof ContactoIndividual)
-										 .map(contacto -> (ContactoIndividual) contacto)
-										 .filter(contacto -> contacto.getUsuario().equals(usuario))
-										 .findFirst()
-										 .orElse(null);
-		}
-		
-		
-		//Funcion para devolver la lista de mensajes recibidos del contacto
+		/**
+		 * Método para devolver la lista de mensajes recibidos del contacto
+		 * @param usuario usuario del que se quieren obtener los mensajes
+		 * @return lista con los mensjes recibidos
+		 */
 		public List<Mensaje> getMensajesRecibidos(Optional<Usuario> usuario) {
 			ContactoIndividual contacto = getContacto(usuario.orElse(null));
 			if(contacto != null) {
@@ -71,12 +67,33 @@ public class ContactoIndividual extends Contacto{
 				return new LinkedList<>();
 			}
 		}	
+		
+		/**
+		 * Método para buscar un tipo de contactoindividual de la lista de contactos del usuario actual y lo devuelve si lo encuentra
+		 * 
+		 */
+		private ContactoIndividual getContacto(Usuario usuario) {
+			return usuario.getContactos().stream()
+										 .filter(contacto -> contacto instanceof ContactoIndividual)
+										 .map(contacto -> (ContactoIndividual) contacto)
+										 .filter(contacto -> contacto.getUsuario().equals(usuario))
+										 .findFirst()
+										 .orElse(null);
+		}
 
-		//Comprueba si el contacto esta asociado a un usuario en concreto
+		/**
+		 * Método que comprueba si el contacto esta asociado a un usuario en concreto
+		 * @param otro
+		 * @return
+		 */
 		public boolean isUsuario(Usuario otro) {
 			return usuario.equals(otro);
 		}
 		
+		/**
+		 * Método añade una lista de mensajes
+		 * @param mensajes
+		 */
 		public void addAllMensajes(List<Mensaje> mensajes) {
 			this.getMensajes().addAll(mensajes);
 		}

@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 
 public class Mensaje implements Comparable<Mensaje>{
 	
-	//CAMBIAR EMISOR Y RECEPTOR A TIPO 
-	
-	//propiedades
+	//Atributos
 	private String texto; 
 	private TipoMensaje tipo;
 	private LocalDateTime hora;
@@ -14,8 +12,7 @@ public class Mensaje implements Comparable<Mensaje>{
 	private int id;
 	private boolean grupo=false;
 	
-	//pensar en si en mensaje el receptor es un Contacto o un Usuario y si hora es LocalDate o String
-	
+	//Constructores
 	public Mensaje(String texto, TipoMensaje tipo, LocalDateTime hora) {
 		this.texto = texto;
 		this.tipo=tipo;

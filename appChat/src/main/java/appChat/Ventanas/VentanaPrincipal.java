@@ -2,8 +2,10 @@ package appChat.Ventanas;
 
 import java.awt.Image;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+
+import com.itextpdf.text.DocumentException;
+
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
@@ -71,9 +76,33 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(panelBotones, BorderLayout.NORTH);
 		panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.X_AXIS));
 
-		JButton btnEnviar = new JButton("");
-		btnEnviar.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/enviar-mensaje.png")));
-		panelBotones.add(btnEnviar);
+		JButton btnExportarPDF = new JButton("");
+		btnExportarPDF.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/enviar-mensaje.png")));
+		btnExportarPDF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				boolean exito;
+				try {
+					exito = AppChat.getUnicaInstancia().exportarPDF();
+					if (exito) {
+						JOptionPane.showMessageDialog(frame, "Exportación a PDF realizada con éxito.", "Información",
+								JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(frame, "No se pudo exportar a PDF.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (DocumentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+
+		});
+		panelBotones.add(btnExportarPDF);
 
 		JButton btnBuscarMensajes = new JButton("");
 		btnBuscarMensajes.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/lupa.png")));
@@ -100,35 +129,6 @@ public class VentanaPrincipal extends JFrame {
 		});
 		panelBotones.add(btnCrearContacto);
 		panelBotones.add(btnContactos);
-
-		/*
-		 * JLabel labelImagenUsuarioActual = new JLabel(""); String imagen =
-		 * appchat.getUsuarioLogueado().getImagen(); if (imagen == null ||
-		 * imagen.isEmpty()) { // Si no hay imagen, usa RoboHash con el nombre del
-		 * usuario try { imagen = "https://robohash.org/" +
-		 * appchat.getUsuarioLogueado().getNombre(); // Convertir la URL en un objeto
-		 * ImageIcon URL imageUrl = new URL(imagen); ImageIcon imageIcon = new
-		 * ImageIcon(imageUrl); Image image = imageIcon.getImage().getScaledInstance(50,
-		 * 50, Image.SCALE_AREA_AVERAGING); ImageIcon imageResized = new
-		 * ImageIcon(image); labelImagenUsuarioActual.setIcon(imageResized); } catch
-		 * (MalformedURLException e) { e.printStackTrace(); // Manejar el caso de error
-		 * en la URL, puedes poner una imagen predeterminada aquí. } } else { // Si hay
-		 * imagen, usa la imagen del usuario ImageIcon imageIcon = new
-		 * ImageIcon(imagen); Image image = imageIcon.getImage().getScaledInstance(50,
-		 * 50, Image.SCALE_AREA_AVERAGING); ImageIcon imageResized = new
-		 * ImageIcon(image); labelImagenUsuarioActual.setIcon(imageResized); }
-		 * 
-		 * panelBotones.add(labelImagenUsuarioActual);
-		 */
-
-		/*
-		 * JLabel labelImagenUsuarioActual = new JLabel(""); ImageIcon imageIcon = new
-		 * ImageIcon(appchat.getUsuarioLogueado().getImagen()); Image image =
-		 * imageIcon.getImage().getScaledInstance(50,50, Image.SCALE_AREA_AVERAGING);
-		 * ImageIcon imageResized= new ImageIcon(image);
-		 * labelImagenUsuarioActual.setIcon(imageResized);
-		 * panelBotones.add(labelImagenUsuarioActual);
-		 */
 
 		JButton botonPremium = new JButton("Premium");
 		botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
@@ -221,52 +221,9 @@ public class VentanaPrincipal extends JFrame {
 				}
 			});
 		} else {
-			// Si no se pudo cargar la imagen, puedes establecer una imagen por defecto
 			System.err.println("No se pudo cargar la imagen, estableciendo imagen por defecto.");
-			// Aquí puedes agregar código para mostrar una imagen por defecto
 		}
-
-		/*
-		 * String imagen = appchat.getUsuarioLogueado().getImagen(); if (imagen == null
-		 * || imagen.isEmpty()) { imagen =
-		 * "\TDS\\appChat\\src\\main\\java\\imagenes\\contacto.png"; } ImageIcon
-		 * imageIcon = new ImageIcon(imagen); Image image =
-		 * imageIcon.getImage().getScaledInstance(45, 45, Image.SCALE_AREA_AVERAGING);
-		 * ImageIcon imageResized = new ImageIcon(image);
-		 * 
-		 * JButton botonImagenUsuarioActual = new JButton();
-		 * botonImagenUsuarioActual.setIcon(imageResized);
-		 * panelBotones.add(botonImagenUsuarioActual);
-		 * 
-		 * //hacemos click en el boton para que el usuario
-		 * botonImagenUsuarioActual.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { // Crear un
-		 * JFileChooser para seleccionar la imagen JFileChooser fileChooser = new
-		 * JFileChooser();
-		 * 
-		 * // Filtrar solo imágenes (opcional) fileChooser.setFileFilter(new
-		 * javax.swing.filechooser.FileNameExtensionFilter("Imágenes", "jpg", "png",
-		 * "gif"));
-		 * 
-		 * // Mostrar el diálogo para seleccionar el archivo int result =
-		 * fileChooser.showOpenDialog(null);
-		 * 
-		 * // Si el usuario selecciona un archivo if (result ==
-		 * JFileChooser.APPROVE_OPTION) { File selectedFile =
-		 * fileChooser.getSelectedFile();
-		 * 
-		 * // Crear un ImageIcon con la imagen seleccionada ImageIcon selectedImageIcon
-		 * = new ImageIcon(selectedFile.getAbsolutePath()); Image selectedImage =
-		 * selectedImageIcon.getImage().getScaledInstance(50, 50,
-		 * Image.SCALE_AREA_AVERAGING); ImageIcon resizedImageIcon = new
-		 * ImageIcon(selectedImage);
-		 * 
-		 * // Establecer la imagen en el botón
-		 * botonImagenUsuarioActual.setIcon(resizedImageIcon);
-		 * appchat.actualizarFoto(selectedFile.getAbsolutePath()); }} });
-		 */
-
+		
 		JPanel panelLista = new JPanel();
 		contentPane.add(panelLista, BorderLayout.WEST);
 		panelLista.setLayout(new BorderLayout(0, 0));
@@ -308,8 +265,6 @@ public class VentanaPrincipal extends JFrame {
 				if (contactoActual != null) {
 					cargarChat(contactoActual);
 					appchat.setChatActual(contactoActual);
-					// botonImagenUsuarioActual.setIcon(resizeIcon(contactoActual.getFoto(),
-					// ICON_SIZE_MINI));
 				}
 			}
 		});
@@ -405,9 +360,33 @@ public class VentanaPrincipal extends JFrame {
 	    listaNombres.setVisibleRowCount(8);
 	    JScrollPane scroll = new JScrollPane(listaNombres);
 
+	    // Panel para la imagen con el path arriba y el botón debajo
+	    JPanel panelImagen = new JPanel();
+	    panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
+	    JTextField campoRutaImagen = new JTextField();
+	    campoRutaImagen.setEditable(false);
+	    JButton botonSeleccionarImagen = new JButton("Seleccionar imagen");
+
+	    botonSeleccionarImagen.addActionListener(e -> {
+	        JFileChooser fileChooser = new JFileChooser();
+	        int returnValue = fileChooser.showOpenDialog(null);
+	        if (returnValue == JFileChooser.APPROVE_OPTION) {
+	            java.io.File file = fileChooser.getSelectedFile();
+	            campoRutaImagen.setText(file.getAbsolutePath());
+	        }
+	    });
+
+	    campoRutaImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    botonSeleccionarImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    panelImagen.add(campoRutaImagen);
+	    panelImagen.add(Box.createRigidArea(new Dimension(0, 5))); // Espacio entre campo y botón
+	    panelImagen.add(botonSeleccionarImagen);
+
 	    Object[] mensaje = {
 	        "Nombre del grupo:", nombreGrupo,
-	        "Selecciona miembros:", scroll
+	        "Selecciona miembros:", scroll,
+	        "Imagen del grupo:", panelImagen
 	    };
 
 	    int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Grupo", JOptionPane.OK_CANCEL_OPTION);
@@ -415,13 +394,14 @@ public class VentanaPrincipal extends JFrame {
 	    if (opcion == JOptionPane.OK_OPTION) {
 	        String nombre = nombreGrupo.getText().trim();
 	        List<String> seleccionados = listaNombres.getSelectedValuesList();
+	        String rutaImagen = campoRutaImagen.getText().trim();
 
 	        if (nombre.isEmpty() || seleccionados.isEmpty()) {
 	            JOptionPane.showMessageDialog(this, "Debes ingresar un nombre y seleccionar al menos un contacto.");
 	            return;
 	        }
 
-	        appchat.agregarGrupo(nombre, seleccionados);
+	        appchat.agregarGrupo(nombre, seleccionados, rutaImagen);
 	        actualizarListaContactos(); // Refresca la UI
 	    }
 	}
@@ -475,15 +455,6 @@ public class VentanaPrincipal extends JFrame {
 			return false;
 		}
 	}
-
-	/*
-	 * private Icon resizeIcon(String foto, int iconSizeMini) { try { Image img =
-	 * new ImageIcon(foto).getImage(); // Cargar la imagen Image resizedImg =
-	 * img.getScaledInstance(iconSizeMini, iconSizeMini, Image.SCALE_SMOOTH); return
-	 * new ImageIcon(resizedImg); // Devolver la imagen redimensionada como Icon }
-	 * catch (Exception e) { e.printStackTrace(); return null; // Si falla, devuelve
-	 * null } }
-	 */
 
 	private void cargarChat(Contacto contacto) {
 		if (contacto == null) {

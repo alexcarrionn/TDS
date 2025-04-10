@@ -33,13 +33,17 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	private AdaptadorUsuario() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
-
+	/*
 	public void borrarUsuario(Usuario user) {
 		// No se comprueban restricciones de integridad con Contacto
 		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
 		servPersistencia.borrarEntidad(eUsuario);
-	}
-
+	}*/
+	
+	/**
+	 * Método que sirve para modificar un usuario de la base de datos
+	 * @param user usuario que se quiere modificar
+	 */
 	public void modificarUsuario(Usuario user) {
 
 		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
@@ -67,7 +71,10 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 	}
 	
-
+	/**
+	 * Método para poder registar un usuario en la base de datos
+	 * @param usuario usuario que queremos registar
+	 */
 	public void registrarUsuario(Usuario usuario) {
 	    Entidad eUsuario = null;
 
@@ -110,13 +117,15 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	    usuario.setId(eUsuario.getId());
 	}
 	
+	//Método auxiliar para obtener los códigos de los contactos pasados como parametros
 	private String obtenerCodigosContactos(List<Contacto> contactos) {
 	    return contactos.stream()
 	    	.filter(contacto->contacto instanceof ContactoIndividual)
 	        .map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
 	        .collect(Collectors.joining(","));
 	}
-
+	
+	//Método auxiliar para obtener los codigos de los grupos pasados como parametros
 	private String obtenerCodigosGrupos(List<Contacto> grupos) {
 	    return grupos.stream()
 	        .filter(grupo -> grupo instanceof Grupo) // Para cada grupo, obtenemos sus contactos
@@ -124,7 +133,11 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	        .collect(Collectors.joining(",")); // Unimos los códigos de los contactos en una cadena separada por comas
 	}
 
-
+	/**
+	 * Método que sirve para recuperar un usuario de la base de datos a partir de un identificador
+	 * @param codigo identificador del usuario que se quiere recuperar
+	 * @return Usuario con el identificador especificado
+	 */
 	public Usuario recuperarUsuario(int codigo) {
 
 	    // Si la entidad está en el pool, la devuelve directamente
@@ -177,7 +190,10 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	    return usuario;
 	}
 	
-	
+	/**
+	 * Método para poder recuperar todos los Usuarios
+	 * @return devuelve una lista con todos los usuarios
+	 */
 	public List<Usuario> recuperarTodosUsuarios() {
 
 	    List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("usuario");
@@ -190,7 +206,7 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	}
 
 	// Método auxiliar para obtener contactos a partir de códigos
-	public List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
+	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
         AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
 
         return Arrays.stream(codigos.split(","))
@@ -204,7 +220,9 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
                      .filter(contacto -> contacto != null)
                      .collect(Collectors.toList());
     }
+	
 
+	//Método auxiliar para obtener una lista de grupos a partir de sus códigos
 	private List<Grupo> obtenerGruposDesdeCodigos(String codigos) {
 	    List<Grupo> grupos = new ArrayList<>();
 	    if (codigos == null || codigos.isEmpty()) {

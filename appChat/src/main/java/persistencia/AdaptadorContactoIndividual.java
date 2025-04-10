@@ -15,9 +15,12 @@ import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
 public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividualDAO{
+	
+	//Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorContactoIndividual unicaInstancia = null;
-
+    
+    //Inicializador
     public static AdaptadorContactoIndividual getUnicaInstancia() { // patron singleton
         if (unicaInstancia == null)
             return new AdaptadorContactoIndividual();
@@ -28,7 +31,11 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
     private AdaptadorContactoIndividual() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
-
+    
+    /**
+     * Metodo que sirve para registar un contacto en la base de datos
+     * @param c contacto que queremos registrar
+     */
     public void registrarContacto(ContactoIndividual c) {
         // Comprobar si el contacto ya está registrado
         if (servPersistencia.recuperarEntidad(c.getId()) != null) {
@@ -71,7 +78,11 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         AdaptadorUsuario.getUnicaInstancia().registrarUsuario(usuario);        
     }
     
-    //Funcion para recuperar un contactoIndividual de la BBDDs
+    /**
+     * Método para recuperar un contactoIndividual de la BBDD
+     * @param id identificador de usuario que queremos recuperar 
+     * @return ContactoIndividual de la base de datos
+     */
     public ContactoIndividual recuperarContacto(int id) {
     	if (PoolDAO.getUnicaInstancia().contiene(id))
             return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(id);
@@ -106,6 +117,7 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
     private Usuario obtenerUsuarioDesdeCodigo(String usuarioId) {
     	return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(usuarioId));
     }
+    
     //funcion auxiliar para obtener los mensajes desde los codigos 
     private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
         List<Mensaje> mensajes = new LinkedList<>();
@@ -119,7 +131,10 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
     }
     
     
-    //Funcion para modificar un contacto
+    /**
+     * Método que sirve para modificar un contacto de la base de datos
+     * @param contacto contacto que se quiere modificar
+     */
     public void modificarContacto(ContactoIndividual contacto) {
         // Recuperar la entidad asociada al contacto
         Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());

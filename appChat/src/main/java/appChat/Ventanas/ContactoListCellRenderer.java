@@ -108,44 +108,56 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 			setOpaque(true); // Para que el fondo se muestre correctamente
 			return this;
 		} else {
-		    // Configuración de la imagen que sera igual para todos los grupos
-		    String fotoGrupo = "https://robohash.org/grupo"; 
-		    
-		    // Intentar cargar desde URL en lugar de archivo local
-		    ImageIcon icono = null;
-		    try {
-		        icono = new ImageIcon(new java.net.URL(fotoGrupo));
-		    } catch (Exception e) {
-		        System.err.println("No se pudo cargar la imagen desde la URL: " + fotoGrupo);
-		        e.printStackTrace();
-		    }
+			// Configuración de la imagen que será igual para todos los grupos
+			String fotoGrupo = contacto.getFoto();
 
-		    if (icono != null) {
-		        int anchoDeseado = 50;
-		        int altoDeseado = 50;
-		        Image imagenOriginal = icono.getImage();
-		        Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
-		        ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		        lblImagen.setIcon(iconoEscalado);
-		    } else {
-		        lblImagen.setIcon(null);
-		    }
+			if (fotoGrupo == null || fotoGrupo.isEmpty()) {
+			    fotoGrupo = "https://robohash.org/grupo";
+			}
 
-		    // Configuración del texto para grupos
-		    lblNombre.setText(contacto.getNombre());
-		    lblTelefono.setText("Grupo");  //
-		    lblSaludo.setText(""); // Limpiar el saludo para grupos
-		 // Configuración de colores para selección
-		 			if (isSelected) {
-		 				setBackground(new Color(184, 207, 229)); // Color de fondo para selección
-		 				setBorder(SELECCIONADO); // Borde azul para mostrar selección
-		 			} else {
-		 				setBackground(Color.WHITE); // Fondo blanco cuando no está seleccionado
-		 				setBorder(NO_SELECCIONADO); // Sin borde cuando no está seleccionado
-		 			}
+			ImageIcon icono = null;
 
-		 			setOpaque(true); // Para que el fondo se muestre correctamente
-		 			return this;
+			try {
+			    if (fotoGrupo.startsWith("http://") || fotoGrupo.startsWith("https://")) {
+			        // Si es una URL remota
+			        icono = new ImageIcon(new java.net.URL(fotoGrupo));
+			    } else {
+			        // Si es una ruta local
+			        icono = new ImageIcon(fotoGrupo);
+			    }
+			} catch (Exception e) {
+			    System.err.println("No se pudo cargar la imagen: " + fotoGrupo);
+			    e.printStackTrace();
+			}
+
+			if (icono != null && icono.getImage() != null) {
+			    int anchoDeseado = 50;
+			    int altoDeseado = 50;
+			    Image imagenOriginal = icono.getImage();
+			    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+			    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+			    lblImagen.setIcon(iconoEscalado);
+			} else {
+			    lblImagen.setIcon(null);
+			}
+
+			// Configuración del texto para grupos
+			lblNombre.setText(contacto.getNombre());
+			lblTelefono.setText("Grupo");
+			lblSaludo.setText("");
+
+			// Configuración de colores para selección
+			if (isSelected) {
+			    setBackground(new Color(184, 207, 229));
+			    setBorder(SELECCIONADO);
+			} else {
+			    setBackground(Color.WHITE);
+			    setBorder(NO_SELECCIONADO);
+			}
+
+			setOpaque(true);
+			return this;
+
 		}
 	}
 }

@@ -6,7 +6,6 @@ import tds.driver.ServicioPersistencia;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import beans.Entidad;
 import beans.Propiedad;
@@ -14,9 +13,11 @@ import modelo.Mensaje;
 import modelo.TipoMensaje;
 
 public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
+	//Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorMensaje unicaInstancia = null;
-
+    
+    //Iniciañizador
     public static AdaptadorMensaje getUnicaInstancia() {
         if (unicaInstancia == null)
             return new AdaptadorMensaje();
@@ -27,7 +28,13 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
     private AdaptadorMensaje() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
-
+    
+    //Métodos 
+    
+    /**
+     * Método que sirve para registar un mensaje en la base de datos
+     * @param mensaje mensaje que se quiere registar en la base de datos
+     */
     public void registrarMensaje(Mensaje mensaje) {
         Entidad eMensaje = null;
 
@@ -80,7 +87,11 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         }
     }*/
     
-    //Funcion para recuperar los mensajes 
+    /**
+     * Método para recuperar los mensajes a traves del identificador
+     * @param codigo identificador del mensaje que se quiere recuperar
+     * @return mensaje con el identificador correspondiente
+     */
     public Mensaje recuperarMensaje(int codigo) {
         // Si el mensaje está en el pool, se devuelve directamente
         if (PoolDAO.getUnicaInstancia().contiene(codigo))
@@ -103,6 +114,7 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         return mensaje;
     }
     
+    /*
     public List<Mensaje> recuperarTodosMensajes() {
         List<Mensaje> mensajes = new ArrayList<>();
         List<Entidad> eMensajes = servPersistencia.recuperarEntidades("Mensaje");
@@ -110,5 +122,5 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             mensajes.add(recuperarMensaje(eMensaje.getId()));
         }
         return mensajes;
-    }
+    }*/
 }

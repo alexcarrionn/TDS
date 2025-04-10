@@ -15,9 +15,11 @@ import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
 public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
+	//Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorGrupo unicaInstancia = null;
-
+    
+    //Inicializador 
     public static AdaptadorGrupo getUnicaInstancia() { // patron singleton
         if (unicaInstancia == null)
             return new  AdaptadorGrupo();
@@ -28,8 +30,14 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
     private  AdaptadorGrupo() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
-
-    //Funcion para registar un grupo en la bbdd
+    
+    
+    //Metodos
+    
+    /**
+     * Método para registar un grupo en la bbdd
+     * @param grupo grupo que se quiere registar en la base de datos
+     */
     public void registrarGrupo(Grupo grupo) {
         // Comprobar si el contacto ya está registrado
         if (servPersistencia.recuperarEntidad(grupo.getId()) != null) {
@@ -48,7 +56,8 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         eGrupo.setPropiedades(new ArrayList<Propiedad>(
             Arrays.asList(
                 new Propiedad("nombre", grupo.getNombre()),
-                new Propiedad("contactos", obtenerIdsContactos(grupo.getContactos()))
+                new Propiedad("contactos", obtenerIdsContactos(grupo.getContactos())),
+                new Propiedad("Imagen", grupo.getFoto())
             )
         ));
         // Guardar en la persistencia
@@ -64,6 +73,7 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
 		contactos.stream()
 				 .forEach(AdaptadorContactoIndividual.getUnicaInstancia()::registrarContacto); // Registramos cada contacto
 	}
+    
     //Funcion auxiliar para obtener los ids de los contactos pasados como parametros 
 	private String obtenerIdsContactos(List<ContactoIndividual> contactos) {
     	return contactos.stream()
@@ -71,7 +81,11 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
     					.collect(Collectors.joining(","));
 	}
 	
-	//Función para poder recuperar un grupo
+	/**
+	 * Método que sirve para poder recuperar un grupo de la base de datos
+	 * @param id identificador del grupo que se desea recuperar
+	 * @return Grupo con el identificador pasado como parámetro
+	 */
 	public Grupo recuperarGrupo(int id) {
         // Si la entidad está en el pool, la devuelve directamente
         if (PoolDAO.getUnicaInstancia().contiene(id)) {
@@ -85,7 +99,8 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         }
         // Recuperar propiedades que no son objetos
         String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, "nombre");
-        Grupo grupo = new Grupo(nombre, new LinkedList<>());
+        String rutaImagen = servPersistencia.recuperarPropiedadEntidad(eGrupo, "Imagen");
+        Grupo grupo = new Grupo(nombre, new LinkedList<>(),rutaImagen);
         grupo.setId(id);
 
         // Metemos al grupo en el pool antes de llamar a otros adaptadores
@@ -115,7 +130,10 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
     }
     
     
-    //Funcion que te permitirá modificar un grupo 
+    /**
+     * Funcion que te permitirá modificar un grupo 
+     * @param grupo Grupo que se va a modificar
+     */
     public void modificarGrupo(Grupo grupo) {
         // Recuperar la entidad asociada al grupo
         Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getId());
@@ -128,6 +146,8 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
                 prop.setValor(String.valueOf(grupo.getContactos()));
             } else if (prop.getNombre().equals("mensajes")) {
                 prop.setValor(obtenerIdsMensajes(grupo.getMensajes()));
+            }else if(prop.getNombre().equals("Imagen")) {
+            	prop.setValor(grupo.getFoto());
             }
             // Guardar los cambios en la propiedad actualizada
             servPersistencia.modificarPropiedad(prop);

@@ -3,9 +3,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Grupo extends Contacto{
-
-	private List<ContactoIndividual> contactos;
+	//Atributos 
 	
+	private List<ContactoIndividual> contactos;
+	private String foto; 
+	
+	//Getters and setters
 	public List<ContactoIndividual> getContactos() {
 		return new LinkedList<>(contactos);
 	}
@@ -15,13 +18,17 @@ public class Grupo extends Contacto{
 	}
 
 	//Constructor
-	public Grupo(String nombre, List<ContactoIndividual> contactos) {
+	public Grupo(String nombre, List<ContactoIndividual> contactos, String foto) {
 		super(nombre);
 		this.contactos = contactos != null ? new LinkedList<>(contactos) : new LinkedList<>(); 
+		this.foto = foto;
 
 	}
 	
-	//Para agregar una lista de individuos al grupo
+	/**
+	 * Para agregar una lista de individuos al grupo
+	 * @param usuaio lista de usuarios para agregar al grupo
+	 */
 	
 	public void agregarContactos(List<ContactoIndividual> usuario) {
 		for(ContactoIndividual c : usuario) {
@@ -29,10 +36,15 @@ public class Grupo extends Contacto{
 		}
 	}
 	
-	//Para agregar un individuo al grupo 
-	public void agregarIndividuo(ContactoIndividual c) {
-		contactos.add(c);
-	}
+	
+	/**
+	 * Para agregar un individuo al grupo
+	 * @param c Agrega a un solo individuo a la lista de contactos
+	 */
+	//public void agregarIndividuo(ContactoIndividual c) {
+		//contactos.add(c);
+	//}
+	
 	//Para borrar a un integrante del grupo 
 	
 	public void borraContacto(ContactoIndividual usuario) {
@@ -81,7 +93,7 @@ public class Grupo extends Contacto{
 
 		@Override
 		public String getFoto() {
-			return "https://robohash.org/"+ this.getNombre();
+			return this.foto;
 		}
 
 

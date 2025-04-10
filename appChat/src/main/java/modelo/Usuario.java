@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import descuentoStrategy.Descuento;
 
 public class Usuario {
+	//Atributos 
+	/**
+	 * Precio normal que se le pondra a un usuario si no es premium
+	 */
 	private static final double PRECIO_PREMIUM = 10.00;
 	private String telefono; 
 	private int id; 
@@ -135,8 +140,29 @@ public class Usuario {
 			return PRECIO_PREMIUM;
 	}
 	
+	public void setDescuento(Descuento d) {
+		this.descuento = Optional.ofNullable(d);
+	}
+
 	
-	//Devolver los grupos que tiene el usuario
+	public int getNumMensajes() {
+		return contactos.stream()
+		.mapToInt(contacto-> contacto.getMensajes().size())
+		.sum();
+		
+	}
+	
+	public List<Mensaje> getMensajes(Contacto contacto) {
+		return contacto.getMensajes();
+	}
+
+	
+	//Metodos 
+	
+	/**
+	 * Método que devuelve los grupos que tiene el usuario
+	 * @return lista de grupos del usuario
+	 */
     
     public List<Contacto> obtenerGrupos() {
         List<Contacto> grupos = new ArrayList<>();
@@ -148,16 +174,24 @@ public class Usuario {
         return grupos;
     }
 	
-	//Devolver los contactos Ind
+	/**
+	 * Método para añadir un Contacto individual a los contactos del usuario
+	 * @param contacto que se quiere añadir
+	 */
 	
 	public void addContacto(ContactoIndividual contacto) {
 		contactos.add(contacto);
 	}
 	
+	/*
 	public void removeContacto(Contacto contacto) {
 		contactos.remove(contacto);
-	}
+	}*/
 	
+	/**
+	 * Método que sirve para añadir un Grupo a la lista de contactos del usuario
+	 * @param grupo
+	 */
 	public void addGrupo(Grupo grupo) {
 		contactos.add(grupo);
 	}
@@ -178,6 +212,76 @@ public class Usuario {
 	            .sum(); // Sumamos todos los tamaños de las listas de mensajes
 	}
 	*/
+	
+
+	/**
+	 * Método que sirve para saber si existe algun contacto, en la lista del usuario, con el nombre pasado como parametro
+	 * @param nombre
+	 * @return true si existe, false en caso contrario
+	 */
+	public boolean contieneContacto(String nombre) {
+		return contactos.stream()
+						.filter(c-> c instanceof ContactoIndividual)
+						.anyMatch(c->c.getNombre().equals(nombre));
+	}
+	
+	/**
+	 *  Método que sirve para saber si existe algun grupo, en la lista del usuario, con el nombre pasado como parametro
+	 * @param nombre
+	 * @return
+	 */
+	public boolean contieneGrupo(String nombre) {
+		return contactos.stream()
+						.filter(c-> c instanceof Grupo)
+						.anyMatch(c->c.getNombre().equals(nombre));
+	}
+	
+	/**
+	 * Método para poder crear un contactoIndividual
+	 * @param nombre2
+	 * @param telefono2
+	 * @param usuario
+	 * @return contacto nuevo
+	 */
+	public ContactoIndividual crearContactoIndividual(String nombre2, String telefono2, Usuario usuario) {
+		return new ContactoIndividual(nombre2, telefono2, usuario);
+	}
+	
+	/**
+	 * Método que sirve para poder crear un Grupo
+	 * @param groupName
+	 * @param contactos2
+	 * @param foto
+	 * @return grupo nuevo
+	 */
+	public Grupo crearGrupo(String groupName, List<ContactoIndividual> contactos2, String foto) {
+		return new Grupo(groupName, contactos2, foto);
+	}
+	
+	/**
+	 * Método que te devuelve un ContactoIndividual a traves del telefono
+	 * @param telefono
+	 * @return
+	 */
+	public ContactoIndividual getContactoIndividual(String telefono) {
+	    return contactos.stream()
+	                    .filter(c -> c instanceof ContactoIndividual)
+	                    .map(c -> (ContactoIndividual) c)
+	                    .filter(c -> c.getMovil().equals(telefono))
+	                    .findFirst()
+	                    .orElse(null);
+	}
+	
+	/**
+	 * Método que devuelve todos los grupos del usuario logueado
+	 * 
+	 */
+	public List<Grupo> recuperarTodosGrupos(){
+		return this.contactos.stream()
+				.filter(c -> c instanceof Grupo)
+				.map(c -> (Grupo) c)
+				.collect(Collectors.toList());
+	}
 	
 	//To string y el hashCode y el equals
 		@Override
@@ -210,51 +314,6 @@ public class Usuario {
 					&& Objects.equals(fecha, other.fecha) && id == other.id && Objects.equals(imagen, other.imagen)
 					&& Objects.equals(nombre, other.nombre) && Objects.equals(premium, other.premium)
 					&& Objects.equals(telefono, other.telefono);
-		}
-
-		public void setDescuento(Descuento d) {
-			this.descuento = Optional.ofNullable(d);
-		}
-
-		
-		public int getNumMensajes() {
-			return contactos.stream()
-			.mapToInt(contacto-> contacto.getMensajes().size())
-			.sum();
-			
-		}
-
-		public boolean contieneContacto(String nombre) {
-			return contactos.stream()
-							.filter(c-> c instanceof ContactoIndividual)
-							.anyMatch(c->c.getNombre().equals(nombre));
-		}
-		
-		public boolean contieneGrupo(String nombre) {
-			return contactos.stream()
-							.filter(c-> c instanceof Grupo)
-							.anyMatch(c->c.getNombre().equals(nombre));
-		}
-		
-		public List<Mensaje> getMensajes(Contacto contacto) {
-			return contacto.getMensajes();
-		}
-
-		public ContactoIndividual crearContactoIndividual(String nombre2, String telefono2, Usuario usuario) {
-			return new ContactoIndividual(nombre2, telefono2, usuario);
-		}
-
-		public Grupo crearGrupo(String groupName, List<ContactoIndividual> contactos2) {
-			return new Grupo(groupName, contactos2);
-		}
-
-		public ContactoIndividual getContactoIndividual(String telefono) {
-		    return contactos.stream()
-		                    .filter(c -> c instanceof ContactoIndividual)
-		                    .map(c -> (ContactoIndividual) c)
-		                    .filter(c -> c.getMovil().equals(telefono))
-		                    .findFirst()
-		                    .orElse(null);
 		}
 
 	}

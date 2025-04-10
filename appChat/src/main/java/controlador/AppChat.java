@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +30,16 @@ import persistencia.IAdaptadorContactoIndividualDAO;
 import persistencia.IAdaptadorGrupoDAO;
 import persistencia.IAdaptadorMensajeDAO;
 import persistencia.IAdaptadorUsuarioDAO;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class AppChat {
     private static AppChat unicaInstancia;
@@ -81,7 +90,9 @@ public class AppChat {
         adaptadorContacto = factoria.getContactoIndividualDAO();
         adaptadorGrupo = factoria.getGrupoDAO();
     }
-
+    
+    
+     
     public Usuario getUsuarioLogueado() {
         return usuarioLogueado;
     }
@@ -89,7 +100,13 @@ public class AppChat {
 	public double getDescuento() {
     	return usuarioLogueado.getPrecio(); 
     }
-
+	
+	/**
+	 * Metodo para poder comprobar el login
+	 * @param tel telefono con el que se intenta hacer el login 
+	 * @param contraseña contraseña con la que se intenta hacer el login
+	 * @return true si se ha conseguido hacer el login, false en caso contrario
+	 */
     public boolean hacerLogin(String tel, String contraseña) {
         Usuario usuario = repo.getUsuario(tel);
         if (usuario == null || !usuario.getContraseña().equals(contraseña)) {
@@ -99,7 +116,16 @@ public class AppChat {
         return true;
     }
 
-    
+    /**
+     * Metodo que sirve para registrar a un nuevo usuario
+     * @param telefono telefono del usuario que se quiere registrar
+     * @param nombre nombre del usuario que se quiere registrar
+     * @param foto foto del usuario que se quiere registrar
+     * @param contraseña contraseña del usuario que se quiere registar
+     * @param fecha fecha del usuario que se quiere registrar
+     * @param estado estado del usuario que se quiere registrar
+     * @return true si se ha podido registrar al usuario con exito, false en caso contrario
+     */
     public boolean registrarUsuario(String telefono, String nombre,String foto, String contraseña,LocalDate fecha,String estado) {
 		Usuario usuarioExistente = repo.getUsuario(telefono);
 		if (usuarioExistente != null) {
@@ -115,14 +141,18 @@ public class AppChat {
 			repo.addUsuario(nuevoUsuario);
 			adaptadorUsuario.registrarUsuario(nuevoUsuario);
 
-			return hacerLogin(nuevoUsuario.getTelefono(), nuevoUsuario.getContraseña()); // comprueba que se haya registrado
-																		// correctamente
+			return hacerLogin(nuevoUsuario.getTelefono(), nuevoUsuario.getContraseña()); // comprueba que se haya registrado correctamente
 		}
 		return false;
 
 	}
 
-    // Función para obtener los mensajes
+    
+    /**
+     * Método para obtener los mensajes
+     * @param contacto del que se quiere obtener los mensajes
+     * @return Lista de mensajes del contacto
+     */
     public List<Mensaje> getMensajes(Contacto contacto) {
         // Caso 1: Si el contacto es IndividualContact y no es el usuario actual
         if (contacto instanceof ContactoIndividual && !((ContactoIndividual) contacto).isUsuario(usuarioLogueado)) {
@@ -143,11 +173,20 @@ public class AppChat {
         return contacto.getMensajes();
     }
 
+    
+    /**
+     * Obtiene los contactos del usuario Actual
+     * @return lista del contactos del usuarioLogueado
+     */
 	public List<Contacto> getContactosUsuarioActual() {
 		List<Contacto> contactosActual = usuarioLogueado.getContactos(); 
 		return contactosActual;
 	}
 	
+	/**
+	 * Retorna el chat en el que se encuentra el usuario
+	 * @return Contacto con el que esta hablando
+	 */
 	public Contacto getChatActual() {
 		return chatActual;
 	}
@@ -169,12 +208,21 @@ public class AppChat {
             .collect(Collectors.toList());
     }
 */
-	
+	/**
+	 * Método que sirve para porder buscar a un usuario a traves de su telefono
+	 * @param telefono telefono del usuario a encontrar
+	 * @return Retorna el usuario si se encontro
+	 */
 	public Optional<Usuario> buscarUsuario(String telefono) {
 		return repo.obtenerUsuarioPorTelefono(telefono);
 	}
 	
-	//Funcion para agregar los contactos
+	/**
+	 * Método para agregar los contactos
+	 * @param nombre nombre del contacto
+	 * @param telefono telefono del contacto
+	 * @return retorna el ContactoIndividual creado
+	 */
 	public ContactoIndividual agregarContacto(String nombre, String telefono) {
 	    if (usuarioLogueado.contieneContacto(nombre)) {
 	        return null; // Ya existe el contacto
@@ -198,8 +246,14 @@ public class AppChat {
 	}
 
         
-    //Funcion para poder agregar un Grupo
-	public Grupo agregarGrupo(String groupName, List<String> contactNames) {
+    /**
+     * Método para poder agregar un Grupo
+     * @param groupName nombre del grupo
+     * @param contactNames lista de los nombres de los contactos que se quieren meter al grupo
+     * @param rutaImagen imagen del grupo
+     * @return nuevo grupo
+     */
+	public Grupo agregarGrupo(String groupName, List<String> contactNames, String rutaImagen) {
 	    //Si ya existe el grupo 
 		if (usuarioLogueado.contieneGrupo(groupName)) {
 	        System.out.println("El grupo ya existe: " + groupName);
@@ -217,13 +271,13 @@ public class AppChat {
 	        return null;
 	    }
 	    //Crea el nuevo grupo
-	    return crearYRegistrarGrupo(groupName, contactos);
+	    return crearYRegistrarGrupo(groupName, contactos, rutaImagen);
 	}
 	
 	//Funcion para poder crear y registrar el gurpo 
-	private Grupo crearYRegistrarGrupo(String groupName, List<ContactoIndividual> contactos) {
+	private Grupo crearYRegistrarGrupo(String groupName, List<ContactoIndividual> contactos, String rutaImagen) {
 	    //creamos el grupo y lo añadimos a los contactos del usuario
-		Grupo nuevoGrupo = usuarioLogueado.crearGrupo(groupName, contactos);
+		Grupo nuevoGrupo = usuarioLogueado.crearGrupo(groupName, contactos, rutaImagen);
 	    usuarioLogueado.addGrupo(nuevoGrupo);
 	    //registramos el grupo y modificamos el grupo en la bbdd
 	    adaptadorGrupo.registrarGrupo(nuevoGrupo);
@@ -245,22 +299,20 @@ public class AppChat {
         return null;
     }
     
+    /*
     //Eliminar un contacto
     public void eliminarContacto(Contacto contacto) {
         usuarioLogueado.removeContacto(contacto);
-    }
-    
-    //Función para obtener todos los contactos
-    public List<Contacto> obtenerTodosContactos() {
-    	if (usuarioLogueado == null)
-            return new LinkedList<Contacto>();
-        
-        return usuarioLogueado.getContactos();
-    }
+    }*/
     
   //ENVIAR MENSAJE DE TEXTO
     
-    // Método para crear un mensaje entre usuarios
+    /**
+     *  Método para crear un mensaje entre usuarios
+     * @param contacto contacto al que se le quiere enviar el mensaje
+     * @param texto mensaje que se le quiere pasar al contacto
+     * @param tipo tipo del mensaje
+     */
 	@SuppressWarnings("null")
 	private void crearMensajeTextoUsuarioContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		//Cogemos el usuario receptor
@@ -281,7 +333,12 @@ public class AppChat {
         adaptadorContacto.modificarContacto(contactoInverso);
     }
 	
-    // Método para crear un mensaje entre usuarios
+    /**
+     *  Método para crear un mensaje entre usuarios
+     * @param contacto contacto al que se le quiere enviar el mensaje
+     * @param emoticono emoji que se le quiere pasar al contacto
+     * @param tipo tipo del mensaje
+     */
 	@SuppressWarnings("null")
 	private void crearMensajeEmoticonoUsuarioContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		//Cogemos el usuario receptor
@@ -302,27 +359,47 @@ public class AppChat {
         adaptadorContacto.modificarContacto(contactoInverso);
     }
     
-	//Metodo para crear un mensaje de texto para el contacto
+	/**
+	 * Metodo para crear un mensaje de texto para el contacto
+	 * @param contacto
+	 * @param texto
+	 * @param tipo
+	 */
     private void crearMensajeContactoTexto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
         Mensaje mensaje = contacto.creaMensajeTexto(texto, tipo);
         adaptadorMensaje.registrarMensaje(mensaje);
         adaptadorContacto.modificarContacto(contacto);
     }
     
-    //Metedo para crear Mensaje con emoticono para el contacto
+    /**
+     * Metedo para crear Mensaje con emoticono para el contacto
+     * @param contacto
+     * @param emoticono
+     * @param tipo
+     */
     private void crearMensajeContactoEmoticono(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
         Mensaje mensaje = contacto.creaMensajeEmoticono(emoticono, tipo);
         adaptadorMensaje.registrarMensaje(mensaje);
         adaptadorContacto.modificarContacto(contacto);
     }
     
-    // Método para enviar un mensaje a un contacto individual
+    /**
+     *  Método para enviar un mensaje a un contacto individual
+     * @param contacto
+     * @param texto
+     * @param tipo
+     */
     public void enviarMensajeTextoContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
         this.crearMensajeContactoTexto(contacto, texto, tipo);
         this.crearMensajeTextoUsuarioContacto(contacto, texto, tipo);
     }
     
-    //Metodo para enviar un mendaje de emoticono a un contacto individual
+    /**
+     * Metodo para enviar un mendaje de emoticono a un contacto individual
+     * @param contacto
+     * @param emoticono
+     * @param tipo
+     */
     public void enviarMensajeEmoticonoContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
         this.crearMensajeContactoEmoticono(contacto, emoticono, tipo);
         this.crearMensajeEmoticonoUsuarioContacto(contacto, emoticono, tipo);
@@ -331,24 +408,46 @@ public class AppChat {
     
     //ENVIAR MENSAJE DE EMOJI A UN GRUPO 
     
-    // Método para enviar un mensaje de texto a un grupo
+    /**
+     *  Método para enviar un mensaje de texto a un grupo
+     * @param grupo de los contactos a los que se les quiere mandar el mensaje
+     * @param texto texto del mensaje
+     * @param tipo tipo del mensaje
+     */
     public void enviarMensajeTextoGrupo(Grupo grupo, String texto, TipoMensaje tipo) {
         this.crearMensajeTextoGrupo(grupo, texto, tipo);
         grupo.getContactos().forEach(c -> this.crearMensajeTextoUsuarioContacto(c, texto, tipo));
     }
     
-    // Método para enviar un mensaje con emoji a un grupo
+    /**
+     *  Método para enviar un mensaje con emoji a un grupo
+     * @param grupo de los contactos a los que se les quiere mandar el mensaje 
+     * @param emoticono emoji del mensaje
+     * @param tipo tipo del mensaje 
+     */
     public void enviarMensajeEmoticonoGrupo(Grupo grupo, int emoticono, TipoMensaje tipo) {
         this.crearMensajeEmojiGrupo(grupo, emoticono, tipo);
         grupo.getContactos().forEach(c -> this.crearMensajeEmoticonoUsuarioContacto(c, emoticono, tipo));
     }
     
+    /**
+     * Método para registar el mensaje de texto
+     * @param g
+     * @param texto
+     * @param tipo
+     */
     public void crearMensajeTextoGrupo(Grupo g, String texto, TipoMensaje tipo) {
     	 Mensaje mensaje = g.creaMensajeTexto(texto, tipo);
          adaptadorMensaje.registrarMensaje(mensaje);
          adaptadorGrupo.modificarGrupo(g);
     }
     
+    /**
+     * Método para registar el mensaje
+     * @param g
+     * @param emoticono
+     * @param tipo
+     */
     public void crearMensajeEmojiGrupo(Grupo g, int emoticono, TipoMensaje tipo) {
     	Mensaje mensaje = g.creaMensajeEmoticono(emoticono, tipo);
         adaptadorMensaje.registrarMensaje(mensaje);
@@ -495,7 +594,65 @@ public class AppChat {
 		
 		return filtro.filtrarMensaje(mensajes);
 	}
-
-
+	
+	/**
+	 * Método que sirve para exportar una conversacíon a PDF 
+	 * @throws DocumentException 
+	 * @throws FileNotFoundException 
+	 */
+	
+	public boolean exportarPDF() throws FileNotFoundException, DocumentException {
+		boolean comprobacion;
+		if(usuarioLogueado.isPremium()) {
+			crearPDF();
+			comprobacion=true;
+		}else 
+			comprobacion= false;
+		return comprobacion;
+	}
+	
+	
+	public void crearPDF()throws FileNotFoundException, DocumentException {
+			FileOutputStream archivo = new FileOutputStream("");
+			Document documento = new Document();
+			PdfWriter.getInstance(documento, archivo);
+			documento.open();
+			documento.add(new Paragraph("Reporte de Usuarios y Grupos"));
+			documento.add(Chunk.NEWLINE);
+			
+			//Listamos a los usuarios
+			documento.add(new Paragraph("Usuarios: ")); 
+			 PdfPTable tablaUsuarios = new PdfPTable(2);
+		     tablaUsuarios.addCell("Nombre");
+		     tablaUsuarios.addCell("Teléfono");
+		     
+		     List<Usuario> usuarios = repo.getUsuarios();
+		     for (Usuario u: usuarios) {
+		    	 tablaUsuarios.addCell(u.getNombre());
+		    	 tablaUsuarios.addCell(u.getTelefono());
+		     }
+		     documento.add(tablaUsuarios);
+		     documento.add(Chunk.NEWLINE);
+		     
+		     List<Grupo> grupos = usuarioLogueado.recuperarTodosGrupos();
+		     for (Grupo g: grupos) {
+		    	 documento.add(new Paragraph("Grupo: " + g.getNombre()));
+		            PdfPTable tablaGrupo = new PdfPTable(2);
+		            tablaGrupo.addCell("Nombre del Miembro");
+		            tablaGrupo.addCell("Teléfono");
+		            
+		            List<ContactoIndividual> contactos = g.getContactos();
+		            for (ContactoIndividual ci: contactos) {
+		            	tablaGrupo.addCell(ci.getNombre());
+		            	tablaGrupo.addCell(ci.getMovil());
+		            }
+		            documento.add(tablaGrupo);
+		            documento.add(Chunk.NEWLINE);
+		            
+		     }
+		  // Cerrar el documento
+			documento.close();
+			
+	}
 
 }
