@@ -105,6 +105,7 @@ public class ContactoIndividual extends Contacto{
 
 		@Override
 		public String toString() {
-			return "ContactoIndividual [movil=" + movil + ", usuario=" + usuario + "]";
+			return getNombre() + " - " + getMovil();
 		}
+
 }

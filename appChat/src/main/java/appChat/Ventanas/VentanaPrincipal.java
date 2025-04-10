@@ -26,6 +26,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+
 import controlador.AppChat;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
@@ -83,10 +85,7 @@ public class VentanaPrincipal extends JFrame {
 
 		JButton btnContactos = new JButton("Nuevo Grupo");
 		btnContactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-grupo.png")));
-		btnContactos.addActionListener(ev -> {
-			VentanaGrupo grupo = new VentanaGrupo();
-			grupo.setVisible(true);
-		});
+		btnContactos.addActionListener(ev -> crearGrupo());
 
 		// Botón para crear un nuevo contacto
 		JButton btnCrearContacto = new JButton("Nuevo Contacto");
@@ -387,6 +386,46 @@ public class VentanaPrincipal extends JFrame {
 		actualizarListaContactos();
 		return nuevoContacto;
 	}
+	
+	private void crearGrupo() {
+	    JTextField nombreGrupo = new JTextField();
+
+	    // Obtener solo nombres de contactos individuales
+	    List<Contacto> contactos = appchat.getContactosUsuarioActual();
+	    DefaultListModel<String> modelNombres = new DefaultListModel<>();
+
+	    for (Contacto c : contactos) {
+	        if (c instanceof ContactoIndividual) {
+	            modelNombres.addElement(c.getNombre());
+	        }
+	    }
+
+	    JList<String> listaNombres = new JList<>(modelNombres);
+	    listaNombres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	    listaNombres.setVisibleRowCount(8);
+	    JScrollPane scroll = new JScrollPane(listaNombres);
+
+	    Object[] mensaje = {
+	        "Nombre del grupo:", nombreGrupo,
+	        "Selecciona miembros:", scroll
+	    };
+
+	    int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Grupo", JOptionPane.OK_CANCEL_OPTION);
+
+	    if (opcion == JOptionPane.OK_OPTION) {
+	        String nombre = nombreGrupo.getText().trim();
+	        List<String> seleccionados = listaNombres.getSelectedValuesList();
+
+	        if (nombre.isEmpty() || seleccionados.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, "Debes ingresar un nombre y seleccionar al menos un contacto.");
+	            return;
+	        }
+
+	        appchat.agregarGrupo(nombre, seleccionados);
+	        actualizarListaContactos(); // Refresca la UI
+	    }
+	}
+
 
 	// FUNCIONES AUXILIARES
 
