@@ -64,10 +64,34 @@ public abstract class Contacto {
 	 * @return
 	 */
     public Mensaje creaMensajeTexto(String texto, TipoMensaje tipo) {
-    	Mensaje m= new Mensaje(texto,tipo,LocalDateTime.now());
+    	Mensaje m= new Mensaje(texto,tipo,LocalDateTime.now(),false);
     	mensajes.add(m);
     	return m;
     }
+    
+	/**
+	 * Metodo para crear un mensaje para el grupo
+	 * @param texto texto del mensaje 
+	 * @param tipo tipo del mensaje
+	 * @return Mensaje creado
+	 */
+	public Mensaje creaMensajeTextoGrupo(String texto, TipoMensaje tipo) {
+		Mensaje m= new Mensaje(texto,tipo,LocalDateTime.now(), true);
+    	mensajes.add(m);
+    	return m;
+	}
+	
+	/**
+	 * Método para crear un mensaje con un emotico para el grupo
+	 * @param emoticono
+	 * @param tipo
+	 * @return
+	 */
+	public Mensaje creaMensajeEmoticonoGrupo(int emoticono, TipoMensaje tipo) {
+		Mensaje m= new Mensaje(emoticono,tipo,LocalDateTime.now(), true);
+    	mensajes.add(m);
+    	return m;
+	}
     
     /**
      * Método que sirve para crear un mensaje con un emoji
@@ -77,10 +101,11 @@ public abstract class Contacto {
      */
     
     public Mensaje creaMensajeEmoticono(int emoticono, TipoMensaje tipo) {
-    	Mensaje m= new Mensaje(emoticono,tipo,LocalDateTime.now());
+    	Mensaje m= new Mensaje(emoticono,tipo,LocalDateTime.now(),false);
     	mensajes.add(m);
     	return m;
     }
+    
     
     /**
      * Metodo que se ha definido en ContactoIndividual y en Grupo

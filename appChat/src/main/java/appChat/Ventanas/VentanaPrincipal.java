@@ -342,6 +342,8 @@ public class VentanaPrincipal extends JFrame {
 		return nuevoContacto;
 	}
 	
+	//Método privado que servirá para crear el grupo
+	
 	private void crearGrupo() {
 	    JTextField nombreGrupo = new JTextField();
 

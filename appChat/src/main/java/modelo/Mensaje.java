@@ -26,6 +26,20 @@ public class Mensaje implements Comparable<Mensaje>{
 	}
 	
 	
+	public Mensaje(String texto, TipoMensaje tipo, LocalDateTime hora, boolean b) {
+		this.texto = texto;
+		this.tipo=tipo;
+		this.hora=hora;
+		this.grupo = b;
+	}
+	
+	public Mensaje(int emoticono, TipoMensaje tipo, LocalDateTime hora, boolean b) {
+		this.tipo=tipo;
+		this.emoticono=emoticono; 
+		this.hora=hora; 
+		this.grupo=b;
+	}
+
 	//getters y setters
 	public String getTexto() {
 		return texto;

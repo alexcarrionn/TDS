@@ -1,4 +1,5 @@
 package modelo;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,11 +52,14 @@ public class Grupo extends Contacto{
 		contactos.remove(usuario);
 	}
 	
-	/*A lo mejor tenemos que hacer funciones para conseguir los mensajes 
-	como conseguir aquellos que tu envias o para borrar los mensajes
-	Devuelve los mensajes que han enviado el resto de usuarios por el grupo. El
-	valor del parametro pasado como parámetro no importa
-	*/
+	/**
+	 * Método añade una lista de mensajes
+	 * @param mensajes
+	 */
+	public void addAllMensajes(List<Mensaje> mensajes) {
+		this.getMensajes().addAll(mensajes);
+	}
+
 	
 	// HashCode e Equals
 		/**
@@ -95,6 +99,5 @@ public class Grupo extends Contacto{
 		public String getFoto() {
 			return this.foto;
 		}
-
 
 }

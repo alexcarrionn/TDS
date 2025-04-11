@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import beans.Entidad;
@@ -57,7 +58,8 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
             Arrays.asList(
                 new Propiedad("nombre", grupo.getNombre()),
                 new Propiedad("contactos", obtenerIdsContactos(grupo.getContactos())),
-                new Propiedad("Imagen", grupo.getFoto())
+                new Propiedad("Imagen", grupo.getFoto()),
+                new Propiedad("mensajes", obtenerIdsMensajes(grupo.getMensajes()))
             )
         ));
         // Guardar en la persistencia
@@ -109,8 +111,24 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         // Contactos que el grupo tiene
         String contactosId = servPersistencia.recuperarPropiedadEntidad(eGrupo, "contactos");
         grupo.agregarContactos(obtenerContactosDesdeCodigos(contactosId));
+        
+        //recuperamos los mensajes y se lo añadimos
+        String mensajesId = servPersistencia.recuperarPropiedadEntidad(eGrupo, "mensajes"); 
+        grupo.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
 
         return grupo;
+    }
+	
+    //funcion auxiliar para obtener los mensajes desde los codigos 
+    private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
+        List<Mensaje> mensajes = new LinkedList<>();
+        StringTokenizer strTok = new StringTokenizer(codigos, " ");
+        AdaptadorMensaje adaptadorMensaje = AdaptadorMensaje.getUnicaInstancia();
+        while (strTok.hasMoreTokens()) {
+            String code = (String) strTok.nextElement();
+            mensajes.add(adaptadorMensaje.recuperarMensaje(Integer.valueOf(code)));
+        }
+        return mensajes;
     }
     
 	//Funcion auxiliar para obtener los contactos desde los codigos 

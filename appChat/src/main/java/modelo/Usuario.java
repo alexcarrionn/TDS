@@ -274,12 +274,24 @@ public class Usuario {
 	
 	/**
 	 * Método que devuelve todos los grupos del usuario logueado
+	 * @return Lista de los grupos del usuario
 	 * 
 	 */
 	public List<Grupo> recuperarTodosGrupos(){
 		return this.contactos.stream()
 				.filter(c -> c instanceof Grupo)
 				.map(c -> (Grupo) c)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Método para reuperar todos los usuarios individuales del usuario
+	 * @return Lista de Contactos Individuales
+	 */
+	public List<ContactoIndividual> recuperarTodosLosContactos(){
+		return contactos.stream()
+				.filter(c -> c instanceof ContactoIndividual)
+				.map(c -> (ContactoIndividual)c)
 				.collect(Collectors.toList());
 	}
 	

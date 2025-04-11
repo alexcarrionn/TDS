@@ -59,9 +59,9 @@ public class FiltroCombinado implements Filtro{
 	 */
 	@Override
 	public List<Mensaje> filtrarMensaje(List<Mensaje> mensajes) {
-		List<Mensaje> mensajesFiltrados = new ArrayList<>(mensajes); 
+		List<Mensaje> mensajesFiltrados = new ArrayList<>(); 
 		for (Filtro f : filtros)
-			f.filtrarMensaje(mensajesFiltrados);
+			mensajesFiltrados.addAll(f.filtrarMensaje(mensajes));
 		return mensajesFiltrados;
 	}
 

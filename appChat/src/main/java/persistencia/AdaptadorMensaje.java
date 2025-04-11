@@ -105,7 +105,7 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         String tipo = servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo");
 
         // Crear el mensaje sin emisor ni receptor al principio
-        Mensaje mensaje = new Mensaje(texto, TipoMensaje.valueOf(tipo.toUpperCase()), fecha);
+        Mensaje mensaje = new Mensaje(texto, TipoMensaje.valueOf(tipo.toUpperCase()), fecha, false);
         mensaje.setId(codigo);
 
         // Añadir al pool antes de recuperar más propiedades
