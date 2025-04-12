@@ -183,8 +183,7 @@ public class AppChat {
 	 * @return lista del contactos del usuarioLogueado
 	 */
 	public List<Contacto> getContactosUsuarioActual() {
-		List<Contacto> contactosActual = usuarioLogueado.getContactos();
-		return contactosActual;
+		return new ArrayList<>(usuarioLogueado.getContactos());
 	}
 
 	/**
@@ -269,7 +268,7 @@ public class AppChat {
 		// si no existe coge la lista de contactos pasados para crear el grupo
 		List<ContactoIndividual> contactos = contactNames.stream().map(this::getContactoPorNombre)
 				.filter(Objects::nonNull) // Filtra los contactos no encontrados
-				.toList(); // Devuelve una lista inmutable
+				.collect(Collectors.toList()); // Devuelve una lista inmutable
 		// si no hay ninguno retorna null
 		if (contactos.isEmpty()) {
 			System.out.println("No se encontraron contactos válidos para el grupo: " + groupName);
@@ -314,7 +313,7 @@ public class AppChat {
 	 * @param texto    mensaje que se le quiere pasar al contacto
 	 * @param tipo     tipo del mensaje
 	 */
-	@SuppressWarnings("null")
+
 	private void crearMensajeTextoUsuarioContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		// Cogemos el usuario receptor
 		Usuario usuarioReceptor = contacto.getUsuario();
@@ -323,7 +322,8 @@ public class AppChat {
 
 		// Si el usuario no existe entre los contactos del usuario, creamos uno vacio
 		if (contactoInverso == null) {
-			contactoInverso = usuarioReceptor.crearContactoIndividual("", contacto.getMovil(), usuarioLogueado);
+			contactoInverso = usuarioReceptor.crearContactoIndividual(" ", usuarioLogueado.getTelefono(), usuarioLogueado);
+			usuarioReceptor.addContacto(contactoInverso);
 			adaptadorContacto.registrarContacto(contactoInverso);
 			adaptadorUsuario.modificarUsuario(usuarioReceptor);
 		}
@@ -341,7 +341,7 @@ public class AppChat {
 	 * @param emoticono emoji que se le quiere pasar al contacto
 	 * @param tipo      tipo del mensaje
 	 */
-	@SuppressWarnings("null")
+
 	private void crearMensajeEmoticonoUsuarioContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		// Cogemos el usuario receptor
 		Usuario usuarioReceptor = contacto.getUsuario();
@@ -350,7 +350,8 @@ public class AppChat {
 
 		// Si el usuario no existe entre los contactos del usuario, creamos uno vacio
 		if (contactoInverso == null) {
-			contactoInverso = usuarioReceptor.crearContactoIndividual("", contactoInverso.getMovil(), usuarioLogueado);
+			contactoInverso = usuarioReceptor.crearContactoIndividual(" ", usuarioLogueado.getTelefono(), usuarioLogueado);
+			usuarioReceptor.addContacto(contactoInverso);
 			adaptadorContacto.registrarContacto(contactoInverso);
 			adaptadorUsuario.modificarUsuario(usuarioReceptor);
 		}

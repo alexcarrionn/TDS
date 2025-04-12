@@ -50,6 +50,7 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         eMensaje.setPropiedades(new ArrayList<Propiedad>(
                 Arrays.asList(
                         new Propiedad("texto", mensaje.getTexto()),
+                        new Propiedad("emoji", String.valueOf(mensaje.getEmoticono())),
                         new Propiedad("tipo", String.valueOf(mensaje.getTipo())),
                         new Propiedad("fecha", mensaje.getHora().toString()),
                         new Propiedad("grupo", String.valueOf(mensaje.isGrupo()))
@@ -101,11 +102,20 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
 
         // Recuperar propiedades
         String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
+        int emoji = Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoji"));
         LocalDateTime fecha = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "fecha"));
         String tipo = servPersistencia.recuperarPropiedadEntidad(eMensaje, "tipo");
+        
+        Mensaje mensaje;
 
         // Crear el mensaje sin emisor ni receptor al principio
-        Mensaje mensaje = new Mensaje(texto, TipoMensaje.valueOf(tipo.toUpperCase()), fecha, false);
+        if(texto==null) {
+             mensaje = new Mensaje(emoji, TipoMensaje.valueOf(tipo.toUpperCase()), fecha, false);	
+        }
+        else {
+        	 mensaje = new Mensaje(texto, TipoMensaje.valueOf(tipo.toUpperCase()), fecha, false);
+        }
+
         mensaje.setId(codigo);
 
         // Añadir al pool antes de recuperar más propiedades

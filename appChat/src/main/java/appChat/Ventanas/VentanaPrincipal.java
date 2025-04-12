@@ -3,7 +3,10 @@ package appChat.Ventanas;
 import java.awt.Image;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
@@ -15,9 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-
 import com.itextpdf.text.DocumentException;
-
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
@@ -32,7 +33,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-
 import controlador.AppChat;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
@@ -54,6 +54,10 @@ public class VentanaPrincipal extends JFrame {
 
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
+	
+	private JScrollPane scrollPanelEmojis;
+	private JPanel panelEmojis;
+
 
 	/**
 	 * Create the frame.
@@ -112,23 +116,18 @@ public class VentanaPrincipal extends JFrame {
 		});
 		panelBotones.add(btnBuscarMensajes);
 
-		JButton btnContactos = new JButton("Nuevo Grupo");
-		btnContactos.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-grupo.png")));
-		btnContactos.addActionListener(ev -> crearGrupo());
+		JButton btnCrearGrupo = new JButton("Nuevo Grupo");
+		btnCrearGrupo.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-grupo.png")));
+		btnCrearGrupo.addActionListener(ev -> crearGrupo());
 
 		// Botón para crear un nuevo contacto
 		JButton btnCrearContacto = new JButton("Nuevo Contacto");
 		btnCrearContacto.setToolTipText("Crear nuevo contacto"); // Tooltip para mayor claridad
 		btnCrearContacto.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-contacto.png")));
-		btnCrearContacto.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Llamar a la función crearContacto()
-				crearContacto();
-			}
-		});
+		btnCrearContacto.addActionListener(ev -> crearContacto());
+
 		panelBotones.add(btnCrearContacto);
-		panelBotones.add(btnContactos);
+		panelBotones.add(btnCrearGrupo);
 
 		JButton botonPremium = new JButton("Premium");
 		botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
@@ -271,10 +270,17 @@ public class VentanaPrincipal extends JFrame {
 
 		// Agregar la lista al panel
 		panelLista.add(new JScrollPane(listaContactos)); // Se recomienda usar JScrollPane para listas grandes
+		
+		cargarPanelEmojis();
 
 		JPanel enviar = new JPanel();
 		chatActual.add(enviar, BorderLayout.SOUTH);
 		enviar.setLayout(new BoxLayout(enviar, BoxLayout.X_AXIS));
+		
+		JButton botonEmojis = new JButton("");
+		botonEmojis.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/diablo.png")));
+		botonEmojis.addActionListener(ev -> abrirPanelEmojis());
+		enviar.add(botonEmojis);
 
 		mensaje = new JTextField();
 		enviar.add(mensaje);
@@ -311,6 +317,52 @@ public class VentanaPrincipal extends JFrame {
 		});
 		enviar.add(botonEnviarMensaje);
 	}
+
+	private void cargarPanelEmojis() {
+		// Crear el panel de emojis al inicializar la ventana (oculto por defecto)
+		panelEmojis = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		panelEmojis.setBackground(Color.LIGHT_GRAY); // O usa tu constante CHAT_COLOR
+
+		// Cargar los emojis una sola vez
+		for (int i = 0; i <= BubbleText.MAXICONO; i++) {
+		    final int emojiId = i;
+		    JLabel labelIcono = new JLabel(BubbleText.getEmoji(i));
+		    labelIcono.setName(Integer.toString(i));
+		    labelIcono.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		    labelIcono.setToolTipText("Emoji " + i);
+		    
+		    labelIcono.addMouseListener(new MouseAdapter() {
+		        @Override
+		        public void mouseClicked(MouseEvent e) {
+		            enviarMensajeEmoji(emojiId);
+		            mensaje.setText(""); // Limpia el campo de texto
+		        }
+		    });
+
+		    panelEmojis.add(labelIcono);
+		}
+
+		scrollPanelEmojis = new JScrollPane(panelEmojis);
+		scrollPanelEmojis.setBorder(null);
+		scrollPanelEmojis.setPreferredSize(new Dimension(400, 75));
+		scrollPanelEmojis.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPanelEmojis.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+
+		// Inicialmente oculto
+		scrollPanelEmojis.setVisible(false);
+
+		// Añadir el panel justo encima del área de entrada (debajo del chat)
+		contentPane.add(scrollPanelEmojis, BorderLayout.SOUTH);
+
+	}
+
+	private void abrirPanelEmojis() {
+	    boolean visible = scrollPanelEmojis.isVisible();
+	    scrollPanelEmojis.setVisible(!visible);
+	    contentPane.revalidate();
+	    contentPane.repaint();
+	}
+
 
 	// Dialogo para crear el contacto al pulsar el boton de Crear Contacto
 	private ContactoIndividual crearContacto() {
@@ -432,11 +484,21 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void enviarMensajeEmoji(int emoji) {
+		if(appchat.getChatActual()==null) return;
 		if (appchat.getChatActual() instanceof ContactoIndividual) {
-			appchat.enviarMensajeEmoticonoContacto((ContactoIndividual) appchat.getChatActual(), emoji,
-					TipoMensaje.ENVIADO);
+			appchat.enviarMensajeEmoticonoContacto((ContactoIndividual) appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
 		} else {
 			appchat.enviarMensajeEmoticonoGrupo((Grupo) appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
+		}
+		
+		Mensaje nuevoMensaje = new Mensaje(emoji, TipoMensaje.ENVIADO, LocalDateTime.now());
+		BubbleText burbuja = crearBurbuja(nuevoMensaje);
+		
+		ChatBurbujas chatActual = chatsRecientes.get(appchat.getChatActual());
+		if(chatActual != null) {
+			chatActual.agregarBurbuja(burbuja);
+			scrollBarChatBurbujas.getViewport().revalidate();
+			scrollBarChatBurbujas.getViewport().repaint();
 		}
 	}
 
@@ -530,7 +592,7 @@ public class VentanaPrincipal extends JFrame {
 			direccionMensaje = BubbleText.RECEIVED;
 		}
 
-		if (m.getTexto().isEmpty()) {
+		if (m.getTexto()==null) {
 			return new BubbleText(chat, m.getEmoticono(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
 		}
 		return new BubbleText(chat, m.getTexto(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);

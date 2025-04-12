@@ -23,6 +23,8 @@ import java.io.File;
         AppChat appChat=AppChat.getUnicaInstancia();
 		appChat.registrarUsuario("1","a","","a",LocalDate.now(),"a");
 		appChat.registrarUsuario("2","a","","a",LocalDate.now(),"a");
+		appChat.registrarUsuario("3","a","","a",LocalDate.now(),"a");
+		appChat.registrarUsuario("4","a","","a",LocalDate.now(),"a");
 
         VentanaLogin login = new VentanaLogin(); 
         login.main(null);  
