@@ -199,19 +199,6 @@ public class AppChat {
 		chatActual = contactoActual;
 	}
 
-	/*
-	 * public List<Contacto> buscarContactos(String texto, String telefono) { //
-	 * Crear variables locales para las versiones procesadas final String
-	 * textoFiltrado = (texto != null) ? texto.trim().toLowerCase() : ""; final
-	 * String telefonoFiltrado = (telefono != null) ? telefono.trim() : "";
-	 * 
-	 * // Usar estas variables en la lambda return
-	 * usuarioLogueado.getContactos().stream() .filter(c -> (textoFiltrado.isEmpty()
-	 * || c.getNombre().toLowerCase().contains(textoFiltrado)) &&
-	 * (telefonoFiltrado.isEmpty() ||
-	 * String.valueOf(c.getTelefono()).contains(telefonoFiltrado)))
-	 * .collect(Collectors.toList()); }
-	 */
 	/**
 	 * Método que sirve para porder buscar a un usuario a traves de su telefono
 	 * 
@@ -309,9 +296,6 @@ public class AppChat {
 	/**
 	 * Método para crear un mensaje entre usuarios
 	 * 
-	 * @param contacto contacto al que se le quiere enviar el mensaje
-	 * @param texto    mensaje que se le quiere pasar al contacto
-	 * @param tipo     tipo del mensaje
 	 */
 
 	private void crearMensajeTextoUsuarioContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
@@ -336,10 +320,7 @@ public class AppChat {
 
 	/**
 	 * Método para crear un mensaje entre usuarios
-	 * 
-	 * @param contacto  contacto al que se le quiere enviar el mensaje
-	 * @param emoticono emoji que se le quiere pasar al contacto
-	 * @param tipo      tipo del mensaje
+	 *
 	 */
 
 	private void crearMensajeEmoticonoUsuarioContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
@@ -364,10 +345,7 @@ public class AppChat {
 
 	/**
 	 * Metodo para crear un mensaje de texto para el contacto
-	 * 
-	 * @param contacto
-	 * @param texto
-	 * @param tipo
+
 	 */
 	private void crearMensajeContactoTexto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		Mensaje mensaje = contacto.creaMensajeTexto(texto, tipo);
@@ -377,10 +355,7 @@ public class AppChat {
 
 	/**
 	 * Metedo para crear Mensaje con emoticono para el contacto
-	 * 
-	 * @param contacto
-	 * @param emoticono
-	 * @param tipo
+
 	 */
 	private void crearMensajeContactoEmoticono(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		Mensaje mensaje = contacto.creaMensajeEmoticono(emoticono, tipo);
@@ -505,10 +480,7 @@ public class AppChat {
 	/**
 	 * Metodo privado que sirva para saber si el usuario cumple con la condicion
 	 * dependiendo del tipo que haya escogido
-	 * 
-	 * @param tipo
-	 * @return devuelve true en caso de que cumpla la condicion y false en caso
-	 *         contrario
+
 	 */
 	private boolean cumpleCondicion(String tipo) {
 		// Fijamos las dos fechas de inicio y fin donde se aplicará el descuento
@@ -782,73 +754,15 @@ public class AppChat {
 		return usuarioLogueado.getMensajes(grupo);
 	}
 
-	/*
-	 * public void crearPDF() throws FileNotFoundException, DocumentException { File
-	 * directorio = new File("exportaciones"); if (!directorio.exists()) {
-	 * directorio.mkdirs(); } FileOutputStream archivo = new
-	 * FileOutputStream("exportaciones/UsuariosYgrupos.pdf"); Document documento =
-	 * new Document(); PdfWriter.getInstance(documento, archivo); documento.open();
-	 * documento.add(new Paragraph("Reporte de Usuarios y Grupos"));
-	 * documento.add(Chunk.NEWLINE);
+	/**
+	 * Método para añadir un contacto individual específico a un grupo 
+	 * @param grupo grupo al que se quiere añadir el contacto individual
+	 * @param contacto contacto individual que desea añadir al grupo
 	 * 
-	 * // Listamos a los usuarios documento.add(new Paragraph("Usuarios: "));
-	 * PdfPTable tablaUsuarios = new PdfPTable(2); tablaUsuarios.addCell("Nombre");
-	 * tablaUsuarios.addCell("Teléfono");
-	 * 
-	 * List<ContactoIndividual> usuarios =
-	 * usuarioLogueado.recuperarTodosLosContactos(); for (ContactoIndividual u:
-	 * usuarios) { tablaUsuarios.addCell(u.getNombre());
-	 * tablaUsuarios.addCell(u.getMovil()); } documento.add(tablaUsuarios);
-	 * documento.add(Chunk.NEWLINE);
-	 * 
-	 * // Mensajes de usuarios individuales documento.add(new
-	 * Paragraph("Mensajes con Contactos:")); documento.add(Chunk.NEWLINE);
-	 * 
-	 * for (ContactoIndividual u: usuarios) { documento.add(new
-	 * Paragraph("Conversación con: " + u.getNombre()));
-	 * 
-	 * // Supongamos que tienes un método para obtener los mensajes con un contacto
-	 * List<Mensaje> mensajes = obtenerMensajesConContacto(u); if (mensajes != null
-	 * && !mensajes.isEmpty()) { PdfPTable tablaMensajes = new PdfPTable(3);
-	 * tablaMensajes.addCell("Tipo"); tablaMensajes.addCell("Fecha");
-	 * tablaMensajes.addCell("Contenido");
-	 * 
-	 * for (Mensaje m: mensajes) {
-	 * tablaMensajes.addCell(String.valueOf(m.getTipo()));
-	 * tablaMensajes.addCell(String.valueOf(m.getHora()));
-	 * tablaMensajes.addCell(m.getTexto()); } documento.add(tablaMensajes); } else {
-	 * documento.add(new Paragraph("No hay mensajes con este contacto.")); }
-	 * documento.add(Chunk.NEWLINE); }
-	 * 
-	 * // Grupos y mensajes de grupos List<Grupo> grupos =
-	 * usuarioLogueado.recuperarTodosGrupos(); for (Grupo g: grupos) {
-	 * documento.add(new Paragraph("Grupo: " + g.getNombre())); PdfPTable tablaGrupo
-	 * = new PdfPTable(2); tablaGrupo.addCell("Nombre del Miembro");
-	 * tablaGrupo.addCell("Teléfono");
-	 * 
-	 * List<ContactoIndividual> contactos = g.getContactos(); for
-	 * (ContactoIndividual ci: contactos) { tablaGrupo.addCell(ci.getNombre());
-	 * tablaGrupo.addCell(ci.getMovil()); } documento.add(tablaGrupo);
-	 * documento.add(Chunk.NEWLINE);
-	 * 
-	 * // Añadir mensajes del grupo documento.add(new
-	 * Paragraph("Mensajes del grupo " + g.getNombre() + ":"));
-	 * 
-	 * // Supongamos que tienes un método para obtener los mensajes de un grupo
-	 * List<Mensaje> mensajesGrupo = obtenerMensajesDeGrupo(g); if (mensajesGrupo !=
-	 * null && !mensajesGrupo.isEmpty()) { PdfPTable tablaMensajesGrupo = new
-	 * PdfPTable(3); tablaMensajesGrupo.addCell("Tipo");
-	 * tablaMensajesGrupo.addCell("Fecha"); tablaMensajesGrupo.addCell("Contenido");
-	 * 
-	 * for (Mensaje m: mensajesGrupo) {
-	 * tablaMensajesGrupo.addCell(String.valueOf(m.getTipo()));
-	 * tablaMensajesGrupo.addCell(String.valueOf(m.getHora()));
-	 * tablaMensajesGrupo.addCell(m.getTexto()); }
-	 * documento.add(tablaMensajesGrupo); } else { documento.add(new
-	 * Paragraph("No hay mensajes en este grupo.")); } documento.add(Chunk.NEWLINE);
-	 * }
-	 * 
-	 * // Cerrar el documento documento.close(); }
 	 */
-
+		
+	public void agregarContacto(Grupo g, ContactoIndividual c) {
+		g.agregarContacto(c);
+		adaptadorGrupo.modificarGrupo(g);
+	}
 }

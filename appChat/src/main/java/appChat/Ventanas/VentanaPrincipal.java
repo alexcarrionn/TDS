@@ -54,10 +54,9 @@ public class VentanaPrincipal extends JFrame {
 
 	private Map<Contacto, ChatBurbujas> chatsRecientes;
 	private JScrollPane scrollBarChatBurbujas;
-	
+
 	private JScrollPane scrollPanelEmojis;
 	private JPanel panelEmojis;
-
 
 	/**
 	 * Create the frame.
@@ -84,7 +83,6 @@ public class VentanaPrincipal extends JFrame {
 		btnExportarPDF.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/enviar-mensaje.png")));
 		btnExportarPDF.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				boolean exito;
 				try {
 					exito = AppChat.getUnicaInstancia().exportarPDF();
@@ -96,13 +94,11 @@ public class VentanaPrincipal extends JFrame {
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (DocumentException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 			}
 
 		});
@@ -126,8 +122,14 @@ public class VentanaPrincipal extends JFrame {
 		btnCrearContacto.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-contacto.png")));
 		btnCrearContacto.addActionListener(ev -> crearContacto());
 
+		JButton btnAnadirContacto = new JButton("Añadir contacto");
+		btnAnadirContacto
+				.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/nuevo-contacto-grupo.png")));
+		btnAnadirContacto.addActionListener(ev -> anadirContacto());
+
 		panelBotones.add(btnCrearContacto);
 		panelBotones.add(btnCrearGrupo);
+		panelBotones.add(btnAnadirContacto);
 
 		JButton botonPremium = new JButton("Premium");
 		botonPremium.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/calidad-premium.png")));
@@ -149,13 +151,9 @@ public class VentanaPrincipal extends JFrame {
 		JLabel labelUsuarioActual = new JLabel(appchat.getUsuarioLogueado().getNombre());
 		panelBotones.add(labelUsuarioActual);
 		
-		//TODO Refactorizar
-		//Aqui cogemos la imagen del usuario y comprobamos que este, en caso de no tener se le asignará la de robohash
+		// Aqui cogemos la imagen del usuario y comprobamos que este, en caso de no
+		// tener se le asignará la de robohash
 		String imagen = appchat.getUsuarioLogueado().getImagen();
-		if (imagen == null || imagen.isEmpty()) {
-			imagen = "https://robohash.org/" + appchat.getUsuarioLogueado().getNombre();
-		}
-
 		ImageIcon imageIcon = null;
 
 		// Verificar si la imagen es una URL o un archivo local
@@ -222,7 +220,7 @@ public class VentanaPrincipal extends JFrame {
 		} else {
 			System.err.println("No se pudo cargar la imagen, estableciendo imagen por defecto.");
 		}
-		
+
 		JPanel panelLista = new JPanel();
 		contentPane.add(panelLista, BorderLayout.WEST);
 		panelLista.setLayout(new BorderLayout(0, 0));
@@ -270,13 +268,13 @@ public class VentanaPrincipal extends JFrame {
 
 		// Agregar la lista al panel
 		panelLista.add(new JScrollPane(listaContactos)); // Se recomienda usar JScrollPane para listas grandes
-		
+
 		cargarPanelEmojis();
 
 		JPanel enviar = new JPanel();
 		chatActual.add(enviar, BorderLayout.SOUTH);
 		enviar.setLayout(new BoxLayout(enviar, BoxLayout.X_AXIS));
-		
+
 		JButton botonEmojis = new JButton("");
 		botonEmojis.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/imagenes/diablo.png")));
 		botonEmojis.addActionListener(ev -> abrirPanelEmojis());
@@ -318,6 +316,9 @@ public class VentanaPrincipal extends JFrame {
 		enviar.add(botonEnviarMensaje);
 	}
 
+	// FUNCIONES AUXILIARES
+
+	// Método privado que servira para carar el panel de los emoticonos
 	private void cargarPanelEmojis() {
 		// Crear el panel de emojis al inicializar la ventana (oculto por defecto)
 		panelEmojis = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -325,21 +326,21 @@ public class VentanaPrincipal extends JFrame {
 
 		// Cargar los emojis una sola vez
 		for (int i = 0; i <= BubbleText.MAXICONO; i++) {
-		    final int emojiId = i;
-		    JLabel labelIcono = new JLabel(BubbleText.getEmoji(i));
-		    labelIcono.setName(Integer.toString(i));
-		    labelIcono.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-		    labelIcono.setToolTipText("Emoji " + i);
-		    
-		    labelIcono.addMouseListener(new MouseAdapter() {
-		        @Override
-		        public void mouseClicked(MouseEvent e) {
-		            enviarMensajeEmoji(emojiId);
-		            mensaje.setText(""); // Limpia el campo de texto
-		        }
-		    });
+			final int emojiId = i;
+			JLabel labelIcono = new JLabel(BubbleText.getEmoji(i));
+			labelIcono.setName(Integer.toString(i));
+			labelIcono.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+			labelIcono.setToolTipText("Emoji " + i);
 
-		    panelEmojis.add(labelIcono);
+			labelIcono.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					enviarMensajeEmoji(emojiId);
+					mensaje.setText(""); // Limpia el campo de texto
+				}
+			});
+
+			panelEmojis.add(labelIcono);
 		}
 
 		scrollPanelEmojis = new JScrollPane(panelEmojis);
@@ -356,15 +357,16 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
+	// Método privado que te permitirá abrir el panel de emoticonos
 	private void abrirPanelEmojis() {
-	    boolean visible = scrollPanelEmojis.isVisible();
-	    scrollPanelEmojis.setVisible(!visible);
-	    contentPane.revalidate();
-	    contentPane.repaint();
+		boolean visible = scrollPanelEmojis.isVisible();
+		scrollPanelEmojis.setVisible(!visible);
+		contentPane.revalidate();
+		contentPane.repaint();
 	}
 
-
-	// Dialogo para crear el contacto al pulsar el boton de Crear Contacto
+	// Método privado que servirá como dialogo para crear el contacto al pulsar el
+	// boton de Crear Contacto
 	private ContactoIndividual crearContacto() {
 		JTextField nombreContacto = new JTextField();
 		JTextField telefonoContacto = new JTextField();
@@ -393,76 +395,71 @@ public class VentanaPrincipal extends JFrame {
 		actualizarListaContactos();
 		return nuevoContacto;
 	}
-	
-	//Método privado que servirá para crear el grupo
-	
+
+	// Método privado que servirá para crear el grupo
+
 	private void crearGrupo() {
-	    JTextField nombreGrupo = new JTextField();
+		JTextField nombreGrupo = new JTextField();
 
-	    // Obtener solo nombres de contactos individuales
-	    List<Contacto> contactos = appchat.getContactosUsuarioActual();
-	    DefaultListModel<String> modelNombres = new DefaultListModel<>();
+		// Obtener solo nombres de contactos individuales
+		List<Contacto> contactos = appchat.getContactosUsuarioActual();
+		DefaultListModel<String> modelNombres = new DefaultListModel<>();
 
-	    for (Contacto c : contactos) {
-	        if (c instanceof ContactoIndividual) {
-	            modelNombres.addElement(c.getNombre());
-	        }
-	    }
+		for (Contacto c : contactos) {
+			if (c instanceof ContactoIndividual) {
+				modelNombres.addElement(c.getNombre());
+			}
+		}
 
-	    JList<String> listaNombres = new JList<>(modelNombres);
-	    listaNombres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-	    listaNombres.setVisibleRowCount(8);
-	    JScrollPane scroll = new JScrollPane(listaNombres);
+		JList<String> listaNombres = new JList<>(modelNombres);
+		listaNombres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		listaNombres.setVisibleRowCount(8);
+		JScrollPane scroll = new JScrollPane(listaNombres);
 
-	    // Panel para la imagen con el path arriba y el botón debajo
-	    JPanel panelImagen = new JPanel();
-	    panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
-	    JTextField campoRutaImagen = new JTextField();
-	    campoRutaImagen.setEditable(false);
-	    JButton botonSeleccionarImagen = new JButton("Seleccionar imagen");
+		// Panel para la imagen con el path arriba y el botón debajo
+		JPanel panelImagen = new JPanel();
+		panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
+		JTextField campoRutaImagen = new JTextField();
+		campoRutaImagen.setEditable(false);
+		JButton botonSeleccionarImagen = new JButton("Seleccionar imagen");
 
-	    botonSeleccionarImagen.addActionListener(e -> {
-	        JFileChooser fileChooser = new JFileChooser();
-	        int returnValue = fileChooser.showOpenDialog(null);
-	        if (returnValue == JFileChooser.APPROVE_OPTION) {
-	            java.io.File file = fileChooser.getSelectedFile();
-	            campoRutaImagen.setText(file.getAbsolutePath());
-	        }
-	    });
+		botonSeleccionarImagen.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			int returnValue = fileChooser.showOpenDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				java.io.File file = fileChooser.getSelectedFile();
+				campoRutaImagen.setText(file.getAbsolutePath());
+			}
+		});
 
-	    campoRutaImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
-	    botonSeleccionarImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
+		campoRutaImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
+		botonSeleccionarImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-	    panelImagen.add(campoRutaImagen);
-	    panelImagen.add(Box.createRigidArea(new Dimension(0, 5))); // Espacio entre campo y botón
-	    panelImagen.add(botonSeleccionarImagen);
+		panelImagen.add(campoRutaImagen);
+		panelImagen.add(Box.createRigidArea(new Dimension(0, 5))); // Espacio entre campo y botón
+		panelImagen.add(botonSeleccionarImagen);
 
-	    Object[] mensaje = {
-	        "Nombre del grupo:", nombreGrupo,
-	        "Selecciona miembros:", scroll,
-	        "Imagen del grupo:", panelImagen
-	    };
+		Object[] mensaje = { "Nombre del grupo:", nombreGrupo, "Selecciona miembros:", scroll, "Imagen del grupo:",
+				panelImagen };
 
-	    int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Grupo", JOptionPane.OK_CANCEL_OPTION);
+		int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Nuevo Grupo", JOptionPane.OK_CANCEL_OPTION);
 
-	    if (opcion == JOptionPane.OK_OPTION) {
-	        String nombre = nombreGrupo.getText().trim();
-	        List<String> seleccionados = listaNombres.getSelectedValuesList();
-	        String rutaImagen = campoRutaImagen.getText().trim();
+		if (opcion == JOptionPane.OK_OPTION) {
+			String nombre = nombreGrupo.getText().trim();
+			List<String> seleccionados = listaNombres.getSelectedValuesList();
+			String rutaImagen = campoRutaImagen.getText().trim();
 
-	        if (nombre.isEmpty() || seleccionados.isEmpty()) {
-	            JOptionPane.showMessageDialog(this, "Debes ingresar un nombre y seleccionar al menos un contacto.");
-	            return;
-	        }
+			if (nombre.isEmpty() || seleccionados.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Debes ingresar un nombre y seleccionar al menos un contacto.");
+				return;
+			}
 
-	        appchat.agregarGrupo(nombre, seleccionados, rutaImagen);
-	        actualizarListaContactos(); // Refresca la UI
-	    }
+			appchat.agregarGrupo(nombre, seleccionados, rutaImagen);
+			actualizarListaContactos(); // Refresca la UI
+		}
 	}
 
-
-	// FUNCIONES AUXILIARES
-
+	// Método privado que servirá para actualizar la lista de los contactos
 	private void actualizarListaContactos() {
 		List<Contacto> contactos = appchat.getContactosUsuarioActual();
 		DefaultListModel<Contacto> modeloActualizado = new DefaultListModel<>();
@@ -474,6 +471,8 @@ public class VentanaPrincipal extends JFrame {
 		listaContactos.setModel(modeloActualizado);
 	}
 
+	// Mérodo privado que servirá para saber si un mensaje es un mensaje de texto o
+	// un emoji
 	private void comprobarEmojioTexto(String mensajeTexto) {
 		if (esEntero(mensajeTexto)) {
 			enviarMensajeEmoji(Integer.parseInt(mensajeTexto));
@@ -483,25 +482,29 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
+	// Método privado que servirá para enviar un mensaje de emoji
 	private void enviarMensajeEmoji(int emoji) {
-		if(appchat.getChatActual()==null) return;
+		if (appchat.getChatActual() == null)
+			return;
 		if (appchat.getChatActual() instanceof ContactoIndividual) {
-			appchat.enviarMensajeEmoticonoContacto((ContactoIndividual) appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
+			appchat.enviarMensajeEmoticonoContacto((ContactoIndividual) appchat.getChatActual(), emoji,
+					TipoMensaje.ENVIADO);
 		} else {
 			appchat.enviarMensajeEmoticonoGrupo((Grupo) appchat.getChatActual(), emoji, TipoMensaje.ENVIADO);
 		}
-		
+
 		Mensaje nuevoMensaje = new Mensaje(emoji, TipoMensaje.ENVIADO, LocalDateTime.now());
 		BubbleText burbuja = crearBurbuja(nuevoMensaje);
-		
+
 		ChatBurbujas chatActual = chatsRecientes.get(appchat.getChatActual());
-		if(chatActual != null) {
+		if (chatActual != null) {
 			chatActual.agregarBurbuja(burbuja);
 			scrollBarChatBurbujas.getViewport().revalidate();
 			scrollBarChatBurbujas.getViewport().repaint();
 		}
 	}
 
+	// Método privado que servirña para enviar un mensaje de texto
 	private void enviarMensajeTexto(String mensaje) {
 		if (appchat.getChatActual() instanceof ContactoIndividual) {
 			appchat.enviarMensajeTextoContacto((ContactoIndividual) appchat.getChatActual(), mensaje,
@@ -511,6 +514,7 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
+	// Método privado que servirá para saber si el mensaje enviado es un entero o no
 	private static boolean esEntero(String str) {
 		try {
 			Integer.parseInt(str);
@@ -520,6 +524,8 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
+	// Método privado que servirá para poder cargar el chat del contacto pasado como
+	// parámetro
 	private void cargarChat(Contacto contacto) {
 		if (contacto == null) {
 			return; // Salir si el contacto es nulo
@@ -592,10 +598,78 @@ public class VentanaPrincipal extends JFrame {
 			direccionMensaje = BubbleText.RECEIVED;
 		}
 
-		if (m.getTexto()==null) {
+		if (m.getTexto() == null) {
 			return new BubbleText(chat, m.getEmoticono(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
 		}
 		return new BubbleText(chat, m.getTexto(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
 	}
 
+	// Método privado que te permitirá añadir un contacto individual a un grupo en
+	// concreto
+	private void anadirContacto() {
+		// Obtener solo nombres de contactos individuales
+		List<Contacto> contactos = appchat.getContactosUsuarioActual();
+		DefaultListModel<String> modelNombres = new DefaultListModel<>();
+
+		for (Contacto c : contactos) {
+			if (c instanceof ContactoIndividual) {
+				modelNombres.addElement(c.getNombre());
+			}
+		}
+
+		// Lista visual para seleccionar contacto
+		JList<String> listaNombres = new JList<>(modelNombres);
+		listaNombres.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listaNombres.setVisibleRowCount(8);
+		JScrollPane scroll = new JScrollPane(listaNombres);
+
+		// Obtener solo nombres de grupos
+		DefaultListModel<String> nombreGrupos = new DefaultListModel<>();
+		for (Contacto c : contactos) {
+			if (c instanceof Grupo) {
+				nombreGrupos.addElement(c.getNombre()); // ✅ Aquí estaba el fallo
+			}
+		}
+
+		// Lista visual para seleccionar grupo
+		JList<String> listaGrupos = new JList<>(nombreGrupos);
+		listaGrupos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listaGrupos.setVisibleRowCount(8);
+		JScrollPane scrollGrupos = new JScrollPane(listaGrupos);
+
+		// Mostrar panel con ambas listas
+		Object[] mensaje = { "Selecciona un contacto:", scroll, "Selecciona el grupo al que añadirlo:", scrollGrupos };
+
+		int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Añadir contacto a grupo",
+				JOptionPane.OK_CANCEL_OPTION);
+
+		if (opcion == JOptionPane.OK_OPTION) {
+			String nombreContacto = listaNombres.getSelectedValue();
+			String nombreGrupo = listaGrupos.getSelectedValue();
+
+			if (nombreContacto == null || nombreGrupo == null) {
+				JOptionPane.showMessageDialog(this, "Debes seleccionar un contacto y un grupo.");
+				return;
+			}
+
+			// Buscar el contacto y grupo seleccionados
+			ContactoIndividual contactoIndividual = null;
+			Grupo grupo = null;
+
+			for (Contacto c : contactos) {
+				if (c instanceof ContactoIndividual && c.getNombre().equals(nombreContacto)) {
+					contactoIndividual = (ContactoIndividual) c;
+				} else if (c instanceof Grupo && c.getNombre().equals(nombreGrupo)) {
+					grupo = (Grupo) c;
+				}
+			}
+
+			if (contactoIndividual != null && grupo != null) {
+				grupo.agregarContacto(contactoIndividual);
+				actualizarListaContactos();
+			} else {
+				JOptionPane.showMessageDialog(this, "No se pudo encontrar el contacto o el grupo.");
+			}
+		}
+	}
 }

@@ -1,31 +1,29 @@
 package lanzador;
 
 import java.io.IOException;
-import java.time.LocalDate;
-
 import appChat.Ventanas.VentanaLogin;
-import controlador.AppChat;
+import cargador.CargarAppChat;
+
 import java.io.File;
 
 
  public class Lanzador {
  
-    public static void main(String[] args) {
-    	/*ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k", 
+    @SuppressWarnings("static-access")
+	public static void main(String[] args) {
+    	ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k", 
     		    "java -jar ServidorPersistenciaH2.jar");
-    		terminalPersistencia.directory(new File("C:\\Users\\Juanpe\\Downloads\\ServidorPersistenciaH2"));
+    	
+    		//IMPORTANTE CADA VEZ QUE SE QUIERA EJECUTAR EN UN EQUIPO DIFERENTE, CAMBIAR LA RUTA DEL ARCHIVO
+    		terminalPersistencia.directory(new File("C:\\Users\\acarr\\Downloads\\ServidorPersistenciaH2"));
         try {
             terminalPersistencia.start();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         
-        AppChat appChat=AppChat.getUnicaInstancia();
-		appChat.registrarUsuario("1","a","","a",LocalDate.now(),"a");
-		appChat.registrarUsuario("2","a","","a",LocalDate.now(),"a");
-		appChat.registrarUsuario("3","a","","a",LocalDate.now(),"a");
-		appChat.registrarUsuario("4","a","","a",LocalDate.now(),"a");
-
+        CargarAppChat.main(null);
+        
         VentanaLogin login = new VentanaLogin(); 
         login.main(null);  
         

@@ -38,14 +38,6 @@ public class Grupo extends Contacto{
 	}
 	
 	
-	/**
-	 * Para agregar un individuo al grupo
-	 * @param c Agrega a un solo individuo a la lista de contactos
-	 */
-	//public void agregarIndividuo(ContactoIndividual c) {
-		//contactos.add(c);
-	//}
-	
 	//Para borrar a un integrante del grupo 
 	
 	public void borraContacto(ContactoIndividual usuario) {
@@ -58,6 +50,14 @@ public class Grupo extends Contacto{
 	 */
 	public void addAllMensajes(List<Mensaje> mensajes) {
 		this.getMensajes().addAll(mensajes);
+	}
+	
+	/**
+	 * Método que te permitirá añadir a un contactoIndividual a un grupo específico
+	 * @param contacto contacto que se desea añadir al grupo
+	 */
+	public void agregarContacto(ContactoIndividual contacto) {
+		contactos.add(contacto);
 	}
 
 	
@@ -99,5 +99,6 @@ public class Grupo extends Contacto{
 		public String getFoto() {
 			return this.foto;
 		}
+
 
 }

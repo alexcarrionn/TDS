@@ -51,13 +51,6 @@ public class RepositorioUsuario {
 		return lista;
 	}
 	
-	/*
-	public Usuario getUsuario(int id) {
-		return usuarios.values().stream()
-								.filter(u->u.getId()==id)
-								.findAny()
-								.orElse(null);
-	}*/
 	
 	/**
 	 * Método que devuelve el usuario del telefono que se ha pasado como parametro
