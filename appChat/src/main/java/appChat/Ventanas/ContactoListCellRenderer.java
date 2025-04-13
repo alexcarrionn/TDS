@@ -2,6 +2,7 @@ package appChat.Ventanas;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -13,6 +14,11 @@ import modelo.ContactoIndividual;
 
 import java.awt.*;
 import java.io.File;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 
 public class ContactoListCellRenderer extends JPanel implements ListCellRenderer<Contacto> {
 	/**
@@ -26,28 +32,47 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 	private JLabel lblNombre;
 	private JLabel lblTelefono;
 	private JLabel lblSaludo;
+	private JLabel btnEditar; // Botón para editar el nombre
 
 	public ContactoListCellRenderer() {
-		setLayout(new BorderLayout(10, 10)); // Espaciado entre imagen y texto
+	    setLayout(new BorderLayout(10, 10)); // Espaciado entre imagen y texto
 
-		lblImagen = new JLabel();
-		lblNombre = new JLabel();
-		lblTelefono = new JLabel();
-		lblSaludo = new JLabel();
+	    lblImagen = new JLabel();
+	    lblNombre = new JLabel();
+	    lblTelefono = new JLabel();
+	    lblSaludo = new JLabel();
+	    btnEditar = new JLabel("");
 
-		lblNombre.setFont(new Font("Arial", Font.BOLD, 14));
-		lblTelefono.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblSaludo.setFont(new Font("Arial", Font.ITALIC, 12));
+	    btnEditar.setIcon(new ImageIcon(ContactoListCellRenderer.class.getResource("/imagenes/boton-mas.png")));
+	    btnEditar.setPreferredSize(new Dimension(20, 20)); // Tamaño cuadrado
+	    btnEditar.setVisible(false); // Oculto por defecto
+	    btnEditar.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cambia el cursor al pasar sobre el ícono
 
-		JPanel panelTexto = new JPanel(new GridLayout(3, 1)); // Para organizar los textos verticalmente
-		panelTexto.add(lblNombre);
-		panelTexto.add(lblTelefono);
-		panelTexto.add(lblSaludo);
+	    lblNombre.setFont(new Font("Arial", Font.BOLD, 14));
+	    lblTelefono.setFont(new Font("Arial", Font.PLAIN, 12));
+	    lblSaludo.setFont(new Font("Arial", Font.ITALIC, 12));
 
-		add(lblImagen, BorderLayout.WEST); // Imagen a la izquierda
-		add(panelTexto, BorderLayout.CENTER); // Texto a la derecha
+	    JPanel panelTexto = new JPanel(new GridLayout(3, 1)); // Para organizar los textos verticalmente
+	    panelTexto.add(lblNombre);
+	    panelTexto.add(lblTelefono);
+	    panelTexto.add(lblSaludo);
+
+	    // Crear un panel vertical para el botón con espaciado arriba y abajo
+	    JPanel panelBoton = new JPanel();
+	    panelBoton.setLayout(new BoxLayout(panelBoton, BoxLayout.Y_AXIS)); // Diseño vertical
+	    panelBoton.add(Box.createRigidArea(new Dimension(0, 15))); // Espacio arriba
+	    panelBoton.add(btnEditar); // Añadir el botón
+	    panelBoton.add(Box.createRigidArea(new Dimension(0, 15))); // Espacio abajo
+
+	    add(lblImagen, BorderLayout.WEST); // Imagen a la izquierda
+	    add(panelTexto, BorderLayout.CENTER); // Texto en el centro
+	    add(panelBoton, BorderLayout.EAST); // Botón a la derecha
 	}
-
+	
+	public JLabel getBtnEditar() {
+	    return btnEditar;
+	}
+	
 	@Override
 	public Component getListCellRendererComponent(JList<? extends Contacto> listacontactos, Contacto contacto,
 			int index, boolean isSelected, boolean cellHasFocus) {
@@ -68,6 +93,13 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 			lblSaludo.setText("");
 		}
 
+		// Mostrar el botón "Editar" si es un contacto inverso sin nombre
+        if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).isContactoInverso()) {
+            btnEditar.setVisible(true);
+        } else {
+            btnEditar.setVisible(false);
+        }
+		
 		// Configuración de colores para selección
 		if (isSelected) {
 			setBackground(new Color(184, 207, 229)); // Color de fondo para selección

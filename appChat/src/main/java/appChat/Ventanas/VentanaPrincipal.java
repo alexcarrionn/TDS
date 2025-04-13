@@ -1,6 +1,7 @@
 package appChat.Ventanas;
 
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -264,6 +265,34 @@ public class VentanaPrincipal extends JFrame {
 					appchat.setChatActual(contactoActual);
 				}
 			}
+		});
+		
+		// Boton para editar contacto no agregado
+		listaContactos.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int index = listaContactos.locationToIndex(e.getPoint());
+		        if (index >= 0) {
+		            Rectangle bounds = listaContactos.getCellBounds(index, index);
+		            Contacto contacto = listaContactos.getModel().getElementAt(index);
+
+		            // Verificar si es un contacto inverso sin nombre
+		            if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).isContactoInverso()) {
+		                // Verificar si el clic fue en la celda
+		                if (bounds.contains(e.getPoint())) {
+		                    String nuevoNombre = JOptionPane.showInputDialog(VentanaPrincipal.this,
+		                            "Introduce un nombre para el contacto:", "Editar Nombre",
+		                            JOptionPane.PLAIN_MESSAGE);
+
+		                    if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
+		                        // Actualizar el nombre del contacto
+		                        appchat.actualizarNombreContacto(contacto, nuevoNombre);
+		                        actualizarListaContactos(); // Refrescar la lista de contactos
+		                    }
+		                }
+		            }
+		        }
+		    }
 		});
 
 		// Agregar la lista al panel

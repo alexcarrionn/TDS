@@ -125,4 +125,9 @@ public class ContactoIndividual extends Contacto{
 			return getNombre() + " - " + getMovil();
 		}
 
+		public boolean isContactoInverso() {
+			if(getNombre().equals(" ")) return true;
+			return false;
+		}
+
 }

@@ -765,4 +765,12 @@ public class AppChat {
 		g.agregarContacto(c);
 		adaptadorGrupo.modificarGrupo(g);
 	}
+
+	public void actualizarNombreContacto(Contacto contacto, String nuevoNombre) {
+	    if (contacto instanceof ContactoIndividual) {
+	        ((ContactoIndividual) contacto).setNombre(nuevoNombre);
+	        // Guardar cambios en la persistencia
+	        adaptadorContacto.modificarContacto((ContactoIndividual)contacto);
+	    }
+	}
 }
