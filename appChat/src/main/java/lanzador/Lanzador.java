@@ -14,7 +14,7 @@ import java.io.File;
  
   @SuppressWarnings("static-access")
 	public static void main(String[] args) {
-	  /*ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k", 
+	  ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k", 
     		    "java -jar ServidorPersistenciaH2.jar");
     	
     		//IMPORTANTE CADA VEZ QUE SE QUIERA EJECUTAR EN UN EQUIPO DIFERENTE, CAMBIAR LA RUTA DEL ARCHIVO
@@ -23,9 +23,9 @@ import java.io.File;
             terminalPersistencia.start();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         
-        //CargarAppChat.main(null);
+        CargarAppChat.main(null);
         AppChat appChat = AppChat.getUnicaInstancia();
 		//TODO CAMBIAR LAS IMAGENES 
 		appChat.registrarUsuario("1", "a", "", "a", LocalDate.of(1960, 10, 3), "Hola, soy jesus");

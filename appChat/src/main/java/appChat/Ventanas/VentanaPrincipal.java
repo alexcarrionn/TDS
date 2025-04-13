@@ -267,33 +267,36 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		
-		// Boton para editar contacto no agregado
+		// Botón para editar contacto no agregado
 		listaContactos.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
 		        int index = listaContactos.locationToIndex(e.getPoint());
-		        if (index >= 0) {
-		            Rectangle bounds = listaContactos.getCellBounds(index, index);
-		            Contacto contacto = listaContactos.getModel().getElementAt(index);
 
-		            // Verificar si es un contacto inverso sin nombre
-		            if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).isContactoInverso()) {
-		                // Verificar si el clic fue en la celda
-		                if (bounds.contains(e.getPoint())) {
-		                    String nuevoNombre = JOptionPane.showInputDialog(VentanaPrincipal.this,
-		                            "Introduce un nombre para el contacto:", "Editar Nombre",
-		                            JOptionPane.PLAIN_MESSAGE);
+		        if (index < 0) return;
 
-		                    if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
-		                        // Actualizar el nombre del contacto
-		                        appchat.actualizarNombreContacto(contacto, nuevoNombre);
-		                        actualizarListaContactos(); // Refrescar la lista de contactos
-		                    }
-		                }
-		            }
+		        Contacto contacto = listaContactos.getModel().getElementAt(index);
+
+		        // Solo permitir edición si es un contacto inverso sin nombre
+		        if (!(contacto instanceof ContactoIndividual ci) || !ci.isContactoInverso()) return;
+
+		        Rectangle bounds = listaContactos.getCellBounds(index, index);
+		        if (!bounds.contains(e.getPoint())) return;
+
+		        String nuevoNombre = JOptionPane.showInputDialog(
+		            VentanaPrincipal.this,
+		            "Introduce un nombre para el contacto:",
+		            "Editar Nombre",
+		            JOptionPane.PLAIN_MESSAGE
+		        );
+
+		        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+		            appchat.actualizarNombreContacto(contacto, nuevoNombre.trim());
+		            actualizarListaContactos();
 		        }
 		    }
 		});
+
 
 		// Agregar la lista al panel
 		panelLista.add(new JScrollPane(listaContactos)); // Se recomienda usar JScrollPane para listas grandes
