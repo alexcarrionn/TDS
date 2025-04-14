@@ -8,8 +8,6 @@ import controlador.AppChat;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 
 public class VentanaRegistro {
@@ -229,13 +227,6 @@ public class VentanaRegistro {
 		panelCentral.add(panel, gbc_panel);
 
 		JButton btnAceptar = new JButton("Aceptar");
-		btnAceptar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				frame.dispose(); // Cierra la ventana actual
-				VentanaLogin.main(new String[] {}); // Abre la ventana de login
-			}
-		});
 		btnAceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (nombreField.getText().isBlank()) {
@@ -278,6 +269,10 @@ public class VentanaRegistro {
 					if (!accept) {
 						JOptionPane.showMessageDialog(frame, "El Usuario ya esta registrado", "Error",
 								JOptionPane.ERROR_MESSAGE);
+					}else {
+						JOptionPane.showMessageDialog(frame, "Usuario registrado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+						frame.dispose(); // Cierra la ventana de registro
+						VentanaLogin.main(new String[] {}); // Abre la ventana de login
 					}
 				}
 			}
