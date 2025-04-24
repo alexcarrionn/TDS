@@ -35,7 +35,7 @@ import java.io.File;
         }
         
         //quitar una vez lanzado por primera vez 
-        //CargarAppChat.main(null);
+        CargarAppChat.main(null);
         
         VentanaLogin login = new VentanaLogin(); 
         login.main(null);  

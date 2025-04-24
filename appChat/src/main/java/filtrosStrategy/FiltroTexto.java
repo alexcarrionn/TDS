@@ -31,10 +31,10 @@ public class FiltroTexto implements Filtro{
 	 */
 	@Override
 	public List<Mensaje> filtrarMensaje(List<Mensaje> mensajes) {
-		return mensajes.stream()
-				//Filtramos los mensajes que sean null, que esten vacios o que tengan el texto especificado
-				.filter(m -> texto==null || texto.isEmpty() || (m.getTexto() != null && m.getTexto().contains(texto)))
-				.collect(Collectors.toList());
+	    return mensajes.stream()
+	            .filter(m -> texto == null || texto.isEmpty() || (m.getTexto() != null && m.getTexto().contains(texto)))
+	            .collect(Collectors.toList());
 	}
+
 
 }
