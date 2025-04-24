@@ -52,7 +52,7 @@ public class RepositorioUsuario {
 	/**
 	 * Método que devuelve el usuario del telefono que se ha pasado como parametro
 	 * @param telefono telefono del ususario que se quiere obtener
-	 * @return 
+	 * @return Usuario del telefono
 	 */
 	public Usuario getUsuario(String telefono) {
 		return usuarios.get(telefono);
@@ -60,7 +60,7 @@ public class RepositorioUsuario {
 	
 	/**
 	 * Método para añadir un usuario a la lista de usuarios del repositorio
-	 * @param user
+	 * @param user usuario para añadirlo a la lista
 	 */
 	public void addUsuario(Usuario user) {
 	    usuarios.put(user.getTelefono(), user);
@@ -89,8 +89,8 @@ public class RepositorioUsuario {
 	
 	/**
 	 * Metodo que busca un Usuario por el telefono
-	 * @param telefono
-	 * @return
+	 * @param telefono telefono para buscar al usuario
+	 * @return Usuario 
 	 */
 	public Optional<Usuario> obtenerUsuarioPorTelefono(String telefono) {
 		return usuarios.values().stream()

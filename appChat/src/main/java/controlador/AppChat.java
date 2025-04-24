@@ -63,13 +63,19 @@ public class AppChat {
 
 	// catalogo de usuarios
 	private RepositorioUsuario repo;
-
+	
+	/**
+	 * Constructor donde inicializaremos los adaptadores y el repositorio
+	 */
 	private AppChat() {
 		inicializarAdaptadores();
 		inicializarRepositorio();
 	}
 
-	// aplicamos el patrón Singleton
+	/**
+	 * Obtiene la instancia única del Controlador (Singleton).
+     * @return La instancia única del Controlador.
+	 */
 	public static AppChat getUnicaInstancia() {
 		if (unicaInstancia == null) {
 			unicaInstancia = new AppChat();
@@ -77,12 +83,16 @@ public class AppChat {
 		return unicaInstancia;
 	}
 
-	// inicializamos Repositorio
+	/**
+	 *  inicializamos Repositorio
+	 */
 	private void inicializarRepositorio() {
 		repo = RepositorioUsuario.getUnicaInstancia();
 	}
 
-	// Inicializamos los adaptadores
+	/**
+	 *  Inicializamos los adaptadores
+	 */
 	private void inicializarAdaptadores() {
 		FactoriaDAO factoria = null;
 		try {
@@ -405,9 +415,9 @@ public class AppChat {
 	/**
 	 * Método para enviar un mensaje a un contacto individual
 	 * 
-	 * @param contacto
-	 * @param texto
-	 * @param tipo
+	 * @param contacto contacto 
+	 * @param texto texto del mensaje a enviar 
+	 * @param tipo tipo del mensaje 
 	 */
 	public void enviarMensajeTextoContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		this.crearMensajeContactoTexto(contacto, texto, tipo);
@@ -417,9 +427,9 @@ public class AppChat {
 	/**
 	 * Metodo para enviar un mendaje de emoticono a un contacto individual
 	 * 
-	 * @param contacto
-	 * @param emoticono
-	 * @param tipo
+	 * @param contacto contacto 
+	 * @param emoticono emoticono del mensaje a enviar 
+	 * @param tipo tipo del mensaje
 	 */
 	public void enviarMensajeEmoticonoContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		this.crearMensajeContactoEmoticono(contacto, emoticono, tipo);
@@ -631,7 +641,7 @@ public class AppChat {
 	/**
 	 * Método que sirve para exportar una conversacíon a PDF
 	 * 
-	 * @throws DocumentException
+	 * @throws DocumentException 
 	 * @throws FileNotFoundException
 	 */
 

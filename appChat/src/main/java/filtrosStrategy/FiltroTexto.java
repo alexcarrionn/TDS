@@ -26,7 +26,7 @@ public class FiltroTexto implements Filtro{
 	/**
 	 * Función para filtrar los mensajes según el texto que contengan
 	 * 
-	 * @param mensajes
+	 * @param mensajes mensajes que se van a filtrar
 	 * @return filtra los mensajes y los devulve segun el texto del mensaje
 	 */
 	@Override

@@ -57,7 +57,7 @@ public class MensajeCellRender extends JPanel implements ListCellRenderer<Mensaj
 	 * cada celda de la lista de mensajes.
 	 * 
 	 * @param list la lista que contiene los mensajes.
-	 * @param mensaje el mensaje a renderizar.
+	 * @param Mensaje el mensaje a renderizar.
 	 * @param index el índice del mensaje en la lista.
 	 * @param isSelected true si la celda está seleccionada.
 	 * @param cellHasFocus true si la celda tiene el foco.

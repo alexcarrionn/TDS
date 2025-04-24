@@ -16,7 +16,7 @@ public interface Filtro {
 	/**
 	 * Filtra la lista de mensajes según se desee
 	 * 
-	 * @param mensajes
+	 * @param mensajes mensaje a filtrar 
 	 * @return Retornará una lista de los mensajes del usuario que cumplan con el filtro deseado
 	 */
 	List<Mensaje>filtrarMensaje(List<Mensaje> mensajes);

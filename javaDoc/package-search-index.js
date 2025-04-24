@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"appChat.Ventanas"},{"l":"cargador"},{"l":"controlador"},{"l":"descuentoStrategy"},{"l":"filtrosStrategy"},{"l":"lanzador"},{"l":"modelo"},{"l":"persistencia"},{"l":"um.tds.appChat"}];updateSearchResults();

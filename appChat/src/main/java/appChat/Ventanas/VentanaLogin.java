@@ -27,7 +27,6 @@ public class VentanaLogin {
 
     /**
      * Constructor que inicializa la ventana y el controlador
-     * @wbp.parser.entryPoint
      */
     public VentanaLogin() {
         controlador = AppChat.getUnicaInstancia(); // Inicialización del controlador
@@ -36,6 +35,7 @@ public class VentanaLogin {
 
     /**
      * Método principal para lanzar la aplicación
+     * @param args argumentos
      */
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {

@@ -27,7 +27,7 @@ public class VentanaBuscar {
     private AppChat appchat = AppChat.getUnicaInstancia();
 
     /**
-     * @wbp.parser.entryPoint
+	 * Constructor de la Ventana Buscar, inicializa y configura todos los elementos visuales
      */
     public VentanaBuscar() {
         // Crear el JFrame dentro de la clase
