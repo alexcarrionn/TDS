@@ -2,16 +2,20 @@ package appChat.Ventanas;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
+import controlador.AppChat;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,8 +32,9 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 	private JLabel lblNombre;
 	private JLabel lblTelefono;
 	private JLabel lblSaludo;
-	private JLabel btnEditar; // Botón para editar el nombre
-
+	private JButton btnEditar; // Botón para editar el nombre
+	private AppChat appchat;
+	private Contacto contactoActual;
 	public ContactoListCellRenderer() {
 	    setLayout(new BorderLayout(10, 10)); // Espaciado entre imagen y texto
 
@@ -37,7 +42,7 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 	    lblNombre = new JLabel();
 	    lblTelefono = new JLabel();
 	    lblSaludo = new JLabel();
-	    btnEditar = new JLabel("");
+	    btnEditar = new JButton("");
 
 	    btnEditar.setIcon(new ImageIcon(ContactoListCellRenderer.class.getResource("/imagenes/boton-mas.png")));
 	    btnEditar.setPreferredSize(new Dimension(20, 20)); // Tamaño cuadrado
@@ -63,10 +68,6 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
 	    add(lblImagen, BorderLayout.WEST); // Imagen a la izquierda
 	    add(panelTexto, BorderLayout.CENTER); // Texto en el centro
 	    add(panelBoton, BorderLayout.EAST); // Botón a la derecha
-	}
-	
-	public JLabel getBtnEditar() {
-	    return btnEditar;
 	}
 	
 	@Override
@@ -96,6 +97,26 @@ public class ContactoListCellRenderer extends JPanel implements ListCellRenderer
             btnEditar.setVisible(false);
         }
 		
+        this.contactoActual = contacto;
+
+        // Limpiar listeners anteriores para evitar acumulación
+        for (ActionListener al : btnEditar.getActionListeners()) {
+        	btnEditar.removeActionListener(al);
+        }
+        
+        btnEditar.addActionListener(ev->{
+        	String nuevoNombre = JOptionPane.showInputDialog(this, "Introduce el nuevo nombre para el contacto:", contactoActual.getNombre());
+        	
+        	// Agregar nuevo listener con el contacto actual
+        	if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+        		appchat.actualizarNombreContacto(contactoActual, nuevoNombre.trim());
+        		listacontactos.revalidate();
+        		listacontactos.repaint();
+        	}
+        	
+        });
+        
+        
 		// Configuración de colores para selección
 		if (isSelected) {
 			setBackground(new Color(184, 207, 229)); // Color de fondo para selección

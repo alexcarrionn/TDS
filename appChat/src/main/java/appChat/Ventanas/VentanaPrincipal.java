@@ -267,35 +267,48 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		
-		// Botón para editar contacto no agregado
 		listaContactos.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
 		        int index = listaContactos.locationToIndex(e.getPoint());
 
-		        if (index < 0) return;
+		        if (index >= 0) {
+		            Rectangle cellBounds = listaContactos.getCellBounds(index, index);
+		            Contacto contacto = modeloLista.getElementAt(index);
 
-		        Contacto contacto = listaContactos.getModel().getElementAt(index);
+		            // Determinar la posición del botón dentro de la celda
+		            int botonX = cellBounds.x + cellBounds.width - 30; // Aproximado, depende del tamaño del botón
+		            int botonY = cellBounds.y + cellBounds.height / 2 - 10;
+		            int botonAncho = 20;
+		            int botonAlto = 20;
 
-		        // Solo permitir edición si es un contacto inverso sin nombre
-		        if (!(contacto instanceof ContactoIndividual ci) || !ci.isContactoInverso()) return;
+		            Rectangle areaBoton = new Rectangle(botonX, botonY, botonAncho, botonAlto);
 
-		        Rectangle bounds = listaContactos.getCellBounds(index, index);
-		        if (!bounds.contains(e.getPoint())) return;
+		            // Verificar si el clic fue dentro del área estimada del botón
+		            if (areaBoton.contains(e.getX(), e.getY())) {
+		                if (contacto instanceof ContactoIndividual) {
+		                    ContactoIndividual c = (ContactoIndividual) contacto;
+		                    if (c.isContactoInverso()) {
+		                    	String nuevoNombre = JOptionPane.showInputDialog(
+		                    		    listaContactos,
+		                    		    "Introduce el nuevo nombre para el contacto:",
+		                    		    "Renombrar contacto",
+		                    		    JOptionPane.PLAIN_MESSAGE
+		                    		);
 
-		        String nuevoNombre = JOptionPane.showInputDialog(
-		            VentanaPrincipal.this,
-		            "Introduce un nombre para el contacto:",
-		            "Editar Nombre",
-		            JOptionPane.PLAIN_MESSAGE
-		        );
 
-		        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
-		            appchat.actualizarNombreContacto(contacto, nuevoNombre.trim());
-		            actualizarListaContactos();
+
+		                        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+		                            appchat.actualizarNombreContacto(c, nuevoNombre.trim());
+		                            actualizarListaContactos(); // Para refrescar los datos
+		                        }
+		                    }
+		                }
+		            }
 		        }
 		    }
 		});
+
 
 
 		// Agregar la lista al panel
