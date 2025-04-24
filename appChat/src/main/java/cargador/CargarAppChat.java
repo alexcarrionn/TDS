@@ -7,18 +7,23 @@ import modelo.ContactoIndividual;
 import modelo.RepositorioUsuario;
 import modelo.TipoMensaje;
 
+/**
+ * Clase que te permite cargar la Base de datos solo Una vez
+ */
 
 public class CargarAppChat {
 	
-
+	/**
+	 * Método principal que carga la base de datos
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		AppChat appChat = AppChat.getUnicaInstancia();
-		//TODO CAMBIAR LAS IMAGENES 
-		appChat.registrarUsuario("11", "aa", "/usuarios/fotoJGM.jpg", "aa", LocalDate.of(1960, 10, 3), "Hola, soy jesus");
-		appChat.registrarUsuario("22", "bb", "/usuarios/foto-elena.jpg", "bb", LocalDate.of(1995, 12, 28), "hola, soy elena");
-		appChat.registrarUsuario("33", "cc", "/usuarios/rosalia.jpg", "cc", LocalDate.of(2000, 5, 15), "hola, soy rosalia");
-		appChat.registrarUsuario("44", "dd", "/usuarios/foto-diego.jpg", "dd", LocalDate.of(1970, 5, 11), "hola, soy diego");
-		appChat.registrarUsuario("55", "ee", "/usuarios/annetaylor.jpg", "ee", LocalDate.of(1990, 3, 28), "hola, soy anne");
+		appChat.registrarUsuario("11", "aa", "https://robohash.org/11.png", "aa", LocalDate.of(1960, 10, 3), "Hola, soy jesus");
+		appChat.registrarUsuario("22", "bb", "https://robohash.org/22.png", "bb", LocalDate.of(1995, 12, 28), "hola, soy elena");
+		appChat.registrarUsuario("33", "cc", "https://robohash.org/33.png", "cc", LocalDate.of(2000, 5, 15), "hola, soy rosalia");
+		appChat.registrarUsuario("44", "dd", "https://robohash.org/44.png", "dd", LocalDate.of(1970, 5, 11), "hola, soy diego");
+		appChat.registrarUsuario("55", "ee", "https://robohash.org/55.png", "ee", LocalDate.of(1990, 3, 28), "hola, soy anne");
 
 		
 		appChat.hacerLogin("11", "aa");

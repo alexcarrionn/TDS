@@ -1,6 +1,8 @@
 package persistencia;
 
-//Define una factoria abstracta que devuelve todos los DAO de la aplicacion
+/**
+ * Define una factoria abstracta que devuelve todos los DAO de la aplicacion
+ */
 
 public abstract class FactoriaDAO {
 	private static FactoriaDAO unicaInstancia;
@@ -20,13 +22,19 @@ public abstract class FactoriaDAO {
 		return unicaInstancia;
 	}
 
-
+	/**
+	 * Devuelve una única Instancia de Factoria Dao
+	 * @return
+	 * @throws DAOException
+	 */
 	public static FactoriaDAO getInstancia() throws DAOException{
 			if (unicaInstancia == null) return getInstancia (FactoriaDAO.DAO_TDS);
 					else return unicaInstancia;
 		}
 
-	/* Constructor */
+	/**
+	 * Construsctor
+	 */
 	protected FactoriaDAO (){}
 		
 		

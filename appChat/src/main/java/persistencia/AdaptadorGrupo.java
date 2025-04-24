@@ -9,50 +9,62 @@ import java.util.stream.Collectors;
 
 import beans.Entidad;
 import modelo.Mensaje;
-import beans.Propiedad;
 import modelo.ContactoIndividual;
 import modelo.Grupo;
+import beans.Propiedad;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
-	//Atributos
+/**
+ * Clase encargada de interactuar con la base de datos para realizar operaciones
+ * de persistencia relacionadas con los objetos de tipo {@link Grupo}.
+ * Utiliza el patrón de diseño Singleton para asegurar que haya una única
+ * instancia de la clase.
+ */
+public class AdaptadorGrupo implements IAdaptadorGrupoDAO {
+
+    // Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorGrupo unicaInstancia = null;
-    
-    //Inicializador 
-    public static AdaptadorGrupo getUnicaInstancia() { // patron singleton
+
+    /**
+     * Obtiene la única instancia del adaptador, asegurando el patrón Singleton.
+     * 
+     * @return La instancia única del adaptador de grupos.
+     */
+    public static AdaptadorGrupo getUnicaInstancia() {
         if (unicaInstancia == null)
-            return new  AdaptadorGrupo();
+            return new AdaptadorGrupo();
         else
             return unicaInstancia;
     }
 
-    private  AdaptadorGrupo() {
+    /**
+     * Constructor privado para inicializar el servicio de persistencia.
+     */
+    private AdaptadorGrupo() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
-    
-    
-    //Metodos
-    
+
     /**
-     * Método para registar un grupo en la bbdd
-     * @param grupo grupo que se quiere registar en la base de datos
+     * Método para registrar un grupo en la base de datos. Si el grupo ya está
+     * registrado, no realiza ninguna acción.
+     * 
+     * @param grupo El grupo que se quiere registrar.
      */
     public void registrarGrupo(Grupo grupo) {
-        // Comprobar si el contacto ya está registrado
+        // Comprobar si el grupo ya está registrado
         if (servPersistencia.recuperarEntidad(grupo.getId()) != null) {
             return; // Ya existe, no lo registramos de nuevo
         }
 
-        // Crear una nueva entidad para el contacto
+        // Crear una nueva entidad para el grupo
         Entidad eGrupo = new Entidad();
         eGrupo.setNombre("Grupo");
-        
-        //registrar aquellos los cuales sean objetos en este caso contactos
-        
+
+        // Registrar los contactos si no están registrados
         siNoExistenContactos(grupo.getContactos());
-        
+
         // Añadir propiedades
         eGrupo.setPropiedades(new ArrayList<Propiedad>(
             Arrays.asList(
@@ -62,64 +74,85 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
                 new Propiedad("mensajes", obtenerIdsMensajes(grupo.getMensajes()))
             )
         ));
+        
         // Guardar en la persistencia
         eGrupo = servPersistencia.registrarEntidad(eGrupo);
-        // ID unico para ese contacto
+        
+        // Asignar ID único al grupo
         grupo.setId(eGrupo.getId());
-        //Guardamos en el pool 
-        PoolDAO.getUnicaInstancia().addObjeto(grupo.getId(), grupo); 
+        
+        // Guardar en el pool
+        PoolDAO.getUnicaInstancia().addObjeto(grupo.getId(), grupo);
     }
-    
-    //Funcion auxiliar para registar los contactos
+
+    /**
+     * Método auxiliar para registrar los contactos que pertenecen al grupo.
+     * 
+     * @param contactos Lista de contactos que se desean registrar.
+     */
     private void siNoExistenContactos(List<ContactoIndividual> contactos) {
-		contactos.stream()
-				 .forEach(AdaptadorContactoIndividual.getUnicaInstancia()::registrarContacto); // Registramos cada contacto
-	}
-    
-    //Funcion auxiliar para obtener los ids de los contactos pasados como parametros 
-	private String obtenerIdsContactos(List<ContactoIndividual> contactos) {
-    	return contactos.stream()
-    					.map(contacto -> String.valueOf(contacto.getId()))
-    					.collect(Collectors.joining(","));
-	}
-	
-	/**
-	 * Método que sirve para poder recuperar un grupo de la base de datos
-	 * @param id identificador del grupo que se desea recuperar
-	 * @return Grupo con el identificador pasado como parámetro
-	 */
-	public Grupo recuperarGrupo(int id) {
+        contactos.stream()
+                 .forEach(AdaptadorContactoIndividual.getUnicaInstancia()::registrarContacto); // Registramos cada contacto
+    }
+
+    /**
+     * Método auxiliar para obtener los identificadores de los contactos del grupo
+     * como una cadena de texto.
+     * 
+     * @param contactos Lista de contactos del grupo.
+     * @return Cadena de texto con los identificadores de los contactos.
+     */
+    private String obtenerIdsContactos(List<ContactoIndividual> contactos) {
+        return contactos.stream()
+                        .map(contacto -> String.valueOf(contacto.getId()))
+                        .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Método para recuperar un grupo de la base de datos utilizando su identificador.
+     * Si el grupo ya está en el pool, se devuelve directamente.
+     * 
+     * @param id El identificador del grupo que se desea recuperar.
+     * @return El grupo correspondiente al identificador dado.
+     */
+    public Grupo recuperarGrupo(int id) {
         // Si la entidad está en el pool, la devuelve directamente
         if (PoolDAO.getUnicaInstancia().contiene(id)) {
             return (Grupo) PoolDAO.getUnicaInstancia().getObjeto(id);
         }
-        // Sino, la recupera de la base de datos
-        // Recuperamos la entidad
+        
+        // Recuperar la entidad del grupo de la base de datos
         Entidad eGrupo = servPersistencia.recuperarEntidad(id);
         if (eGrupo == null) {
             return null;
         }
+
         // Recuperar propiedades que no son objetos
         String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, "nombre");
         String rutaImagen = servPersistencia.recuperarPropiedadEntidad(eGrupo, "Imagen");
-        Grupo grupo = new Grupo(nombre, new LinkedList<>(),rutaImagen);
+        Grupo grupo = new Grupo(nombre, new LinkedList<>(), rutaImagen);
         grupo.setId(id);
 
-        // Metemos al grupo en el pool antes de llamar a otros adaptadores
+        // Añadir el grupo al pool antes de recuperar sus contactos y mensajes
         PoolDAO.getUnicaInstancia().addObjeto(id, grupo);
 
-        // Contactos que el grupo tiene
+        // Recuperar los contactos del grupo
         String contactosId = servPersistencia.recuperarPropiedadEntidad(eGrupo, "contactos");
         grupo.agregarContactos(obtenerContactosDesdeCodigos(contactosId));
-        
-        //recuperamos los mensajes y se lo añadimos
-        String mensajesId = servPersistencia.recuperarPropiedadEntidad(eGrupo, "mensajes"); 
-        grupo.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
+
+        // Recuperar los mensajes del grupo
+        String mensajesId = servPersistencia.recuperarPropiedadEntidad(eGrupo, "mensajes");
+        grupo.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId));
 
         return grupo;
     }
-	
-    //funcion auxiliar para obtener los mensajes desde los codigos 
+
+    /**
+     * Método auxiliar para obtener los mensajes desde sus códigos.
+     * 
+     * @param codigos Cadena con los identificadores de los mensajes.
+     * @return Lista de mensajes correspondientes a los identificadores dados.
+     */
     private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
         List<Mensaje> mensajes = new LinkedList<>();
         StringTokenizer strTok = new StringTokenizer(codigos, " ");
@@ -130,8 +163,13 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
         }
         return mensajes;
     }
-    
-	//Funcion auxiliar para obtener los contactos desde los codigos 
+
+    /**
+     * Método auxiliar para obtener los contactos desde sus códigos.
+     * 
+     * @param codigos Cadena con los identificadores de los contactos.
+     * @return Lista de contactos correspondientes a los identificadores dados.
+     */
     private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
         AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
 
@@ -146,17 +184,17 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
                      .filter(contacto -> contacto != null)
                      .collect(Collectors.toList());
     }
-    
-    
+
     /**
-     * Funcion que te permitirá modificar un grupo 
-     * @param grupo Grupo que se va a modificar
+     * Método para modificar los datos de un grupo en la base de datos.
+     * 
+     * @param grupo El grupo con los nuevos datos.
      */
     public void modificarGrupo(Grupo grupo) {
         // Recuperar la entidad asociada al grupo
         Entidad eGrupo = servPersistencia.recuperarEntidad(grupo.getId());
 
-        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
+        // Iterar sobre las propiedades de la entidad y actualizarlas
         for (Propiedad prop : eGrupo.getPropiedades()) {
             if (prop.getNombre().equals("nombre")) {
                 prop.setValor(grupo.getNombre());
@@ -164,18 +202,25 @@ public class AdaptadorGrupo implements IAdaptadorGrupoDAO{
                 prop.setValor(String.valueOf(grupo.getContactos()));
             } else if (prop.getNombre().equals("mensajes")) {
                 prop.setValor(obtenerIdsMensajes(grupo.getMensajes()));
-            }else if(prop.getNombre().equals("Imagen")) {
-            	prop.setValor(grupo.getFoto());
+            } else if (prop.getNombre().equals("Imagen")) {
+                prop.setValor(grupo.getFoto());
             }
             // Guardar los cambios en la propiedad actualizada
             servPersistencia.modificarPropiedad(prop);
         }
     }
-	
-    //Funcion auxiliar para obtener los ids de los mensajes recibidos como parametros
-	private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
-        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
-                .trim();
+
+    /**
+     * Método auxiliar para obtener los identificadores de los mensajes recibidos
+     * como parámetros.
+     * 
+     * @param mensajesRecibidos Lista de mensajes del grupo.
+     * @return Cadena de texto con los identificadores de los mensajes.
+     */
+    private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
+        return mensajesRecibidos.stream()
+                                .map(m -> String.valueOf(m.getId()))
+                                .reduce("", (l, m) -> l + m + " ")
+                                .trim();
     }
-	
 }

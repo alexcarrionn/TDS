@@ -3,10 +3,22 @@ package appChat.Ventanas;
 import javax.swing.*;
 import controlador.AppChat;
 import java.awt.*;
+/**
+* Ventana que permite a los usuarios activar o desactivar
+* una cuenta Premium, seleccionando entre diferentes tipos de descuento disponibles.
+* 
+* Esta clase extiende {@code JFrame} e incluye componentes para elegir un descuento,
+* mostrar la cantidad a pagar y botones para aceptar, cancelar o desactivar Premium.
+*/
 
 @SuppressWarnings("serial")
 public class VentanaPremium extends JFrame {
-    public VentanaPremium() { 
+	/**
+     * Constructor que configura e inicializa todos los elementos visuales de la ventana Premium.
+     * Incluye paneles para selección de descuento, visualización del precio y botones de acción.
+     */
+    public VentanaPremium() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPremium.class.getResource("/imagenes/AppChatLogo.png"))); 
         // Crear el frame
         setTitle("Seleccionar Descuento Premium");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

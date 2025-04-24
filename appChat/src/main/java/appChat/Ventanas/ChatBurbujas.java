@@ -7,11 +7,11 @@ import tds.BubbleText;
 
 public class ChatBurbujas extends JPanel {
     
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	/**
+	 * Constructor principal 
+	 */
 	public ChatBurbujas() {
         super(); // Llama al constructor de JPanel
         inicializarPanel();

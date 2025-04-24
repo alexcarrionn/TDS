@@ -14,27 +14,41 @@ import modelo.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 
-public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividualDAO{
-	
-	//Atributos
+/**
+ * Adaptador de la entidad ContactoIndividual para interactuar con la base de datos.
+ * Implementa la interfaz IAdaptadorContactoIndividualDAO y se encarga de registrar,
+ * modificar y recuperar objetos ContactoIndividual de la base de datos.
+ */
+public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividualDAO {
+
+    // Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorContactoIndividual unicaInstancia = null;
-    
-    //Inicializador
-    public static AdaptadorContactoIndividual getUnicaInstancia() { // patron singleton
+
+    // Inicializador
+    /**
+     * Método que devuelve la instancia única del adaptador (patrón Singleton).
+     * 
+     * @return Instancia única de AdaptadorContactoIndividual.
+     */
+    public static AdaptadorContactoIndividual getUnicaInstancia() {
         if (unicaInstancia == null)
             return new AdaptadorContactoIndividual();
         else
             return unicaInstancia;
     }
 
+    /**
+     * Constructor privado para inicializar el adaptador de contacto individual.
+     */
     private AdaptadorContactoIndividual() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
-    
+
     /**
-     * Metodo que sirve para registar un contacto en la base de datos
-     * @param c contacto que queremos registrar
+     * Registra un contacto individual en la base de datos.
+     * 
+     * @param c ContactoIndividual a registrar.
      */
     public void registrarContacto(ContactoIndividual c) {
         // Comprobar si el contacto ya está registrado
@@ -45,80 +59,79 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         // Crear una nueva entidad para el contacto
         Entidad eContacto = new Entidad();
         eContacto.setNombre("Contacto");
-        
-        //registrar aquellos los cuales sean objetos en este caso Usuario y Mensajes
+
+        // Registrar objetos asociados como Usuario y Mensajes
         siNoExisteUsuario(c.getUsuario()); 
         siNoExisteMensajes(c.getMensajes());
-        
-        // Añadir propiedades
-        eContacto.setPropiedades(new ArrayList<Propiedad>(
-            Arrays.asList(
+
+        // Añadir propiedades del contacto
+        eContacto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(
                 new Propiedad("nombre", c.getNombre()),
                 new Propiedad("movil", c.getMovil()),
                 new Propiedad("mensajes", obtenerIdsMensajes(c.getMensajes())),
                 new Propiedad("usuario", String.valueOf(c.getUsuario().getId()))
-            )
-        ));
+        )));
         // Guardar en la persistencia
         eContacto = servPersistencia.registrarEntidad(eContacto);
-        // ID unico para ese contacto
+        // Asignar el ID único al contacto
         c.setId(eContacto.getId());
-        //Guardamos en el pool 
-        PoolDAO.getUnicaInstancia().addObjeto(c.getId(), c); 
+        // Guardar en el pool de objetos
+        PoolDAO.getUnicaInstancia().addObjeto(c.getId(), c);
     }
 
-    //Funcion auxiliar para registrar los mensajes 
+    // Función auxiliar para registrar los mensajes
     private void siNoExisteMensajes(List<Mensaje> mensajes) {
-        mensajes.stream()
-                .forEach(AdaptadorMensaje.getUnicaInstancia()::registrarMensaje); // Registramos cada mensaje
+        mensajes.forEach(AdaptadorMensaje.getUnicaInstancia()::registrarMensaje); // Registrar cada mensaje
     }
-    
-    //Funcion auxiliar para registar el usuario
+
+    // Función auxiliar para registrar el usuario
     private void siNoExisteUsuario(Usuario usuario) {
-        AdaptadorUsuario.getUnicaInstancia().registrarUsuario(usuario);        
+        AdaptadorUsuario.getUnicaInstancia().registrarUsuario(usuario);
     }
-    
+
     /**
-     * Método para recuperar un contactoIndividual de la BBDD
-     * @param id identificador de usuario que queremos recuperar 
-     * @return ContactoIndividual de la base de datos
+     * Recupera un ContactoIndividual de la base de datos utilizando su ID.
+     * 
+     * @param id Identificador único del ContactoIndividual.
+     * @return El ContactoIndividual recuperado de la base de datos.
      */
     public ContactoIndividual recuperarContacto(int id) {
-    	if (PoolDAO.getUnicaInstancia().contiene(id))
+        if (PoolDAO.getUnicaInstancia().contiene(id))
             return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(id);
-    	
-    	Entidad entidadContacto = servPersistencia.recuperarEntidad(id); 
-    	
-    	if(entidadContacto==null)return null;
-    	
-    	String nombre = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "nombre");
+
+        Entidad entidadContacto = servPersistencia.recuperarEntidad(id);
+
+        if (entidadContacto == null) return null;
+
+        // Obtener las propiedades del contacto
+        String nombre = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "nombre");
         String movil = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "movil");
         String usuarioId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "usuario");
-        
-        
-        ContactoIndividual contacto = new ContactoIndividual(nombre, movil,new LinkedList<Mensaje>(),null);
+
+        // Crear el objeto ContactoIndividual
+        ContactoIndividual contacto = new ContactoIndividual(nombre, movil, new LinkedList<Mensaje>(), null);
         contacto.setId(id);
-        
-        //IMPORTANTE: Llamar primero al DAO antes de llamar a otros adaptadores
+
+        // Añadir al pool de objetos
         PoolDAO.getUnicaInstancia().addObjeto(id, contacto);
-        
-        //Recuperamos al usuario y se lo añadimos
+
+        // Recuperar el usuario y asignarlo al contacto
         Usuario usuario = obtenerUsuarioDesdeCodigo(usuarioId);
         contacto.setUsuario(usuario);
-        //recuperamos los mensajes y se lo añadimos
-        String mensajesId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "mensajes"); 
-        contacto.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId)); 
-        
-        
-        return contacto; 
+
+        // Recuperar los mensajes y asignarlos al contacto
+        String mensajesId = servPersistencia.recuperarPropiedadEntidad(entidadContacto, "mensajes");
+        contacto.addAllMensajes(obtenerMensajesDesdeCodigos(mensajesId));
+
+        return contacto;
     }
-	
-    //Funcion auxiliar par obtener al usuario desde el codigo 
+
+    // Función auxiliar para obtener el usuario desde el código
     private Usuario obtenerUsuarioDesdeCodigo(String usuarioId) {
-    	return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(usuarioId));
+        return AdaptadorUsuario.getUnicaInstancia().recuperarUsuario(Integer.valueOf(usuarioId));
     }
-    
-    //funcion auxiliar para obtener los mensajes desde los codigos 
+
+    // Función auxiliar para obtener los mensajes desde los códigos
     private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
         List<Mensaje> mensajes = new LinkedList<>();
         StringTokenizer strTok = new StringTokenizer(codigos, " ");
@@ -129,17 +142,17 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
         }
         return mensajes;
     }
-    
-    
+
     /**
-     * Método que sirve para modificar un contacto de la base de datos
-     * @param contacto contacto que se quiere modificar
+     * Modifica los datos de un contacto en la base de datos.
+     * 
+     * @param contacto ContactoIndividual con los datos actualizados.
      */
     public void modificarContacto(ContactoIndividual contacto) {
         // Recuperar la entidad asociada al contacto
         Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getId());
 
-        // Iterar sobre las propiedades de la entidad y actualizarlas según corresponda
+        // Iterar sobre las propiedades y actualizarlas
         for (Propiedad p : eContacto.getPropiedades()) {
             if (p.getNombre().equals("nombre")) {
                 p.setValor(contacto.getNombre());
@@ -150,17 +163,16 @@ public class AdaptadorContactoIndividual implements IAdaptadorContactoIndividual
             } else if (p.getNombre().equals("usuario")) {
                 p.setValor(String.valueOf(contacto.getUsuario().getId()));
             }
-            // Guardar los cambios en la propiedad actualizada
+            // Guardar los cambios en la propiedad
             servPersistencia.modificarPropiedad(p);
         }
     }
 
-    //Funcion auxiliar para obtener los ids de los mensajes pasados como parametros
+    // Función auxiliar para obtener los IDs de los mensajes
     private String obtenerIdsMensajes(List<Mensaje> mensajesRecibidos) {
-        return mensajesRecibidos.stream().map(m -> String.valueOf(m.getId())).reduce("", (l, m) -> l + m + " ")
+        return mensajesRecibidos.stream()
+                .map(m -> String.valueOf(m.getId()))
+                .reduce("", (l, m) -> l + m + " ")
                 .trim();
     }
-
-
-    
 }

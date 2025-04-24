@@ -1,5 +1,4 @@
 package modelo;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,11 @@ public class RepositorioUsuario {
 	private FactoriaDAO dao;
 	private IAdaptadorUsuarioDAO adaptadorUsuario;
 	
-	//Inicializador
+	 /**
+     * Constructor privado para inicializar el repositorio de usuarios.
+     * Configura el DAO y carga el catálogo de usuarios desde la base de datos.
+     */
+	
 	private RepositorioUsuario() {
 		try {
   			dao = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
@@ -36,21 +39,15 @@ public class RepositorioUsuario {
   		}
 	}
 	
+	/**
+     * Obtiene la instancia única del repositorio de usuarios (Singleton).
+     * 
+     * @return La instancia única del repositorio de usuarios.
+     */
 	public static RepositorioUsuario getUnicaInstancia(){
 		return unicaInstancia;
 	}
-	
-	/**
-	 * Método que te devuelve una lista con todos los Usuarios
-	 * @return lista de Usuarios
-	 */
-	public List<Usuario> getUsuarios(){
-		ArrayList<Usuario> lista = new ArrayList<Usuario>();
-		for (Usuario c:usuarios.values()) 
-			lista.add(c);
-		return lista;
-	}
-	
+
 	
 	/**
 	 * Método que devuelve el usuario del telefono que se ha pasado como parametro
@@ -70,12 +67,11 @@ public class RepositorioUsuario {
 	    adaptadorUsuario.registrarUsuario(user); // Persistir en la base de datos
 	}
 
-/*
-	public void removeUsuario (Usuario user) {
-		usuarios.remove(user.getTelefono());
-	}*/
 	
-	//Recupera todos los usuarios para trabajar con ellos en memoria
+	/**
+	 * Recupera todos los usuarios para trabajar con ellos en memoria
+	 * @throws DAOException
+	 */
 	private void cargarCatalogo() throws DAOException {
 		 List<Usuario> usuariosBD = adaptadorUsuario.recuperarTodosUsuarios();
 		 for (Usuario user: usuariosBD) 

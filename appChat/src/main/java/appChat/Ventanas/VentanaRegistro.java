@@ -10,6 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 
+/**
+ * Esta clase crea una ventana de registro para nuevos usuarios en la aplicación.
+ * La ventana permite ingresar información como nombre, apellidos, teléfono, contraseña, 
+ * estado, fecha y una imagen de perfil. Si el número de teléfono ya está registrado, 
+ * no se permite el registro de un nuevo usuario.
+ */
+
 public class VentanaRegistro {
 	private static GridBagConstraints gbc_1;
 	private static GridBagConstraints gbc_2;
@@ -25,12 +32,21 @@ public class VentanaRegistro {
 	private static GridBagConstraints gbc_repetirLabel;
 	private static JTextField contraseña;
 	private static JTextField telefono;
-	private JLabel imagenLabel; // Hacer imagenLabel accesible en toda la clase
+	private JLabel imagenLabel; 
 	private JFrame frame;
 
+	
+	  /**
+     * Crea una instancia de la ventana de registro.
+     * Esta ventana permite que un usuario ingrese su información personal para registrarse en la aplicación.
+     * También proporciona un formulario con validaciones para asegurar que todos los campos sean completados correctamente.
+     * En caso de que haya un error, se muestran mensajes emergentes de advertencia.
+     * Cuando el registro se completa correctamente, se cierra la ventana de registro y se abre la ventana de login.
+     */
 	public VentanaRegistro() {
 		// Crear la ventana principal
 		frame = new JFrame("Ventana registro");
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaRegistro.class.getResource("/imagenes/AppChatLogo.png")));
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(582, 394);
@@ -291,7 +307,12 @@ public class VentanaRegistro {
 		panel.add(btnCancelar);
 
 	}
-
+	
+	/**
+     * Establece la visibilidad de la ventana de registro.
+     * @param b true para hacerla visible, false en caso contrario
+     */
+	
 	public void setVisible(boolean b) {
 		frame.setVisible(b);
 	}
