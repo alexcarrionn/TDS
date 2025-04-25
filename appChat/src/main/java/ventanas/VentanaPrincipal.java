@@ -1,4 +1,4 @@
-package appChat.Ventanas;
+package ventanas;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -101,7 +101,7 @@ public class VentanaPrincipal extends JFrame {
 						JOptionPane.showMessageDialog(frame, "Exportación a PDF realizada con éxito.", "Información",
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(frame, "No se pudo exportar a PDF.", "Error",
+						JOptionPane.showMessageDialog(frame, "No se pudo exportar a PDF. Si no eres Usuario Premium no puedes usar esta opción", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (FileNotFoundException e1) {
@@ -282,42 +282,44 @@ public class VentanaPrincipal extends JFrame {
 		    public void mouseClicked(MouseEvent e) {
 		        int index = listaContactos.locationToIndex(e.getPoint());
 
-		        if (index >= 0) {
-		            Rectangle cellBounds = listaContactos.getCellBounds(index, index);
-		            Contacto contacto = modeloLista.getElementAt(index);
+		        // Salir si el índice no es válido
+		        if (index < 0 || index >= modeloLista.getSize()) return;
 
-		            // Determinar la posición del botón dentro de la celda
-		            int botonX = cellBounds.x + cellBounds.width - 30; // Aproximado, depende del tamaño del botón
-		            int botonY = cellBounds.y + cellBounds.height / 2 - 10;
-		            int botonAncho = 20;
-		            int botonAlto = 20;
+		        Contacto contacto = modeloLista.getElementAt(index);
+		        Rectangle celda = listaContactos.getCellBounds(index, index);
 
-		            Rectangle areaBoton = new Rectangle(botonX, botonY, botonAncho, botonAlto);
+		        // Salir si no se puede obtener la celda
+		        if (celda == null) return;
 
-		            // Verificar si el clic fue dentro del área estimada del botón
-		            if (areaBoton.contains(e.getX(), e.getY())) {
-		                if (contacto instanceof ContactoIndividual) {
-		                    ContactoIndividual c = (ContactoIndividual) contacto;
-		                    if (c.isContactoInverso()) {
-		                    	String nuevoNombre = JOptionPane.showInputDialog(
-		                    		    listaContactos,
-		                    		    "Introduce el nuevo nombre para el contacto:",
-		                    		    "Renombrar contacto",
-		                    		    JOptionPane.PLAIN_MESSAGE
-		                    		);
+		        Rectangle areaBoton = new Rectangle(
+		            celda.x + celda.width - 30,
+		            celda.y + celda.height / 2 - 10,
+		            20, 20
+		        );
 
+		        // Salir si no se hizo clic en el área del botón
+		        if (!areaBoton.contains(e.getPoint())) return;
 
+		        // Salir si no es un contacto individual válido para renombrar
+		        if (!(contacto instanceof ContactoIndividual c) || !c.isContactoInverso()) return;
 
-		                        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
-		                            appchat.actualizarNombreContacto(c, nuevoNombre.trim());
-		                            actualizarListaContactos(); // Para refrescar los datos
-		                        }
-		                    }
-		                }
-		            }
-		        }
+		        // Lógica de renombrado
+		        String nuevoNombre = JOptionPane.showInputDialog(
+		            listaContactos,
+		            "Introduce el nuevo nombre para el contacto:",
+		            "Renombrar contacto",
+		            JOptionPane.PLAIN_MESSAGE
+		        );
+
+		        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+		        appchat.actualizarNombreContacto(c, nuevoNombre.trim());
+		        actualizarListaContactos();
 		    }
 		});
+
+
+
 
 
 

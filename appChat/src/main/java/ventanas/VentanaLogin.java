@@ -1,4 +1,4 @@
-package appChat.Ventanas;
+package ventanas;
 
 import javax.swing.*;
 import controlador.AppChat;
@@ -86,7 +86,7 @@ public class VentanaLogin {
         ImageIcon originalIcon = new ImageIcon(VentanaLogin.class.getResource("/imagenes/AppChatLogo.png"));
         Image image = originalIcon.getImage();
         Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-	     ImageIcon scaledIcon = new ImageIcon(scaledImage);
+	    ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
         // Panel central para el formulario
         JPanel panelCentral = new JPanel();

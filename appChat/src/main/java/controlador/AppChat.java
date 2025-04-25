@@ -47,6 +47,10 @@ import com.itextpdf.text.pdf.PdfWriter;
  */
 
 public class AppChat {
+	private static final int NUM_MENSAJES_DESCUENTO = 1;
+	private static final LocalDate INICIO_DESCUENTO = LocalDate.of(2024, 12, 24);
+	private static final LocalDate FIN_DESCUENTO = LocalDate.of(2025, 1, 6);
+
 	private static AppChat unicaInstancia;
 
 	// Usuario actual
@@ -533,18 +537,15 @@ public class AppChat {
 	 * @param tipo tipo de descuento seleccionado
 	 */
 	private boolean cumpleCondicion(String tipo) {
-		// Fijamos las dos fechas de inicio y fin donde se aplicará el descuento
-		LocalDate inicioDescuento = LocalDate.of(2024, 12, 24);
-		LocalDate finDescuento = LocalDate.of(2025, 1, 6);
 		// Vemos si se cumple la condicion de que sea Premium según sea Descuento por
 		// mensaje o por Fecha
 		switch (tipo) {
 		case "Descuento Mensajes":
-			return usuarioLogueado.getNumMensajes() >= 100 && !usuarioLogueado.isPremium();
+			return usuarioLogueado.getNumMensajes() >= NUM_MENSAJES_DESCUENTO && !usuarioLogueado.isPremium();
 
 		case "Descuento Fecha":
 			LocalDate fechaUsuario = usuarioLogueado.getFecha();
-			boolean enRangoFechas = !fechaUsuario.isBefore(inicioDescuento) && !fechaUsuario.isAfter(finDescuento);
+			boolean enRangoFechas = !fechaUsuario.isBefore(INICIO_DESCUENTO) && !fechaUsuario.isAfter(FIN_DESCUENTO);
 			return enRangoFechas && !usuarioLogueado.isPremium();
 
 		default:
