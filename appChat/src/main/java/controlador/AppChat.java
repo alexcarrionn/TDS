@@ -41,6 +41,11 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+/**
+ * Controlador que gestiona la interacción entre los usuarios, contactos, grupos y mensajes.
+ * Proporciona métodos para enviar mensajes, aplicar descuentos, activar premium, exportar conversaciones y más.
+ */
+
 public class AppChat {
 	private static AppChat unicaInstancia;
 
@@ -58,13 +63,19 @@ public class AppChat {
 
 	// catalogo de usuarios
 	private RepositorioUsuario repo;
-
+	
+	/**
+	 * Constructor donde inicializaremos los adaptadores y el repositorio
+	 */
 	private AppChat() {
 		inicializarAdaptadores();
 		inicializarRepositorio();
 	}
 
-	// aplicamos el patrón Singleton
+	/**
+	 * Obtiene la instancia única del Controlador (Singleton).
+     * @return La instancia única del Controlador.
+	 */
 	public static AppChat getUnicaInstancia() {
 		if (unicaInstancia == null) {
 			unicaInstancia = new AppChat();
@@ -72,12 +83,16 @@ public class AppChat {
 		return unicaInstancia;
 	}
 
-	// inicializamos Repositorio
+	/**
+	 *  inicializamos Repositorio
+	 */
 	private void inicializarRepositorio() {
 		repo = RepositorioUsuario.getUnicaInstancia();
 	}
 
-	// Inicializamos los adaptadores
+	/**
+	 *  Inicializamos los adaptadores
+	 */
 	private void inicializarAdaptadores() {
 		FactoriaDAO factoria = null;
 		try {
@@ -90,11 +105,19 @@ public class AppChat {
 		adaptadorContacto = factoria.getContactoIndividualDAO();
 		adaptadorGrupo = factoria.getGrupoDAO();
 	}
-
+	
+	/**
+	 * Método para conseguir el UsuarioLogueado
+	 * @return Usuario Logueado
+	 */
 	public Usuario getUsuarioLogueado() {
 		return usuarioLogueado;
 	}
 
+	/**
+	 * Método para conseguir el Precio tras aplicar el Descuento
+	 * @return precio
+	 */
 	public double getDescuento() {
 		return usuarioLogueado.getPrecio();
 	}
@@ -102,7 +125,7 @@ public class AppChat {
 	/**
 	 * Metodo para poder comprobar el login
 	 * 
-	 * @param tel        telefono con el que se intenta hacer el login
+	 * @param tel telefono con el que se intenta hacer el login
 	 * @param contraseña contraseña con la que se intenta hacer el login
 	 * @return true si se ha conseguido hacer el login, false en caso contrario
 	 */
@@ -194,7 +217,11 @@ public class AppChat {
 	public Contacto getChatActual() {
 		return chatActual;
 	}
-
+	
+	/**
+	 * Cambia el chat Actual
+	 * @param contactoActual contacto del chat al que se quiere cambiar
+	 */
 	public void setChatActual(Contacto contactoActual) {
 		chatActual = contactoActual;
 	}
@@ -225,7 +252,13 @@ public class AppChat {
 		return buscarUsuario(telefono).map(usuario -> crearYRegistrarContacto(nombre, telefono, usuario)).orElse(null);
 	}
 
-	// Funcion que te permite crear y registar un contacto
+	/**
+	 *  Funcion que te permite crear y registar un contacto
+	 * @param nombre nombre del nuevo contacto
+	 * @param telefono telefono del nuevo contacto
+	 * @param usuario usuario del nuevo contactp
+	 * @return nuevo contacto
+	 */
 	private ContactoIndividual crearYRegistrarContacto(String nombre, String telefono, Usuario usuario) {
 		ContactoIndividual nuevoContacto = usuarioLogueado.crearContactoIndividual(nombre, telefono, usuario);
 		usuarioLogueado.addContacto(nuevoContacto);
@@ -265,7 +298,13 @@ public class AppChat {
 		return crearYRegistrarGrupo(groupName, contactos, rutaImagen);
 	}
 
-	//Método privado para poder crear y registrar el gurpo
+	/**
+	 * Método privado para poder crear y registrar el gurpo
+	 * @param groupName nombre del grupo
+	 * @param contactos lista de contactos del grupo
+	 * @param rutaImagen imagen del grupo
+	 * @return nuevo grupo 
+	 */ 
 	
 	private Grupo crearYRegistrarGrupo(String groupName, List<ContactoIndividual> contactos, String rutaImagen) {
 		// creamos el grupo y lo añadimos a los contactos del usuario
@@ -279,7 +318,11 @@ public class AppChat {
 		return nuevoGrupo;
 	}
 	
-	//Método privado para conseguir un contacto por nombre
+	/**
+	 * Método privado para conseguir un contacto por nombre
+	 * @param nombre del contacto a conseguir 
+	 * @return contacto con el nombre 
+	 */
 	
 	private ContactoIndividual getContactoPorNombre(String nombre) {
 		List<Contacto> contactos = usuarioLogueado.getContactos();
@@ -292,12 +335,12 @@ public class AppChat {
 	}
 
 
-
 	/**
 	 * Método para crear un mensaje entre usuarios
-	 * 
+	 * @param contacto contacto receptor del mensaje
+	 * @param texto texto del mensaje
+	 * @param tipo tipo del mensaje
 	 */
-
 	private void crearMensajeTextoUsuarioContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		// Cogemos el usuario receptor
 		Usuario usuarioReceptor = contacto.getUsuario();
@@ -320,7 +363,9 @@ public class AppChat {
 
 	/**
 	 * Método para crear un mensaje entre usuarios
-	 *
+	 * @param contacto contacto receptor del mensaje
+	 * @param emoticono emoticono del mensaje
+	 * @param tipo tipo del mensaje
 	 */
 
 	private void crearMensajeEmoticonoUsuarioContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
@@ -344,8 +389,10 @@ public class AppChat {
 	}
 
 	/**
-	 * Metodo para crear un mensaje de texto para el contacto
-
+	 *  Metodo para crear un mensaje de texto para el contacto
+	 * @param contacto 
+	 * @param texto texto del mensaje 
+	 * @param tipo tipo del mensaje
 	 */
 	private void crearMensajeContactoTexto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		Mensaje mensaje = contacto.creaMensajeTexto(texto, tipo);
@@ -354,8 +401,10 @@ public class AppChat {
 	}
 
 	/**
-	 * Metedo para crear Mensaje con emoticono para el contacto
-
+	 * Método para crear Mensaje con emoticono para el contacto
+	 * @param contacto
+	 * @param emoticono emoticono del mensaje
+	 * @param tipo tipo del mensaje
 	 */
 	private void crearMensajeContactoEmoticono(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		Mensaje mensaje = contacto.creaMensajeEmoticono(emoticono, tipo);
@@ -366,9 +415,9 @@ public class AppChat {
 	/**
 	 * Método para enviar un mensaje a un contacto individual
 	 * 
-	 * @param contacto
-	 * @param texto
-	 * @param tipo
+	 * @param contacto contacto 
+	 * @param texto texto del mensaje a enviar 
+	 * @param tipo tipo del mensaje 
 	 */
 	public void enviarMensajeTextoContacto(ContactoIndividual contacto, String texto, TipoMensaje tipo) {
 		this.crearMensajeContactoTexto(contacto, texto, tipo);
@@ -378,9 +427,9 @@ public class AppChat {
 	/**
 	 * Metodo para enviar un mendaje de emoticono a un contacto individual
 	 * 
-	 * @param contacto
-	 * @param emoticono
-	 * @param tipo
+	 * @param contacto contacto 
+	 * @param emoticono emoticono del mensaje a enviar 
+	 * @param tipo tipo del mensaje
 	 */
 	public void enviarMensajeEmoticonoContacto(ContactoIndividual contacto, int emoticono, TipoMensaje tipo) {
 		this.crearMensajeContactoEmoticono(contacto, emoticono, tipo);
@@ -415,9 +464,9 @@ public class AppChat {
 	/**
 	 * Método para registar el mensaje de texto
 	 * 
-	 * @param g
-	 * @param texto
-	 * @param tipo
+	 * @param g grupo
+	 * @param texto texto del mensaje
+	 * @param tipo tipo del mensaje
 	 */
 	public void crearMensajeTextoGrupo(Grupo g, String texto, TipoMensaje tipo) {
 		Mensaje mensaje = g.creaMensajeTextoGrupo(texto, tipo);
@@ -428,9 +477,9 @@ public class AppChat {
 	/**
 	 * Método para registar el mensaje
 	 * 
-	 * @param g
-	 * @param emoticono
-	 * @param tipo
+	 * @param g grupo 
+	 * @param emoticono emoticono del mensaje
+	 * @param tipo tipo del mensaje
 	 */
 	public void crearMensajeEmojiGrupo(Grupo g, int emoticono, TipoMensaje tipo) {
 		Mensaje mensaje = g.creaMensajeEmoticonoGrupo(emoticono, tipo);
@@ -480,7 +529,8 @@ public class AppChat {
 	/**
 	 * Metodo privado que sirva para saber si el usuario cumple con la condicion
 	 * dependiendo del tipo que haya escogido
-
+	 * 
+	 * @param tipo tipo de descuento seleccionado
 	 */
 	private boolean cumpleCondicion(String tipo) {
 		// Fijamos las dos fechas de inicio y fin donde se aplicará el descuento
@@ -557,10 +607,10 @@ public class AppChat {
 	 * Método que sirve para poder Buscar Mensajes específico despendiendo del
 	 * filtro que corresponda
 	 * 
-	 * @param texto
-	 * @param tipo
-	 * @param desde
-	 * @param hasta
+	 * @param texto texto del mensaje a buscar 
+	 * @param tipo tipo del mensaje a buscar 
+	 * @param desde fecha desde la que se quiere buscar 
+	 * @param hasta fecha hasta la que se quiere buscar 
 	 * @return Lista de Mensajes que se hayan encontrado
 	 */
 	public List<Mensaje> buscarMensajes(String texto, TipoMensaje tipo, LocalDate desde, LocalDate hasta) {
@@ -591,7 +641,7 @@ public class AppChat {
 	/**
 	 * Método que sirve para exportar una conversacíon a PDF
 	 * 
-	 * @throws DocumentException
+	 * @throws DocumentException 
 	 * @throws FileNotFoundException
 	 */
 
@@ -639,8 +689,11 @@ public class AppChat {
 		documento.close();
 	}
 
-	// Método privado para crear el directorio donde se pondrá el archivo en caso de
-	// no existir
+	/**
+	 *  Método privado para crear el directorio donde se pondrá el archivo en caso de no existir
+	 * @param rutaDirectorio ruta del directorio a crear 
+	 */
+
 	private void crearDirectorioSiNoExiste(String rutaDirectorio) {
 		File directorio = new File(rutaDirectorio);
 		if (!directorio.exists()) {
@@ -648,13 +701,23 @@ public class AppChat {
 		}
 	}
 
-	// Metodo privado para agregr el titulo a un parrafo en el documento
+	/**
+	 * Metodo privado para agregar el titulo a un parrafo en el documento
+	 * @param documento documento a asignar el titulo
+	 * @param titulo titulo del documento
+	 * @throws DocumentException
+	 */
 	private void agregarTitulo(Document documento, String titulo) throws DocumentException {
 		documento.add(new Paragraph(titulo));
 		documento.add(Chunk.NEWLINE);
 	}
 
-	// Método privado para generar la sección de Usuarios en el documento
+	/**
+	 * Método privado para generar la sección de Usuarios en el documento
+	 * @param documento documento a modificar
+	 * @param usuarios usuarios que estarán en la sección 
+	 * @throws DocumentException
+	 */
 	private void generarSeccionUsuarios(Document documento, List<ContactoIndividual> usuarios)
 			throws DocumentException {
 		documento.add(new Paragraph("Usuarios: "));
@@ -673,8 +736,12 @@ public class AppChat {
 		documento.add(Chunk.NEWLINE);
 	}
 
-	// Método privado para generar la sección de los mensajes con lo usuarios en el
-	// documento
+	/**
+	 *  Método privado para generar la sección de los mensajes con lo usuarios en el  documento
+	 * @param documento documento a modificar
+	 * @param usuarios usuarios de los que se quiere los mensajes 
+	 * @throws DocumentException
+	 */
 	private void generarSeccionMensajesIndividuales(Document documento, List<ContactoIndividual> usuarios)
 			throws DocumentException {
 		documento.add(new Paragraph("Mensajes con Contactos:"));
@@ -694,7 +761,12 @@ public class AppChat {
 		}
 	}
 
-	// Método privado para generar la sección de Grupos en el documento
+	/**
+	 *  Método privado para generar la sección de Grupos en el documento
+	 * @param documento documento a modificar
+	 * @param grupos grupos que se quiere en la sección
+	 * @throws DocumentException
+	 */
 	private void generarSeccionGrupos(Document documento, List<Grupo> grupos) throws DocumentException {
 		for (Grupo grupo : grupos) {
 			documento.add(new Paragraph("Grupo: " + grupo.getNombre()));
@@ -727,8 +799,13 @@ public class AppChat {
 		}
 	}
 
-	// Método privado para generar la sección de los mensajes con los grupos en el
-	// documento
+	/**
+	 *  Método privado para generar la sección de los mensajes con los grupos en el documento
+	 * @param documento docuemnto a modificar
+	 * @param mensajes mensajes que se quiere en la tabla
+	 * @throws DocumentException
+	 */
+
 	private void agregarTablaMensajes(Document documento, List<Mensaje> mensajes) throws DocumentException {
 		PdfPTable tablaMensajes = new PdfPTable(3);
 		tablaMensajes.addCell("Tipo");
@@ -744,28 +821,29 @@ public class AppChat {
 		documento.add(tablaMensajes);
 	}
 
-	// Método privado para obtener los Mensajes con el contacto especificado
+	/**
+	 *  Método privado para obtener los Mensajes con el contacto especificado
+	 * @param contacto del que se quiere obtener los mensajes
+	 * @return
+	 */
 	private List<Mensaje> obtenerMensajesConContacto(ContactoIndividual contacto) {
 		return usuarioLogueado.getMensajes(contacto);
 	}
 
-	// Método privado para obtener los mensajes con el grupo
+	/**
+	 *  Método privado para obtener los mensajes con el grupo
+	 * @param grupo grupo del que se quiere obtener los mensajes
+	 * @return
+	 */
 	private List<Mensaje> obtenerMensajesDeGrupo(Grupo grupo) {
 		return usuarioLogueado.getMensajes(grupo);
 	}
 
 	/**
-	 * Método para añadir un contacto individual específico a un grupo 
-	 * @param grupo grupo al que se quiere añadir el contacto individual
-	 * @param contacto contacto individual que desea añadir al grupo
-	 * 
+	 * Método que te permite actualizar el nombre de un contacto sin nombre
+	 * @param contacto contacto al que se le va a actualizar el nombre
+	 * @param nuevoNombre nombre del contacto
 	 */
-		
-	public void agregarContacto(Grupo g, ContactoIndividual c) {
-		g.agregarContacto(c);
-		adaptadorGrupo.modificarGrupo(g);
-	}
-
 	public void actualizarNombreContacto(Contacto contacto, String nuevoNombre) {
 	    if (contacto instanceof ContactoIndividual) {
 	        ((ContactoIndividual) contacto).setNombre(nuevoNombre);

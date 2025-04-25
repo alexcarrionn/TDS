@@ -41,7 +41,16 @@ import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.TipoMensaje;
 import tds.BubbleText;
+import java.awt.Toolkit;
 
+/**
+ * Ventana principal de la aplicación. Extinde {@code JFrame}
+ * Esta ventana te permitirá acceder a los Chats con los contactos que tengas, además te permitirá añadir un gurpo y un contacto nuevo. 
+ * A través de esta ventana se podrá acceder a las ventanas de Premium y de Buscar. 
+ * El usuario podrá cambiar su foto de perfil siempre que quiera. 
+ * 
+ * 
+ */
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -60,9 +69,10 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel panelEmojis;
 
 	/**
-	 * Create the frame.
+	 * Crea the frame.
 	 */
 	public VentanaPrincipal() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPrincipal.class.getResource("/imagenes/AppChatLogo.png")));
 		// Llamamos a la instancia del controlador
 		appchat = AppChat.getUnicaInstancia();
 		this.chatsRecientes = new HashMap<>();
@@ -267,35 +277,48 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		
-		// Botón para editar contacto no agregado
 		listaContactos.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
 		        int index = listaContactos.locationToIndex(e.getPoint());
 
-		        if (index < 0) return;
+		        if (index >= 0) {
+		            Rectangle cellBounds = listaContactos.getCellBounds(index, index);
+		            Contacto contacto = modeloLista.getElementAt(index);
 
-		        Contacto contacto = listaContactos.getModel().getElementAt(index);
+		            // Determinar la posición del botón dentro de la celda
+		            int botonX = cellBounds.x + cellBounds.width - 30; // Aproximado, depende del tamaño del botón
+		            int botonY = cellBounds.y + cellBounds.height / 2 - 10;
+		            int botonAncho = 20;
+		            int botonAlto = 20;
 
-		        // Solo permitir edición si es un contacto inverso sin nombre
-		        if (!(contacto instanceof ContactoIndividual ci) || !ci.isContactoInverso()) return;
+		            Rectangle areaBoton = new Rectangle(botonX, botonY, botonAncho, botonAlto);
 
-		        Rectangle bounds = listaContactos.getCellBounds(index, index);
-		        if (!bounds.contains(e.getPoint())) return;
+		            // Verificar si el clic fue dentro del área estimada del botón
+		            if (areaBoton.contains(e.getX(), e.getY())) {
+		                if (contacto instanceof ContactoIndividual) {
+		                    ContactoIndividual c = (ContactoIndividual) contacto;
+		                    if (c.isContactoInverso()) {
+		                    	String nuevoNombre = JOptionPane.showInputDialog(
+		                    		    listaContactos,
+		                    		    "Introduce el nuevo nombre para el contacto:",
+		                    		    "Renombrar contacto",
+		                    		    JOptionPane.PLAIN_MESSAGE
+		                    		);
 
-		        String nuevoNombre = JOptionPane.showInputDialog(
-		            VentanaPrincipal.this,
-		            "Introduce un nombre para el contacto:",
-		            "Editar Nombre",
-		            JOptionPane.PLAIN_MESSAGE
-		        );
 
-		        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
-		            appchat.actualizarNombreContacto(contacto, nuevoNombre.trim());
-		            actualizarListaContactos();
+
+		                        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+		                            appchat.actualizarNombreContacto(c, nuevoNombre.trim());
+		                            actualizarListaContactos(); // Para refrescar los datos
+		                        }
+		                    }
+		                }
+		            }
 		        }
 		    }
 		});
+
 
 
 		// Agregar la lista al panel
@@ -350,11 +373,13 @@ public class VentanaPrincipal extends JFrame {
 
 	// FUNCIONES AUXILIARES
 
-	// Método privado que servira para carar el panel de los emoticonos
+	/**
+	 *  Método privado que servira para carar el panel de los emoticonos
+	 */
 	private void cargarPanelEmojis() {
-		// Crear el panel de emojis al inicializar la ventana (oculto por defecto)
+		// Creamos el panel de emojis al inicializar la ventana 
 		panelEmojis = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		panelEmojis.setBackground(Color.LIGHT_GRAY); // O usa tu constante CHAT_COLOR
+		panelEmojis.setBackground(Color.LIGHT_GRAY);
 
 		// Cargar los emojis una sola vez
 		for (int i = 0; i <= BubbleText.MAXICONO; i++) {
@@ -368,7 +393,7 @@ public class VentanaPrincipal extends JFrame {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					enviarMensajeEmoji(emojiId);
-					mensaje.setText(""); // Limpia el campo de texto
+					mensaje.setText(""); // Limpiamos el campo de texto
 				}
 			});
 
@@ -384,12 +409,14 @@ public class VentanaPrincipal extends JFrame {
 		// Inicialmente oculto
 		scrollPanelEmojis.setVisible(false);
 
-		// Añadir el panel justo encima del área de entrada (debajo del chat)
+		// Añadirmos el panel justo encima del área de entrada (debajo del chat)
 		contentPane.add(scrollPanelEmojis, BorderLayout.SOUTH);
 
 	}
 
-	// Método privado que te permitirá abrir el panel de emoticonos
+	/**
+	 *  Método privado que te permitirá abrir el panel de emoticonos
+	 */
 	private void abrirPanelEmojis() {
 		boolean visible = scrollPanelEmojis.isVisible();
 		scrollPanelEmojis.setVisible(!visible);
@@ -397,8 +424,11 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.repaint();
 	}
 
-	// Método privado que servirá como dialogo para crear el contacto al pulsar el
-	// boton de Crear Contacto
+	/**
+	 * Método privado que servirá como dialogo para crear el contacto al pulsar el boton de Crear Contacto
+	 * @return Contacto creado al pulsar el boton Crear contacto
+	 */
+	
 	private ContactoIndividual crearContacto() {
 		JTextField nombreContacto = new JTextField();
 		JTextField telefonoContacto = new JTextField();
@@ -428,7 +458,9 @@ public class VentanaPrincipal extends JFrame {
 		return nuevoContacto;
 	}
 
-	// Método privado que servirá para crear el grupo
+	/**
+	 * Método privado que servirá para crear el grupo
+	 */
 
 	private void crearGrupo() {
 		JTextField nombreGrupo = new JTextField();
@@ -491,7 +523,9 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
-	// Método privado que servirá para actualizar la lista de los contactos
+	/**
+	 *  Método privado que servirá para actualizar la lista de los contactos
+	 */
 	private void actualizarListaContactos() {
 		List<Contacto> contactos = appchat.getContactosUsuarioActual();
 		DefaultListModel<Contacto> modeloActualizado = new DefaultListModel<>();
@@ -503,8 +537,11 @@ public class VentanaPrincipal extends JFrame {
 		listaContactos.setModel(modeloActualizado);
 	}
 
-	// Mérodo privado que servirá para saber si un mensaje es un mensaje de texto o
-	// un emoji
+	/**
+	 *  Mérodo privado que servirá para saber si un mensaje es un mensaje de texto o un emoji
+	 * @param mensajeTexto mensaje a comprobar 
+	 */
+	
 	private void comprobarEmojioTexto(String mensajeTexto) {
 		if (esEntero(mensajeTexto)) {
 			enviarMensajeEmoji(Integer.parseInt(mensajeTexto));
@@ -514,7 +551,10 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
-	// Método privado que servirá para enviar un mensaje de emoji
+	/**
+	 *  Método privado que servirá para enviar un mensaje de emoji
+	 * @param emoji emoji que se quiere enviar como mensaje
+	 */
 	private void enviarMensajeEmoji(int emoji) {
 		if (appchat.getChatActual() == null)
 			return;
@@ -536,7 +576,10 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
-	// Método privado que servirña para enviar un mensaje de texto
+	/**
+	 *  Método privado que servirña para enviar un mensaje de texto
+	 * @param mensaje que se quiere enviar 
+	 */
 	private void enviarMensajeTexto(String mensaje) {
 		if (appchat.getChatActual() instanceof ContactoIndividual) {
 			appchat.enviarMensajeTextoContacto((ContactoIndividual) appchat.getChatActual(), mensaje,
@@ -546,7 +589,11 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
-	// Método privado que servirá para saber si el mensaje enviado es un entero o no
+	/**
+	 *  Método privado que servirá para saber si el mensaje enviado es un entero o no
+	 * @param str mensaje para comprobar si es un entero o es un mensaje de texto
+	 * @return
+	 */
 	private static boolean esEntero(String str) {
 		try {
 			Integer.parseInt(str);
@@ -556,8 +603,11 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
-	// Método privado que servirá para poder cargar el chat del contacto pasado como
-	// parámetro
+	/**
+	 *  Método privado que servirá para poder cargar el chat del contacto pasado como  parámetro
+	 * @param contacto para cargar el chat 
+	 */
+
 	private void cargarChat(Contacto contacto) {
 		if (contacto == null) {
 			return; // Salir si el contacto es nulo
@@ -584,7 +634,9 @@ public class VentanaPrincipal extends JFrame {
 		}
 	}
 
-	// Método para crear un nuevo chat
+	/**
+	 *  Método para crear un nuevo chat
+	 */
 	private ChatBurbujas crearNuevoChat() {
 		ChatBurbujas nuevoChat = new ChatBurbujas();
 		nuevoChat.setBackground(Color.LIGHT_GRAY);
@@ -593,7 +645,10 @@ public class VentanaPrincipal extends JFrame {
 		return nuevoChat;
 	}
 
-	// Método para configurar un chat existente
+	/**
+	 *  Método para configurar un chat existente
+	 * @param chat chat a configurar 
+	 */
 	private void configurarChatExistente(ChatBurbujas chat) {
 		// Configuración básica
 		chat.setBackground(Color.LIGHT_GRAY);
@@ -614,7 +669,11 @@ public class VentanaPrincipal extends JFrame {
 		chat.repaint();
 	}
 
-	// Método para crear una burbuja de mensaje
+	/**
+	 *  Método para crear una burbuja de mensaje
+	 * @param m mensaje del que se quiere crear la burbuja
+	 * @return Burbuja creada con el mensaje pasado como parámetro
+	 */
 	private BubbleText crearBurbuja(Mensaje m) {
 		String emisor;
 		int direccionMensaje;
@@ -625,7 +684,7 @@ public class VentanaPrincipal extends JFrame {
 			emisor = "You";
 			direccionMensaje = BubbleText.SENT;
 		} else {
-			colorBurbuja = Color.BLUE;
+			colorBurbuja = Color.CYAN;
 			emisor = "Other";
 			direccionMensaje = BubbleText.RECEIVED;
 		}
@@ -636,8 +695,10 @@ public class VentanaPrincipal extends JFrame {
 		return new BubbleText(chat, m.getTexto(), colorBurbuja, emisor, direccionMensaje, TAMANO_MENSAJE);
 	}
 
-	// Método privado que te permitirá añadir un contacto individual a un grupo en
-	// concreto
+	/**
+	 *  Método privado que te permitirá añadir un contacto individual a un grupo en concreto
+	 */
+
 	private void anadirContacto() {
 		// Obtener solo nombres de contactos individuales
 		List<Contacto> contactos = appchat.getContactosUsuarioActual();

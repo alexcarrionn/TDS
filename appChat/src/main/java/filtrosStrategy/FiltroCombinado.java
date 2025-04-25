@@ -24,16 +24,10 @@ public class FiltroCombinado implements Filtro{
 		this.filtros = new ArrayList<>(); 
 	}
 	
-	/**
-	 * Funcion Get de los filtros que hay actualmente en el filtro combiando
-	 * @return Copia de los filtros
-	 */
-	public List<Filtro> getFiltros() {
-		return new ArrayList<>(filtros);
-	}
 	
 	/**
 	 * Creamos la función para añadir un nuevo filtro
+	 * @param filtro filto a añadir a la lista del filtro combinado
 	 */
 	
 	public void anadirFiltro(Filtro filtro) {
@@ -42,12 +36,6 @@ public class FiltroCombinado implements Filtro{
 		}
 	}
 	
-	/**
-	 * Funcion para eliminar un filtro de la lista de los filtros
-	 */
-	public boolean eliminarFiltro(Filtro filtro) {
-		return filtros.remove(filtro);
-	}
 	
 	/**
 	 * Filtra la lista de mensajes pasada como parametro, aplicando todos los filtros combinados

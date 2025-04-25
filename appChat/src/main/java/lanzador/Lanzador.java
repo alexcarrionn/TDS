@@ -1,38 +1,53 @@
 package lanzador;
 
 import java.io.IOException;
-import java.time.LocalDate;
-
 import appChat.Ventanas.VentanaLogin;
 import cargador.CargarAppChat;
-import controlador.AppChat;
 
 import java.io.File;
 
+/**
+ * Clase que actúa como punto de entrada para iniciar la aplicación de chat,
+ * incluyendo la configuración y arranque de un servidor de persistencia de
+ * datos y la carga de la aplicación principal.
+ * 
+ * También registra algunos usuarios de ejemplo y lanza la ventana de login para
+ * la interacción con el usuario.
+ */
 
- public class Lanzador {
- 
-  @SuppressWarnings("static-access")
+public class Lanzador {
+
+	/**
+	 * Constructor por defecto.
+	 */
+	public Lanzador() {
+	}
+
+	/**
+	 * Método principal que se ejecuta al iniciar la aplicación.
+	 * 
+	 * @param args Argumentos de línea de comando.
+	 */
+
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-	  ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k", 
-    		    "java -jar ServidorPersistenciaH2.jar");
-    	
-    		//IMPORTANTE CADA VEZ QUE SE QUIERA EJECUTAR EN UN EQUIPO DIFERENTE, CAMBIAR LA RUTA DEL ARCHIVO
-    		terminalPersistencia.directory(new File("C:\\Users\\juanp\\Downloads\\ServidorPersistenciaH2\\ServidorPersistenciaH2"));
-        try {
-            terminalPersistencia.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        CargarAppChat.main(null);
-        AppChat appChat = AppChat.getUnicaInstancia();
-		//TODO CAMBIAR LAS IMAGENES 
-		appChat.registrarUsuario("1", "a", "", "a", LocalDate.of(1960, 10, 3), "Hola, soy jesus");
-		appChat.registrarUsuario("2", "a", "", "a", LocalDate.of(1995, 12, 28), "hola, soy elena");
-        
-        VentanaLogin login = new VentanaLogin(); 
-        login.main(null);  
-        
-    }
+		ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k",
+				"java -jar ServidorPersistenciaH2.jar");
+
+		// IMPORTANTE CADA VEZ QUE SE QUIERA EJECUTAR EN UN EQUIPO DIFERENTE, CAMBIAR LA
+		// RUTA DEL ARCHIVO
+		terminalPersistencia.directory(new File("C:\\Users\\acarr\\Downloads\\ServidorPersistenciaH2"));
+		try {
+			terminalPersistencia.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// quitar una vez lanzado por primera vez
+		CargarAppChat.main(null);
+
+		VentanaLogin login = new VentanaLogin();
+		login.main(null);
+
+	}
 }

@@ -26,15 +26,15 @@ public class FiltroTexto implements Filtro{
 	/**
 	 * Función para filtrar los mensajes según el texto que contengan
 	 * 
-	 * @param mensajes
+	 * @param mensajes mensajes que se van a filtrar
 	 * @return filtra los mensajes y los devulve segun el texto del mensaje
 	 */
 	@Override
 	public List<Mensaje> filtrarMensaje(List<Mensaje> mensajes) {
-		return mensajes.stream()
-				//Filtramos los mensajes que sean null, que esten vacios o que tengan el texto especificado
-				.filter(m -> texto==null || texto.isEmpty() || m.getTexto().contains(texto))
-				.collect(Collectors.toList());
+	    return mensajes.stream()
+	            .filter(m -> texto == null || texto.isEmpty() || (m.getTexto() != null && m.getTexto().contains(texto)))
+	            .collect(Collectors.toList());
 	}
+
 
 }

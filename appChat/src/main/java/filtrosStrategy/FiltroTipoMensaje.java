@@ -16,15 +16,15 @@ public class FiltroTipoMensaje implements Filtro{
 	
 	/**
 	 * Creamos un filtro basado en el tipo del mensaje ya sea enviado o recibido
-	 * @param tipo
-	 */
+	 * @param tipo tipo de mensaje
+	 */ 
 	public FiltroTipoMensaje(TipoMensaje tipo) {
 		this.tipo = tipo;
 	}
 	
 	/**
 	 * Filtro que va a coger solo aquellos mensajes que sean del tipo especificado
-	 * @param lista de mensajes a los que se le aplicará el filtro
+	 * @param mensajes lista de mensajes a los que se le aplicará el filtro
 	 */
 	@Override
 	public List<Mensaje> filtrarMensaje(List<Mensaje> mensajes) {

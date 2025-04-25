@@ -12,12 +12,23 @@ import beans.Propiedad;
 import modelo.Mensaje;
 import modelo.TipoMensaje;
 
+/**
+ * Clase encargada de interactuar con la base de datos para realizar operaciones
+ * de persistencia relacionadas con los objetos de tipo {@link Mensaje}.
+ * Utiliza el patrón de diseño Singleton para asegurar que haya una única
+ * instancia de la clase.
+ */
 public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
 	//Atributos
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorMensaje unicaInstancia = null;
     
-    //Iniciañizador
+    /**
+     * Obtiene la única instancia del adaptador, asegurando el patrón Singleton.
+     * 
+     * @return La instancia única del adaptador de mensajes.
+     */
+    
     public static AdaptadorMensaje getUnicaInstancia() {
         if (unicaInstancia == null)
             return new AdaptadorMensaje();
@@ -25,6 +36,11 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
             return unicaInstancia;
     }
 
+    
+    /**
+     * Constructor privado para inicializar el servicio de persistencia.
+     */
+    
     private AdaptadorMensaje() {
         servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
     }
@@ -63,31 +79,6 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
         PoolDAO.getUnicaInstancia().addObjeto(mensaje.getId(), mensaje);
     }
     
-    /*
-    public void borrarMensaje(Mensaje mensaje) {
-        Entidad eMensaje = servPersistencia.recuperarEntidad(mensaje.getId());
-        servPersistencia.borrarEntidad(eMensaje);
-    }*/
-    
-    /*
-    //Funcion para modificar un mensaje de la bbdd
-    public void modificarMensaje(Mensaje mensaje) {
-        Entidad eMensaje = servPersistencia.recuperarEntidad(mensaje.getId());
-
-        for (Propiedad prop : eMensaje.getPropiedades()) {
-            if (prop.getNombre().equals("texto")) {
-                prop.setValor(mensaje.getTexto());
-            } else if (prop.getNombre().equals("tipo")) {
-                prop.setValor(String.valueOf(mensaje.getTipo()));
-            } else if (prop.getNombre().equals("fecha")) {
-                prop.setValor(mensaje.getHora().toString());
-            } else if (prop.getNombre().equals("grupo")) {
-            	prop.setValor(String.valueOf(mensaje.isGrupo()));
-            }
-            servPersistencia.modificarPropiedad(prop);
-        }
-    }*/
-    
     /**
      * Método para recuperar los mensajes a traves del identificador
      * @param codigo identificador del mensaje que se quiere recuperar
@@ -123,14 +114,4 @@ public class AdaptadorMensaje implements IAdaptadorMensajeDAO{
 
         return mensaje;
     }
-    
-    /*
-    public List<Mensaje> recuperarTodosMensajes() {
-        List<Mensaje> mensajes = new ArrayList<>();
-        List<Entidad> eMensajes = servPersistencia.recuperarEntidades("Mensaje");
-        for (Entidad eMensaje : eMensajes) {
-            mensajes.add(recuperarMensaje(eMensaje.getId()));
-        }
-        return mensajes;
-    }*/
 }

@@ -17,10 +17,25 @@ import modelo.ContactoIndividual;
 import modelo.Grupo;
 import modelo.Usuario;
 
-//Usa un pool para evitar problemas doble referencia con ventas
+/**
+ * Adaptador para gestionar la persistencia de los usuarios en la base de datos.
+ * Implementa la interfaz {@link IAdaptadorUsuarioDAO} y utiliza el patrón
+ * Singleton para asegurar que solo exista una instancia de la clase.
+ * 
+ * Proporciona métodos para registrar, modificar, recuperar y listar usuarios,
+ * así como para gestionar los contactos y grupos asociados a cada usuario.
+ */
+
 public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
 	private static AdaptadorUsuario unicaInstancia = null;
+
+	/**
+	 * Obtiene la instancia única de {@link AdaptadorUsuario} utilizando el patrón
+	 * Singleton.
+	 * 
+	 * @return La única instancia de {@link AdaptadorUsuario}.
+	 */
 
 	public static AdaptadorUsuario getUnicaInstancia() { // patron singleton
 		if (unicaInstancia == null)
@@ -29,15 +44,12 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 			return unicaInstancia;
 	}
 
+	/**
+	 * Constructor privado que inicializa el servicio de persistencia.
+	 */
 	private AdaptadorUsuario() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
-	/*
-	 * public void borrarUsuario(Usuario user) { // No se comprueban restricciones
-	 * de integridad con Contacto Entidad eUsuario =
-	 * servPersistencia.recuperarEntidad(user.getId());
-	 * servPersistencia.borrarEntidad(eUsuario); }
-	 */
 
 	/**
 	 * Método que sirve para modificar un usuario de la base de datos
@@ -89,7 +101,8 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 
 		// Si la imagen del usuario es null o vacía, asignamos una imagen predeterminada
 		if (usuario.getImagen() == null || usuario.getImagen().isEmpty()) {
-			usuario.setImagen("https://robohash.org/" + usuario.getNombre() + usuario.getTelefono()); // Aquí le asignamos
+			usuario.setImagen("https://robohash.org/" + usuario.getNombre() + usuario.getTelefono()); // Aquí le
+																										// asignamos
 																										// el nombre de
 																										// la imagen
 																										// predeterminada
@@ -121,7 +134,12 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		usuario.setId(eUsuario.getId());
 	}
 
-	// Método privado para añadir llamar a otros adaptadores
+	/**
+	 * Método privado que se asegura de registrar los contactos y grupos de un
+	 * usuario si estos no están registrados previamente.
+	 * 
+	 * @param usuario El usuario cuyo contacto se desea registrar.
+	 */
 	private void siNoExisteContacto(Usuario usuario) {
 		AdaptadorContactoIndividual adaptadorContacto = AdaptadorContactoIndividual.getUnicaInstancia();
 		for (Contacto contacto : usuario.getContactos()) {
@@ -133,16 +151,26 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		}
 	}
 
-	// Método auxiliar para obtener los códigos de los contactos pasados como
-	// parametros
+	/**
+	 * Obtiene los códigos de los contactos de un usuario en forma de una cadena de
+	 * texto.
+	 * 
+	 * @param contactos La lista de contactos del usuario.
+	 * @return Una cadena de texto con los códigos de los contactos.
+	 */
 	private String obtenerCodigosContactos(List<Contacto> contactos) {
 		return contactos.stream().filter(contacto -> contacto instanceof ContactoIndividual)
 				.map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
 				.collect(Collectors.joining(","));
 	}
 
-	// Método auxiliar para obtener los codigos de los grupos pasados como
-	// parametros
+	/**
+	 * Obtiene los códigos de los grupos de un usuario en forma de una cadena de
+	 * texto.
+	 * 
+	 * @param grupos La lista de grupos del usuario.
+	 * @return Una cadena de texto con los códigos de los grupos.
+	 */
 	private String obtenerCodigosGrupos(List<Contacto> grupos) {
 		return grupos.stream().filter(grupo -> grupo instanceof Grupo) // Para cada grupo, obtenemos sus contactos
 				.map(contacto -> String.valueOf(contacto.getId())) // Usamos el teléfono como identificador
@@ -224,7 +252,13 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		return usuarios;
 	}
 
-	// Método auxiliar para obtener contactos a partir de códigos
+	/**
+	 * Método auxiliar que obtiene una lista de contactos a partir de los códigos.
+	 * 
+	 * @param codigos La cadena con los códigos de los contactos.
+	 * @return Una lista de objetos {@link ContactoIndividual} correspondientes a
+	 *         los códigos.
+	 */
 	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
 		AdaptadorContactoIndividual adaptadorContactos = AdaptadorContactoIndividual.getUnicaInstancia();
 
@@ -237,7 +271,12 @@ public class AdaptadorUsuario implements IAdaptadorUsuarioDAO {
 		}).filter(contacto -> contacto != null).collect(Collectors.toList());
 	}
 
-	// Método auxiliar para obtener una lista de grupos a partir de sus códigos
+	/**
+	 * Método auxiliar que obtiene una lista de grupos a partir de los códigos.
+	 * 
+	 * @param codigos La cadena con los códigos de los grupos.
+	 * @return Una lista de objetos {@link Grupo} correspondientes a los códigos.
+	 */
 	private List<Grupo> obtenerGruposDesdeCodigos(String codigos) {
 		List<Grupo> grupos = new ArrayList<>();
 		if (codigos == null || codigos.isEmpty()) {

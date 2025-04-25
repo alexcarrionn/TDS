@@ -15,6 +15,11 @@ import java.util.List;
 import modelo.Mensaje;
 import modelo.TipoMensaje;
 
+/**
+ * Ventana que permitirá al usuario Buscar mensajes específicos. 
+ * Contiene campos para añadir la información que quieres buscar en el mensaje. 
+ * 
+ */
 public class VentanaBuscar {
 
     private JFrame frame;
@@ -22,11 +27,12 @@ public class VentanaBuscar {
     private AppChat appchat = AppChat.getUnicaInstancia();
 
     /**
-     * @wbp.parser.entryPoint
+	 * Constructor de la Ventana Buscar, inicializa y configura todos los elementos visuales
      */
     public VentanaBuscar() {
         // Crear el JFrame dentro de la clase
         frame = new JFrame("Buscar Ventana");
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaBuscar.class.getResource("/imagenes/AppChatLogo.png")));
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 500);  // Tamaño más grande de la ventana
         frame.setLocationRelativeTo(null);
@@ -149,7 +155,13 @@ public class VentanaBuscar {
         frame.setVisible(true);
     }
 
-    //Método privado para buscar los mensajes con un chat
+    /**
+     * Método privado para buscar los mensajes con un chat
+     * @param texto texto del mensaje a buscar 
+     * @param tipo tipo del mensaje a buscar
+     * @param desde hora desde la que buscar
+     * @param hasta hora hasta la que buscar
+     */
     private void buscarMensaje(String texto, TipoMensaje tipo, LocalDate desde, LocalDate hasta) {
         mensajesArea.removeAll();
 
@@ -164,7 +176,13 @@ public class VentanaBuscar {
         mensajesArea.repaint();
     }
 
-    //Metodo para crear el Mensaje que se verá en el Panel de los mensajes
+    /**
+     * Crea un panel visual que representa un mensaje, incluyendo texto, tipo, fecha, hora y emoticono (si existe).
+     *
+     * @param m el mensaje que se desea mostrar
+     * @return un JPanel representando visualmente el mensaje
+     */
+
     private JPanel CrearMensaje(Mensaje m) {
         // Crear un panel para el mensaje
         JPanel panelMensaje = new JPanel();
@@ -208,7 +226,13 @@ public class VentanaBuscar {
         return panelMensaje;
     }
 
-    // Método para agregar placeholders en los campos de texto
+    /**
+     * Añade un texto placeholder a un campo de texto, simulando el comportamiento del HTML5.
+     *
+     * @param textField el campo de texto al que se aplicará
+     * @param placeholderText el texto que actuará como placeholder
+     */
+
     private void addPlaceholder(JTextField textField, String placeholderText) {
         textField.setText(placeholderText);
         textField.setForeground(Color.GRAY);
@@ -232,6 +256,10 @@ public class VentanaBuscar {
         });
     }
 
+    /**
+     * Metodo para hacer visible o no la ventana buscar
+     * @param b true si es para hacer visible, false en caso contrario
+     */
     public void setVisible(boolean b) {
         frame.setVisible(b);
     }
