@@ -47,7 +47,7 @@ import com.itextpdf.text.pdf.PdfWriter;
  */
 
 public class AppChat {
-	private static final int NUM_MENSAJES_DESCUENTO = 1;
+	private static final int NUM_MENSAJES_DESCUENTO = 100;
 	private static final LocalDate INICIO_DESCUENTO = LocalDate.of(2024, 12, 24);
 	private static final LocalDate FIN_DESCUENTO = LocalDate.of(2025, 1, 6);
 

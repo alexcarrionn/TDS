@@ -1,11 +1,9 @@
 package lanzador;
 
-import java.io.IOException;
-
 import cargador.CargarAppChat;
 import ventanas.VentanaLogin;
-
-import java.io.File;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Clase que actúa como punto de entrada para iniciar la aplicación de chat,
@@ -29,26 +27,19 @@ public class Lanzador {
 	 * 
 	 * @param args Argumentos de línea de comando.
 	 */
-
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-		ProcessBuilder terminalPersistencia = new ProcessBuilder("cmd.exe", "/k",
-				"java -jar ServidorPersistenciaH2.jar");
-
-		// IMPORTANTE CADA VEZ QUE SE QUIERA EJECUTAR EN UN EQUIPO DIFERENTE, CAMBIAR LA
-		// RUTA DEL ARCHIVO
-		terminalPersistencia.directory(new File("C:\\Users\\acarr\\Downloads\\ServidorPersistenciaH2"));
+		// Configurar el look and feel de JTattoo
 		try {
-			terminalPersistencia.start();
-		} catch (IOException e) {
+			UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 
 		// quitar una vez lanzado por primera vez
-		CargarAppChat.main(null);
+		//CargarAppChat.main(null);
 
 		VentanaLogin login = new VentanaLogin();
 		login.main(null);
-
 	}
 }
