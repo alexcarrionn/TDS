@@ -7,11 +7,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Clase que actúa como punto de entrada para iniciar la aplicación de chat,
- * incluyendo la configuración y arranque de un servidor de persistencia de
- * datos y la carga de la aplicación principal.
+ * incluyendo la configuración y la carga de la aplicación principal.
  * 
- * También registra algunos usuarios de ejemplo y lanza la ventana de login para
- * la interacción con el usuario.
  */
 
 public class Lanzador {

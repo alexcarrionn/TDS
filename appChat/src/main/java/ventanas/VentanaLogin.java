@@ -82,6 +82,11 @@ public class VentanaLogin {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(651, 416);
         frame.getContentPane().setLayout(new BorderLayout());
+        
+        // Centrar la ventana (ponerla en el centro)
+        frame.setLocationRelativeTo(null);
+
+        
         //obtenermos la imagen de nuestra aplicación 
         ImageIcon originalIcon = new ImageIcon(VentanaLogin.class.getResource("/imagenes/AppChatLogo.png"));
         Image image = originalIcon.getImage();

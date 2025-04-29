@@ -27,7 +27,6 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.DefaultListModel;
-//import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
@@ -77,7 +76,11 @@ public class VentanaPrincipal extends JFrame {
 		appchat = AppChat.getUnicaInstancia();
 		this.chatsRecientes = new HashMap<>();
 		scrollBarChatBurbujas = new JScrollPane();
+		
+		// Centrar la ventana (ponerla en el centro)
+		setLocationRelativeTo(null);
 
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 852, 544);
 		contentPane = new JPanel();
@@ -346,27 +349,8 @@ public class VentanaPrincipal extends JFrame {
 		botonEnviarMensaje.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String mensajeTexto = mensaje.getText().trim();
-				if (!mensajeTexto.isEmpty()) {
-					// Obtener contacto actual y enviar mensaje
-					Contacto contactoActual = appchat.getChatActual();
-
-					// Comprobar y ver si el mensaje es un emoticono o un texto y enviar el mensaje
-					comprobarEmojioTexto(mensajeTexto);
-
-					// Crear burbuja y añadirla al chat
-					Mensaje nuevoMensaje = new Mensaje(mensajeTexto, TipoMensaje.ENVIADO, LocalDateTime.now());
-					BubbleText burbuja = crearBurbuja(nuevoMensaje);
-
-					// Obtener el chat actual y actualizar la UI
-					ChatBurbujas chatActual = chatsRecientes.get(contactoActual);
-					if (chatActual != null) {
-						chatActual.agregarBurbuja(burbuja); // Usa el método de ChatBurbujas
-						scrollBarChatBurbujas.getViewport().revalidate();
-						scrollBarChatBurbujas.getViewport().repaint();
-					}
-
-					// Limpiar campo de texto
-					mensaje.setText("");
+				if (appchat.getChatActual() != null) {
+					enviarMensaje(mensajeTexto);
 				}
 			}
 		});
@@ -374,7 +358,35 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	// FUNCIONES AUXILIARES
+	
+	/**
+	 * Metodo para poder enviar el mensaje
+	 * @param mensajeTexto el mensaje a enviar
+	 */
+	private void enviarMensaje(String mensajeTexto) {
+		if (!mensajeTexto.isEmpty()) {
+			// Obtener contacto actual y enviar mensaje
+			Contacto contactoActual = appchat.getChatActual();
 
+			// Comprobar y ver si el mensaje es un emoticono o un texto y enviar el mensaje
+			comprobarEmojioTexto(mensajeTexto);
+
+			// Crear burbuja y añadirla al chat
+			Mensaje nuevoMensaje = new Mensaje(mensajeTexto, TipoMensaje.ENVIADO, LocalDateTime.now());
+			BubbleText burbuja = crearBurbuja(nuevoMensaje);
+
+			// Obtener el chat actual y actualizar la UI
+			ChatBurbujas chatActual = chatsRecientes.get(contactoActual);
+			if (chatActual != null) {
+				chatActual.agregarBurbuja(burbuja); // Usa el método de ChatBurbujas
+				scrollBarChatBurbujas.getViewport().revalidate();
+				scrollBarChatBurbujas.getViewport().repaint();
+			}
+
+			// Limpiar campo de texto
+			mensaje.setText("");
+		}
+	}
 	/**
 	 *  Método privado que servira para carar el panel de los emoticonos
 	 */
