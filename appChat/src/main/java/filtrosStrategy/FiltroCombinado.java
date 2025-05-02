@@ -6,51 +6,59 @@ import java.util.List;
 import modelo.Mensaje;
 
 /**
- * Esta clase lo que te va a permitir es aplicar diferentes filtros a la misma vez, es decir, aplicar multiples filtros
- * de forma secuencial. Cada filtro se aplica sobre el resultado del filtro anterior, asegurando así que los mensajes devueltos
- * cumplan con todos los citerios establecidos
+ * Esta clase lo que te va a permitir es aplicar diferentes filtros a la misma
+ * vez, es decir, aplicar multiples filtros de forma secuencial. Cada filtro se
+ * aplica sobre el resultado del filtro anterior, asegurando así que los
+ * mensajes devueltos cumplan con todos los citerios establecidos
  */
 
-public class FiltroCombinado implements Filtro{
-	
-	//Tenemos la lista con los filtros que se van a usar 
-	private List<Filtro> filtros; 
-	
-	
+public class FiltroCombinado implements Filtro {
+
+	// Tenemos la lista con los filtros que se van a usar
+	private List<Filtro> filtros;
+
 	/**
-	 * Creamos el filtro con los filtros a utilizar 
+	 * Creamos el filtro con los filtros a utilizar
 	 */
 	public FiltroCombinado() {
-		this.filtros = new ArrayList<>(); 
+		this.filtros = new ArrayList<>();
 	}
-	
-	
+
 	/**
 	 * Creamos la función para añadir un nuevo filtro
+	 * 
 	 * @param filtro filto a añadir a la lista del filtro combinado
 	 */
-	
+
 	public void anadirFiltro(Filtro filtro) {
 		if (filtro != null) {
-			filtros.add(filtro); 
+			filtros.add(filtro);
 		}
 	}
-	
-	
+
 	/**
-	 * Filtra la lista de mensajes pasada como parametro, aplicando todos los filtros combinados
+	 * Filtra la lista de mensajes pasada como parametro, aplicando todos los
+	 * filtros combinados
 	 * 
-	 * Cada uno de los filtros de la lista se aplicará de forma secuencial sobre el resultado de los anteriores filtros
+	 * Cada uno de los filtros de la lista se aplicará de forma secuencial sobre el
+	 * resultado de los anteriores filtros
 	 * 
 	 * @param mensajes Lista de mensajes a filtrar, No debe de ser null
 	 * @return Retorna la lista de los mensajes con los filtros correspondientes
 	 */
+
 	@Override
 	public List<Mensaje> filtrarMensaje(List<Mensaje> mensajes) {
-		List<Mensaje> mensajesFiltrados = new ArrayList<>(); 
-		for (Filtro f : filtros)
-			mensajesFiltrados.addAll(f.filtrarMensaje(mensajes));
-		return mensajesFiltrados;
+		// Lista de mensajes original
+		List<Mensaje> mensajesIntermedios = mensajes;
+		// Aplicamos cada filtro a la lista resultante del filtro anterior.
+		for (Filtro f : filtros) {
+			// La lista de entrada para el filtro actual es el resultado del filtro anterior
+			// Y el resultado de este filtro se convierte en la lista de entrada para el
+			// siguiente.
+			mensajesIntermedios = f.filtrarMensaje(mensajesIntermedios);
+		}
+		// Retornamos la lista final
+		return mensajesIntermedios;
 	}
-
 }
