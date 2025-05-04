@@ -23,7 +23,7 @@ public class CargarAppChat {
 		appChat.registrarUsuario("22", "bb", "https://robohash.org/22.png", "bb", LocalDate.of(1995, 12, 28), "hola, soy elena");
 		appChat.registrarUsuario("33", "cc", "https://robohash.org/33.png", "cc", LocalDate.of(2000, 5, 15), "hola, soy rosalia");
 		appChat.registrarUsuario("44", "dd", "https://robohash.org/44.png", "dd", LocalDate.of(1970, 5, 11), "hola, soy diego");
-		appChat.registrarUsuario("55", "ee", "https://robohash.org/55.png", "ee", LocalDate.of(1990, 3, 28), "hola, soy anne");
+		appChat.registrarUsuario("55", "ee", "https://robohash.org/anne.png", "ee", LocalDate.of(1990, 3, 28), "hola, soy anne");
 
 		
 		appChat.hacerLogin("11", "aa");

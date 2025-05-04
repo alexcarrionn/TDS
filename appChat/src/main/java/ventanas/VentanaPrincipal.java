@@ -1,4 +1,4 @@
-package appChat.Ventanas;
+package ventanas;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -27,7 +27,6 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.DefaultListModel;
-//import javax.swing.Icon;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
@@ -77,7 +76,11 @@ public class VentanaPrincipal extends JFrame {
 		appchat = AppChat.getUnicaInstancia();
 		this.chatsRecientes = new HashMap<>();
 		scrollBarChatBurbujas = new JScrollPane();
+		
+		// Centrar la ventana (ponerla en el centro)
+		setLocationRelativeTo(null);
 
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 852, 544);
 		contentPane = new JPanel();
@@ -101,7 +104,7 @@ public class VentanaPrincipal extends JFrame {
 						JOptionPane.showMessageDialog(frame, "Exportación a PDF realizada con éxito.", "Información",
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(frame, "No se pudo exportar a PDF.", "Error",
+						JOptionPane.showMessageDialog(frame, "No se pudo exportar a PDF. Si no eres Usuario Premium no puedes usar esta opción", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (FileNotFoundException e1) {
@@ -282,42 +285,44 @@ public class VentanaPrincipal extends JFrame {
 		    public void mouseClicked(MouseEvent e) {
 		        int index = listaContactos.locationToIndex(e.getPoint());
 
-		        if (index >= 0) {
-		            Rectangle cellBounds = listaContactos.getCellBounds(index, index);
-		            Contacto contacto = modeloLista.getElementAt(index);
+		        // Salir si el índice no es válido
+		        if (index < 0 || index >= modeloLista.getSize()) return;
 
-		            // Determinar la posición del botón dentro de la celda
-		            int botonX = cellBounds.x + cellBounds.width - 30; // Aproximado, depende del tamaño del botón
-		            int botonY = cellBounds.y + cellBounds.height / 2 - 10;
-		            int botonAncho = 20;
-		            int botonAlto = 20;
+		        Contacto contacto = modeloLista.getElementAt(index);
+		        Rectangle celda = listaContactos.getCellBounds(index, index);
 
-		            Rectangle areaBoton = new Rectangle(botonX, botonY, botonAncho, botonAlto);
+		        // Salir si no se puede obtener la celda
+		        if (celda == null) return;
 
-		            // Verificar si el clic fue dentro del área estimada del botón
-		            if (areaBoton.contains(e.getX(), e.getY())) {
-		                if (contacto instanceof ContactoIndividual) {
-		                    ContactoIndividual c = (ContactoIndividual) contacto;
-		                    if (c.isContactoInverso()) {
-		                    	String nuevoNombre = JOptionPane.showInputDialog(
-		                    		    listaContactos,
-		                    		    "Introduce el nuevo nombre para el contacto:",
-		                    		    "Renombrar contacto",
-		                    		    JOptionPane.PLAIN_MESSAGE
-		                    		);
+		        Rectangle areaBoton = new Rectangle(
+		            celda.x + celda.width - 30,
+		            celda.y + celda.height / 2 - 10,
+		            20, 20
+		        );
 
+		        // Salir si no se hizo clic en el área del botón
+		        if (!areaBoton.contains(e.getPoint())) return;
 
+		        // Salir si no es un contacto individual válido para renombrar
+		        if (!(contacto instanceof ContactoIndividual c) || !c.isContactoInverso()) return;
 
-		                        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
-		                            appchat.actualizarNombreContacto(c, nuevoNombre.trim());
-		                            actualizarListaContactos(); // Para refrescar los datos
-		                        }
-		                    }
-		                }
-		            }
-		        }
+		        // Lógica de renombrado
+		        String nuevoNombre = JOptionPane.showInputDialog(
+		            listaContactos,
+		            "Introduce el nuevo nombre para el contacto:",
+		            "Renombrar contacto",
+		            JOptionPane.PLAIN_MESSAGE
+		        );
+
+		        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+		        appchat.actualizarNombreContacto(c, nuevoNombre.trim());
+		        actualizarListaContactos();
 		    }
 		});
+
+
+
 
 
 
@@ -344,27 +349,8 @@ public class VentanaPrincipal extends JFrame {
 		botonEnviarMensaje.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String mensajeTexto = mensaje.getText().trim();
-				if (!mensajeTexto.isEmpty()) {
-					// Obtener contacto actual y enviar mensaje
-					Contacto contactoActual = appchat.getChatActual();
-
-					// Comprobar y ver si el mensaje es un emoticono o un texto y enviar el mensaje
-					comprobarEmojioTexto(mensajeTexto);
-
-					// Crear burbuja y añadirla al chat
-					Mensaje nuevoMensaje = new Mensaje(mensajeTexto, TipoMensaje.ENVIADO, LocalDateTime.now());
-					BubbleText burbuja = crearBurbuja(nuevoMensaje);
-
-					// Obtener el chat actual y actualizar la UI
-					ChatBurbujas chatActual = chatsRecientes.get(contactoActual);
-					if (chatActual != null) {
-						chatActual.agregarBurbuja(burbuja); // Usa el método de ChatBurbujas
-						scrollBarChatBurbujas.getViewport().revalidate();
-						scrollBarChatBurbujas.getViewport().repaint();
-					}
-
-					// Limpiar campo de texto
-					mensaje.setText("");
+				if (appchat.getChatActual() != null) {
+					enviarMensaje(mensajeTexto);
 				}
 			}
 		});
@@ -372,7 +358,35 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	// FUNCIONES AUXILIARES
+	
+	/**
+	 * Metodo para poder enviar el mensaje
+	 * @param mensajeTexto el mensaje a enviar
+	 */
+	private void enviarMensaje(String mensajeTexto) {
+		if (!mensajeTexto.isEmpty()) {
+			// Obtener contacto actual y enviar mensaje
+			Contacto contactoActual = appchat.getChatActual();
 
+			// Comprobar y ver si el mensaje es un emoticono o un texto y enviar el mensaje
+			comprobarEmojioTexto(mensajeTexto);
+
+			// Crear burbuja y añadirla al chat
+			Mensaje nuevoMensaje = new Mensaje(mensajeTexto, TipoMensaje.ENVIADO, LocalDateTime.now());
+			BubbleText burbuja = crearBurbuja(nuevoMensaje);
+
+			// Obtener el chat actual y actualizar la UI
+			ChatBurbujas chatActual = chatsRecientes.get(contactoActual);
+			if (chatActual != null) {
+				chatActual.agregarBurbuja(burbuja); // Usa el método de ChatBurbujas
+				scrollBarChatBurbujas.getViewport().revalidate();
+				scrollBarChatBurbujas.getViewport().repaint();
+			}
+
+			// Limpiar campo de texto
+			mensaje.setText("");
+		}
+	}
 	/**
 	 *  Método privado que servira para carar el panel de los emoticonos
 	 */

@@ -1,4 +1,4 @@
-package appChat.Ventanas;
+package ventanas;
 
 import javax.swing.*;
 import java.awt.*;

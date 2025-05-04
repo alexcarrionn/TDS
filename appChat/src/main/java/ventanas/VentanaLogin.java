@@ -1,4 +1,4 @@
-package appChat.Ventanas;
+package ventanas;
 
 import javax.swing.*;
 import controlador.AppChat;
@@ -82,11 +82,16 @@ public class VentanaLogin {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(651, 416);
         frame.getContentPane().setLayout(new BorderLayout());
+        
+        // Centrar la ventana (ponerla en el centro)
+        frame.setLocationRelativeTo(null);
+
+        
         //obtenermos la imagen de nuestra aplicación 
         ImageIcon originalIcon = new ImageIcon(VentanaLogin.class.getResource("/imagenes/AppChatLogo.png"));
         Image image = originalIcon.getImage();
         Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-	     ImageIcon scaledIcon = new ImageIcon(scaledImage);
+	    ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
         // Panel central para el formulario
         JPanel panelCentral = new JPanel();
